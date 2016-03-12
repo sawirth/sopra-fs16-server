@@ -26,5 +26,6 @@ public class ExampleServiceTest {
 	@Test
 	public void testDoLogic() {
 		assertThat(exampleService.doLogic("a", "b"), is("ab"));
+		assertThat(1, is(1));
 	}
 }
