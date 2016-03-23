@@ -1,5 +1,5 @@
 # SoPra RESTful Service Template
-
+.
 ## Spring Boot
 
 * Documentation: http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/
