@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class User implements Serializable {
@@ -37,6 +38,7 @@ public class User implements Serializable {
 	private UserStatus status;
 
     @ManyToMany
+	@JsonIgnore
     private List<Game> games;
 	
     @OneToMany(mappedBy="user")
