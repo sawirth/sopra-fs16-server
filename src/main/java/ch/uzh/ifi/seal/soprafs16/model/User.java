@@ -3,12 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +32,7 @@ public class User implements Serializable {
 	@Column(nullable = false) 
 	private UserStatus status;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "players", cascade = CascadeType.ALL)
 	@JsonIgnore
     private List<Game> games;
 	

@@ -4,12 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 
@@ -37,7 +32,7 @@ public class Game implements Serializable {
     @OneToMany(mappedBy="game")
     private List<Move> moves;
     
-    @ManyToMany(mappedBy="games")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<User> players;
 
 	public Game() {

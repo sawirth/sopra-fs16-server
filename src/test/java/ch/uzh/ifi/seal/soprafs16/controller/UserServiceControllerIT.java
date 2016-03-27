@@ -48,19 +48,15 @@ public class UserServiceControllerIT {
     @SuppressWarnings("unchecked")
     public void testCreateUserSuccess() {
         List<User> usersBefore = template.getForObject(base + "/user", List.class);
-        Assert.assertEquals(0, usersBefore.size());
 
         User request = new User();
         request.setName("Mike Meyers");
         request.setUsername("mm");
-
-        HttpEntity<User> httpEntity = new HttpEntity<User>(request);
-
+        HttpEntity<User> httpEntity = new HttpEntity<>(request);
         ResponseEntity<User> response = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
-        Assert.assertSame(1L, response.getBody().getId());
 
         List<User> usersAfter = template.getForObject(base + "/user", List.class);
-        Assert.assertEquals(1, usersAfter.size());
+        Assert.assertEquals(usersBefore.size() + 1, usersAfter.size());
 
         ResponseEntity<User> userResponseEntity = template.getForEntity(base + "/user/" + response.getBody().getId(), User.class);
         User userResponse = userResponseEntity.getBody();

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
 import ch.uzh.ifi.seal.soprafs16.Application;
+import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import org.junit.Assert;
@@ -31,7 +32,7 @@ public class GameServiceControllerIT {
 
     private URL base;
     private RestTemplate template;
-    private User user;
+    private int counter;
 
     @Before
     public void setUp()
@@ -39,21 +40,38 @@ public class GameServiceControllerIT {
         this.base = new URL("http://localhost:" + port + "/");
         this.template = new TestRestTemplate();
 
-        User request = new User();
-        request.setName("Horst");
-        request.setUsername("rofl");
-
-        HttpEntity<User> httpEntity = new HttpEntity<>(request);
-        ResponseEntity<User> response = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
-        user = response.getBody();
+        addUser();
     }
 
     @Test
     public void testAddGame() {
+        User user = addUser();
+
         HttpEntity<User> requestBody = new HttpEntity<>(user);
         ResponseEntity<Game> response = template.exchange(base + "/game/new/", HttpMethod.POST, requestBody, Game.class);
         Assert.assertSame(1L, response.getBody().getId());
-        Assert.assertSame(user.getId(), response.getBody().getNextPlayer().getId());
     }
 
+    @Test
+    public void testStartGame() {
+        HttpEntity<User> requestBody = new HttpEntity<>(addUser());
+        ResponseEntity<Game> response = template.exchange(base + "/game/new/", HttpMethod.POST, requestBody, Game.class);
+
+        Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
+
+        template.postForLocation(base + "/game/" + response.getBody().getId() + "/start", response.getBody().getNextPlayer());
+        response = template.getForEntity(base + "/game/" + response.getBody().getId(), Game.class);
+        Assert.assertEquals(GameStatus.RUNNING, response.getBody().getStatus());
+    }
+
+    private User addUser() {
+        User request = new User();
+        request.setName(String.valueOf(Math.random()));
+        request.setUsername(String.valueOf(Math.random()));
+
+        HttpEntity<User> httpEntity = new HttpEntity<>(request);
+        ResponseEntity<User> response = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
+        counter++;
+        return response.getBody();
+    }
 }

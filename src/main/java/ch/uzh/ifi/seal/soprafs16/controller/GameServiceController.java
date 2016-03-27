@@ -54,12 +54,9 @@ public class GameServiceController
         User owner = userRepo.findOne(user.getId());
 
         if (owner != null) {
-            game.setOwner(owner.getName());
+            game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(1);
-            game = gameRepo.save(game);
-
-            //Add owner as player 1
             game.getPlayers().add(owner);
             game = gameRepo.save(game);
 
@@ -77,19 +74,20 @@ public class GameServiceController
     @ResponseStatus(HttpStatus.OK)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        return gameRepo.findOne(gameId);
+        Game game = gameRepo.findOne(gameId);
+        return game;
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
-        logger.info("startGame: " + gameId);
-
+    public void startGame(@PathVariable Long gameId, @RequestBody User user) {
         Game game = gameRepo.findOne(gameId);
-        User owner = userRepo.findByToken(userToken);
+        User owner = userRepo.findOne(user.getId());
 
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername())) {
-            // TODO: Start game
+            game.setStatus(GameStatus.RUNNING);
+            gameRepo.save(game);
+            logger.info("Game " + game.getId() + " started");
         }
     }
 
