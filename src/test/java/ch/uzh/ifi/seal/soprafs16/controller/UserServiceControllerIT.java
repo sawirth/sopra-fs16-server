@@ -5,6 +5,7 @@ import java.util.List;
 
 //import static org.hamcrest.Matchers.is;
 //import static org.hamcrest.MatcherAssert.assertThat;
+import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,19 +48,15 @@ public class UserServiceControllerIT {
     @SuppressWarnings("unchecked")
     public void testCreateUserSuccess() {
         List<User> usersBefore = template.getForObject(base + "/user", List.class);
-        Assert.assertEquals(0, usersBefore.size());
 
         User request = new User();
         request.setName("Mike Meyers");
         request.setUsername("mm");
-
-        HttpEntity<User> httpEntity = new HttpEntity<User>(request);
-
+        HttpEntity<User> httpEntity = new HttpEntity<>(request);
         ResponseEntity<User> response = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
-        Assert.assertSame(1L, response.getBody().getId());
 
         List<User> usersAfter = template.getForObject(base + "/user", List.class);
-        Assert.assertEquals(1, usersAfter.size());
+        Assert.assertEquals(usersBefore.size() + 1, usersAfter.size());
 
         ResponseEntity<User> userResponseEntity = template.getForEntity(base + "/user/" + response.getBody().getId(), User.class);
         User userResponse = userResponseEntity.getBody();
@@ -67,4 +64,26 @@ public class UserServiceControllerIT {
         Assert.assertEquals(request.getUsername(), userResponse.getUsername());
     }
 
+    @Test
+    public void testLoginLogout() {
+        //Create new user on server
+        User request = new User();
+        request.setName("Horst");
+        request.setUsername("horst");
+        HttpEntity<User> httpEntity = new HttpEntity<>(request);
+        ResponseEntity<User> userResponseEntity = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
+
+        //set status to offline to test login properly
+        userResponseEntity.getBody().setStatus(UserStatus.OFFLINE);
+
+        //Test login
+        userResponseEntity = template.exchange(base + "/user/login?username=" + request.getUsername(),
+                HttpMethod.POST, httpEntity, User.class);
+        Assert.assertEquals(UserStatus.ONLINE, userResponseEntity.getBody().getStatus());
+
+        //Test logout
+        userResponseEntity = template.exchange(base + "/user/logout?username=" + request.getUsername(),
+                HttpMethod.POST, httpEntity, User.class);
+        Assert.assertEquals(UserStatus.OFFLINE, userResponseEntity.getBody().getStatus());
+    }
 }

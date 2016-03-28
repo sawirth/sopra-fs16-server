@@ -1,14 +1,10 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 
@@ -25,9 +21,6 @@ public class Game implements Serializable {
 	private Long id;
 	
 	@Column(nullable = false) 
-	private String name;
-	
-	@Column(nullable = false) 
 	private String owner;
 	
 	@Column 
@@ -39,23 +32,20 @@ public class Game implements Serializable {
     @OneToMany(mappedBy="game")
     private List<Move> moves;
     
-    @ManyToMany(mappedBy="games")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<User> players;
-    
+
+	public Game() {
+		this.moves = new ArrayList<>();
+		this.players = new ArrayList<>();
+	}
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getOwner() {

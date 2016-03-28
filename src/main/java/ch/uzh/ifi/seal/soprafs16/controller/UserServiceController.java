@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,9 +53,14 @@ public class UserServiceController
     public User addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
-        user.setStatus(UserStatus.OFFLINE);
+        user.setStatus(UserStatus.ONLINE);
         user.setToken(UUID.randomUUID().toString());
-        user = userRepo.save(user);
+        try {
+            user = userRepo.save(user);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Username " + user.getUsername() + " already exists");
+            throw e;
+        }
 
         return user;
     }
@@ -67,33 +74,25 @@ public class UserServiceController
         return userRepo.findOne(userId);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "{userId}/login")
+    @RequestMapping(method = RequestMethod.POST, value = "/login")
     @ResponseStatus(HttpStatus.OK)
-    public User login(@PathVariable Long userId) {
-        logger.debug("login: " + userId);
+    public User login(@RequestParam String username) {
+        logger.debug("login: " + username);
 
-        User user = userRepo.findOne(userId);
-        if (user != null) {
-            user.setToken(UUID.randomUUID().toString());
-            user.setStatus(UserStatus.ONLINE);
-            user = userRepo.save(user);
+        User user = userRepo.findByUsername(username);
+        userRepo.save(UserService.login(user));
 
-            return user;
-        }
-
-        return null;
+        return user;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "{userId}/logout")
+    @RequestMapping(method = RequestMethod.POST, value = "/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(@PathVariable Long userId, @RequestParam("token") String userToken) {
-        logger.debug("getUser: " + userId);
+    public User logout(@RequestParam("username") String username) {
+        logger.debug("Logout: " + username);
 
-        User user = userRepo.findOne(userId);
+        User user = userRepo.findByUsername(username);
+        userRepo.save(UserService.logout(user));
 
-        if (user != null && user.getToken().equals(userToken)) {
-            user.setStatus(UserStatus.OFFLINE);
-            userRepo.save(user);
-        }
+        return user;
     }
 }
