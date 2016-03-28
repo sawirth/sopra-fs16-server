@@ -165,8 +165,8 @@ public class GameServiceController
         User player = userRepo.findByToken(userToken);
 
         if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS) {
-            player.getGames().add(game);
-            player = userRepo.save(player);
+            game.getPlayers().add(player);
+            game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return CONTEXT + "/" + gameId + "/player/" + (game.getPlayers().size());
         } else {
