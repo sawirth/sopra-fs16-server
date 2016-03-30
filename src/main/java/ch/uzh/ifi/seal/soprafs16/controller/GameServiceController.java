@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ch.uzh.ifi.seal.soprafs16.GameConstants;
@@ -47,13 +48,13 @@ public class GameServiceController
     @RequestMapping(value = CONTEXT + "/new", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Game createGame(@RequestBody User user) {
+    public ResponseEntity<Game> createGame(@RequestParam("token") String token) {
         logger.info("Create new game");
 
         Game game = new Game();
-        User owner = userRepo.findOne(user.getId());
+        User owner = userRepo.findByToken(token);
 
-        if (owner != null) {
+        if (owner != null && owner.getGames().size()==0) {
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(1);
@@ -61,7 +62,12 @@ public class GameServiceController
             game = gameRepo.save(game);
 
             logger.info("Game " + game.getId() + " successfully created");
-            return game;
+            return ResponseEntity.ok(game);
+        }
+
+        else if(owner.getGames().size()>=0){
+            logger.info("User already created or joined a game");
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
 
         return null;
