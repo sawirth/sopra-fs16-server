@@ -49,7 +49,6 @@ public class UserServiceController
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
@@ -63,7 +62,7 @@ public class UserServiceController
             return ResponseEntity.status(409).body(user);
         }
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
 
