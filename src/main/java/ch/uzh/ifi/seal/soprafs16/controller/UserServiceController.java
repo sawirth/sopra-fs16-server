@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +51,7 @@ public class UserServiceController
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public User addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
         user.setStatus(UserStatus.ONLINE);
@@ -59,40 +60,50 @@ public class UserServiceController
             user = userRepo.save(user);
         } catch (DataIntegrityViolationException e) {
             logger.error("Username " + user.getUsername() + " already exists");
-            throw e;
+            return ResponseEntity.status(409).body(user);
         }
 
-        return user;
+        return ResponseEntity.ok(user);
     }
 
 
     @RequestMapping(method = RequestMethod.GET, value = "{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User getUser(@PathVariable Long userId) {
+    public ResponseEntity<User> getUser(@PathVariable Long userId) {
         logger.debug("getUser: " + userId);
 
-        return userRepo.findOne(userId);
+        User user =  userRepo.findOne(userId);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     @ResponseStatus(HttpStatus.OK)
-    public User login(@RequestParam String username) {
+    public ResponseEntity<User> login(@RequestParam String username) {
         logger.debug("login: " + username);
 
         User user = userRepo.findByUsername(username);
-        userRepo.save(UserService.login(user));
-
-        return user;
+        if (user != null) {
+            userRepo.save(UserService.login(user));
+            return ResponseEntity.ok(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout")
     @ResponseStatus(HttpStatus.OK)
-    public User logout(@RequestParam("username") String username) {
+    public ResponseEntity<User> logout(@RequestParam("username") String username) {
         logger.debug("Logout: " + username);
 
         User user = userRepo.findByUsername(username);
-        userRepo.save(UserService.logout(user));
-
-        return user;
+        if (user != null) {
+            return ResponseEntity.ok(userRepo.save(UserService.logout(user)));
+        } else {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
     }
 }
