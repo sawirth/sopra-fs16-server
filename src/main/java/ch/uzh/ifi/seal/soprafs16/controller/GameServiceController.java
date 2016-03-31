@@ -70,7 +70,7 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
 
-        return null;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*
@@ -164,21 +164,22 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public String addPlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public ResponseEntity<Game> addPlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         logger.info("addPlayer: " + userToken);
 
         Game game = gameRepo.findOne(gameId);
         User player = userRepo.findByToken(userToken);
 
-        if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS) {
+        if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().size()==0) {
             game.getPlayers().add(player);
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
-            return CONTEXT + "/" + gameId + "/player/" + (game.getPlayers().size());
-        } else {
-            logger.error("Error adding player with token: " + userToken);
+            return ResponseEntity.ok(game);
+        } else if(player.getGames().size()>=0){
+            logger.error("Error adding player with token, since he already joined a game: " + userToken);
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
-        return null;
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player/{playerId}")
@@ -188,6 +189,41 @@ public class GameServiceController
 
         Game game = gameRepo.findOne(gameId);
         return game.getPlayers().get(--playerId);
+    }
+
+    @RequestMapping(value = CONTEXT + "/{gameId}/player/remove", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Game> removePlayer(@PathVariable Long gameId, @RequestParam("token") String userToken){
+        logger.info("remove Player: "+userToken);
+
+        Game game = gameRepo.findOne(gameId);
+        User user = userRepo.findByToken(userToken);
+
+        if(user.getUsername().equals(game.getOwner())){
+            if(game.getPlayers().size()==1){
+                gameRepo.delete(game);
+                user.setGames(null);
+                userRepo.save(user);
+            }
+            else{
+                game.setOwner(game.getPlayers().get(1).getUsername().toString());
+                game.getPlayers().remove(0);
+                game = gameRepo.save(game);
+                return ResponseEntity.ok(game);
+            }
+        }
+        else{
+            for(int i=0;i<game.getPlayers().size();i++) {
+                if (game.getPlayers().get(i).equals(user)) {
+                    game.getPlayers().remove(i);
+                    game = gameRepo.save(game);
+                    logger.info("Player removed" + userToken);
+                    return ResponseEntity.ok(game);
+                }
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.MULTI_STATUS);
     }
 
 }
