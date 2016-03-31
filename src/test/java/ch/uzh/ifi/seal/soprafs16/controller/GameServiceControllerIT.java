@@ -48,14 +48,15 @@ public class GameServiceControllerIT {
         User user = addUser();
 
         HttpEntity<User> requestBody = new HttpEntity<>(user);
-        ResponseEntity<Game> response = template.exchange(base + "/game/new/", HttpMethod.POST, requestBody, Game.class);
+        ResponseEntity<Game> response = template.exchange(base + "/game/new?token="+user.getToken(), HttpMethod.POST, requestBody, Game.class);
         Assert.assertSame(1L, response.getBody().getId());
     }
 
     @Test
     public void testStartGame() {
-        HttpEntity<User> requestBody = new HttpEntity<>(addUser());
-        ResponseEntity<Game> response = template.exchange(base + "/game/new/", HttpMethod.POST, requestBody, Game.class);
+        User user = addUser();
+        HttpEntity<User> requestBody = new HttpEntity<>(user);
+        ResponseEntity<Game> response = template.exchange(base + "/game/new?token=" + user.getToken(), HttpMethod.POST, requestBody, Game.class);
 
         Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
 
