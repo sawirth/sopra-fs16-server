@@ -94,7 +94,7 @@ public class GameServiceController
         User owner = userRepo.findByToken(userToken);
 
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
-                game.getPlayers().size() >= GameConstants.MIN_PLAYERS) {
+                game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
             game.setTrain(gameInitializeService.createTrain(game.getPlayers().size()));
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);

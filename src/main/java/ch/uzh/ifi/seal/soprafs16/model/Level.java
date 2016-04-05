@@ -17,47 +17,23 @@ public class Level {
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Treasure> moneybags;
-
-    @Column
-    private int diamonds;
-
-    @Column
-    private int cashboxes;
+    private List<Treasure> treasures;
 
     @OneToMany
     private List<User> users;
 
-    public Level(List<Treasure> moneybags,int diamonds, int cashboxes){
-
-        this.diamonds = diamonds;
-        this.cashboxes = cashboxes;
+    public Level(List<Treasure> treasures){
+        this.treasures=treasures;
     }
 
     public Level(){}
 
-    public List<Treasure> getMoneybags() {
-        return moneybags;
+    public List<Treasure> getTreasures() {
+        return treasures;
     }
 
-    public void setMoneybags(List<Treasure> moneybags) {
-        this.moneybags = moneybags;
-    }
-
-    public int getDiamonds() {
-        return diamonds;
-    }
-
-    public void setDiamonds(int diamonds) {
-        this.diamonds = diamonds;
-    }
-
-    public int getCashboxes() {
-        return cashboxes;
-    }
-
-    public void setCashboxes(int cashboxes) {
-        this.cashboxes = cashboxes;
+    public void setTreasures(List<Treasure> treasures) {
+        this.treasures = treasures;
     }
 
     public List<User> getUsers() {

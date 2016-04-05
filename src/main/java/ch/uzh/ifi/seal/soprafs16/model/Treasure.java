@@ -24,6 +24,10 @@ public class Treasure {
         this.type = type;
     }
 
+    public Treasure(){
+
+    }
+
     public int getValue() {
         return value;
     }

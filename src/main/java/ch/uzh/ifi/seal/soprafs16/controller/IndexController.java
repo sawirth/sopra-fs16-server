@@ -23,7 +23,6 @@ public class IndexController {
 	@RequestMapping(value="/")
 	@ResponseBody
 	public String index() {
-		logger.info("hihi höhö");
 		return "SoPra 2016 with Codeship!";
 	}
 
