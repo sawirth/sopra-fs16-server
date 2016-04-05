@@ -73,17 +73,14 @@ public class UserServiceControllerIT {
         HttpEntity<User> httpEntity = new HttpEntity<>(request);
         ResponseEntity<User> userResponseEntity = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
 
-        //set status to offline to test login properly
-        userResponseEntity.getBody().setStatus(UserStatus.OFFLINE);
-
-        //Test login
-        userResponseEntity = template.exchange(base + "/user/login?username=" + request.getUsername(),
-                HttpMethod.POST, httpEntity, User.class);
-        Assert.assertEquals(UserStatus.ONLINE, userResponseEntity.getBody().getStatus());
-
-        //Test logout
-        userResponseEntity = template.exchange(base + "/user/logout?username=" + request.getUsername(),
+        //since a new user created user is directly logged in we test the logout first
+        userResponseEntity = template.exchange(base + "/user/logout?username=" + userResponseEntity.getBody().getUsername(),
                 HttpMethod.POST, httpEntity, User.class);
         Assert.assertEquals(UserStatus.OFFLINE, userResponseEntity.getBody().getStatus());
+
+        //now we test the login
+        template.put(base + "/user/login?username=" + userResponseEntity.getBody().getUsername(), User.class);
+        userResponseEntity = template.getForEntity(base + "/user/" + userResponseEntity.getBody().getId(), User.class);
+        Assert.assertEquals(UserStatus.ONLINE, userResponseEntity.getBody().getStatus());
     }
 }

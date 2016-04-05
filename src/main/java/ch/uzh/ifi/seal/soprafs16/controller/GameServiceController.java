@@ -211,27 +211,25 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player/remove", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Game> removePlayer(@PathVariable Long gameId, @RequestParam("token") String userToken){
-        logger.info("remove Player: "+userToken);
+    public ResponseEntity<Game> removePlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+        logger.info("remove Player: " + userToken);
 
         Game game = gameRepo.findOne(gameId);
         User user = userRepo.findByToken(userToken);
 
-        if(user.getUsername().equals(game.getOwner())){
-            if(game.getPlayers().size()==1){
+        if (user.getUsername().equals(game.getOwner())) {
+            if (game.getPlayers().size() == 1) {
                 gameRepo.delete(game);
                 user.setGames(null);
                 userRepo.save(user);
-            }
-            else{
-                game.setOwner(game.getPlayers().get(1).getUsername().toString());
+            } else {
+                game.setOwner(game.getPlayers().get(1).getUsername());
                 game.getPlayers().remove(0);
                 game = gameRepo.save(game);
                 return ResponseEntity.ok(game);
             }
-        }
-        else{
-            for(int i=0;i<game.getPlayers().size();i++) {
+        } else {
+            for (int i = 0; i < game.getPlayers().size(); i++) {
                 if (game.getPlayers().get(i).equals(user)) {
                     game.getPlayers().remove(i);
                     game = gameRepo.save(game);
@@ -243,5 +241,4 @@ public class GameServiceController
 
         return new ResponseEntity<>(HttpStatus.MULTI_STATUS);
     }
-
 }
