@@ -17,7 +17,7 @@ public class GameInitializeService {
      */
     public List<Wagon> createTrain(int numberOfPlayers) {
         List<Wagon> allWagons = new ArrayList<>();
-        allWagons.addAll(createWagons());
+        //allWagons.addAll(createWagons());
 
         List<Wagon> train = new ArrayList<>();
 
@@ -25,10 +25,10 @@ public class GameInitializeService {
         train.add(new Wagon(new ArrayList<>(), 0, 1, true));
 
         //add random wagons based on the number of players. A wagon for each player
-        Collections.shuffle(allWagons);
+        /*Collections.shuffle(allWagons);
         for (int i = 0; i < numberOfPlayers; i++) {
             train.add(allWagons.get(i));
-        }
+        }*/
 
         return train;
     }

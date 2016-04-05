@@ -101,7 +101,7 @@ public class GameServiceController
             logger.info("Game " + game.getId() + " started");
             return HttpStatus.ACCEPTED;
         }
-        else if(game.getPlayers().size() <= GameConstants.MIN_PLAYERS){
+        else if(game.getPlayers().size() < GameConstants.MIN_PLAYERS){
             logger.error("Couldn't start game: Number of Minimum players required");
             return HttpStatus.PRECONDITION_REQUIRED;
         }
