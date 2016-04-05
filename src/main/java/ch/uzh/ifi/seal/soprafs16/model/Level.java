@@ -67,6 +67,4 @@ public class Level {
     public void setUsers(List<User> users) {
         this.users = users;
     }
-
-
 }

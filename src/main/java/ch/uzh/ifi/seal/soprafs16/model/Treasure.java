@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,8 +23,6 @@ public class Treasure {
         this.value = value;
         this.type = type;
     }
-
-
 
     public int getValue() {
         return value;
