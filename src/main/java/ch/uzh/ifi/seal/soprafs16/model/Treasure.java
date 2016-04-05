@@ -1,5 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
+
 public class Treasure {
     private int value;
     private TreasureType type;
