@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 public class TestModel implements Serializable{
@@ -21,6 +22,9 @@ public class TestModel implements Serializable{
 
     @Column(nullable = true)
     private int age;
+
+    @Column(nullable = false)
+    private User[] users = {new User("sandro", "sandro"), new User("horst", "horst")};
 
     public String getFirstName() {
         return firstName;

@@ -39,6 +39,14 @@ public class User implements Serializable {
     @OneToMany(mappedBy="user")
     private List<Move> moves;
 
+	public User(String name, String username) {
+		this.name = name;
+		this.username = username;
+	}
+
+	public User() {
+	}
+
 	public Long getId() {
 		return id;
 	}

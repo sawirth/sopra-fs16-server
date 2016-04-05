@@ -79,7 +79,8 @@ public class UserServiceController
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/login")
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/login")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<User> login(@RequestParam String username) {
         logger.debug("login: " + username);

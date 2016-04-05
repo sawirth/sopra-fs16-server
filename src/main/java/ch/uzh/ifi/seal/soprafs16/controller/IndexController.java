@@ -2,6 +2,8 @@ package ch.uzh.ifi.seal.soprafs16.controller;
 
 import ch.uzh.ifi.seal.soprafs16.model.TestModel;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.TestModelRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -16,9 +18,12 @@ public class IndexController {
 	@Autowired
 	private TestModelRepository testModelRepo;
 
+	private Logger logger = LoggerFactory.getLogger(IndexController.class);
+
 	@RequestMapping(value="/")
 	@ResponseBody
 	public String index() {
+		logger.info("hihi höhö");
 		return "SoPra 2016 with Codeship!";
 	}
 
@@ -32,8 +37,8 @@ public class IndexController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
 	public TestModel addTestModel(@RequestBody TestModel testModel) {
-
 		testModel = testModelRepo.save(testModel);
+		logger.debug("TestModel added");
 		return testModel;
 	}
 
@@ -43,6 +48,7 @@ public class IndexController {
 	public List<TestModel> getTestModels() {
 		List<TestModel> list = new ArrayList<>();
 		testModelRepo.findAll().forEach(list::add);
+		logger.debug("Return all TestModels");
 		return list;
 	}
 
