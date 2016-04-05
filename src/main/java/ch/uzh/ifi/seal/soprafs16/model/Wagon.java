@@ -1,17 +1,35 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Created by Ada on 28.03.2016.
+ */
+@Entity
+public class Wagon implements Serializable {
 
-public class Wagon {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Level lowerLevel;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Level upperLevel;
+
+    @Column
     private Boolean hasMarshal;
 
     public Wagon(List<Treasure> moneybags, int diamonds, int cashboxes, boolean hasMarshal){
         lowerLevel = new Level(moneybags, diamonds, cashboxes);
         upperLevel = new Level();
         this.hasMarshal = hasMarshal;
+    }
+
+    public Wagon() {
     }
 
     public Level getLowerLevel() {

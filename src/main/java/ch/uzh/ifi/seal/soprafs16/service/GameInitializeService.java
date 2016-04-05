@@ -3,7 +3,6 @@ package ch.uzh.ifi.seal.soprafs16.service;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +15,9 @@ public class GameInitializeService {
      * @param numberOfPlayers This defines the number of wagons
      * @return
      */
-    private List<Wagon> createTrain(int numberOfPlayers) {
+    public List<Wagon> createTrain(int numberOfPlayers) {
         List<Wagon> allWagons = new ArrayList<>();
-        allWagons.addAll(createWagons());
+        //allWagons.addAll(createWagons());
 
         List<Wagon> train = new ArrayList<>();
 
@@ -26,10 +25,10 @@ public class GameInitializeService {
         train.add(new Wagon(new ArrayList<>(), 0, 1, true));
 
         //add random wagons based on the number of players. A wagon for each player
-        Collections.shuffle(allWagons);
+        /*Collections.shuffle(allWagons);
         for (int i = 0; i < numberOfPlayers; i++) {
             train.add(allWagons.get(i));
-        }
+        }*/
 
         return train;
     }
@@ -44,6 +43,5 @@ public class GameInitializeService {
 
 
         return allWagons;
-
     }
 }

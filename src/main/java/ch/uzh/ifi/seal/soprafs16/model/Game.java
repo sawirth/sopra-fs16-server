@@ -36,11 +36,19 @@ public class Game implements Serializable {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<User> players;
 
-	/*@Column
-	private List<Round> rounds;
+	//@Column
+	//private List<Round> rounds;
 
-	@Column
-	private List<Wagon> train;*/
+	public List<Wagon> getTrain() {
+		return train;
+	}
+
+	public void setTrain(List<Wagon> train) {
+		this.train = train;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<Wagon> train;
 
 	public Game() {
 		this.moves = new ArrayList<>();
