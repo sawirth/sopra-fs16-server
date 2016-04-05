@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class GameServiceController
     private UserRepository userRepo;
     @Autowired
     private GameRepository gameRepo;
+    @Autowired
+    private GameInitializeService gameInitializeService;
 
     private final String   CONTEXT = "/game";
 
@@ -57,7 +60,7 @@ public class GameServiceController
         if (owner != null && owner.getGames().size()==0) {
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
-            game.setCurrentPlayer(-1);
+            game.setCurrentPlayer(0);
             game.getPlayers().add(owner);
             game = gameRepo.save(game);
 
@@ -92,6 +95,7 @@ public class GameServiceController
 
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
                 game.getPlayers().size() >= GameConstants.MIN_PLAYERS) {
+            game.setTrain(gameInitializeService.createWagons());
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
