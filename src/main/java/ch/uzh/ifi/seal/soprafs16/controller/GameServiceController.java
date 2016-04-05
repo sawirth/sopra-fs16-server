@@ -65,7 +65,7 @@ public class GameServiceController
             return ResponseEntity.ok(game);
         }
 
-        else if(owner.getGames().size()>=0){
+        else if(owner.getGames().size()>0){
             logger.info("User already created or joined a game");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
@@ -86,15 +86,22 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void startGame(@PathVariable Long gameId, @RequestBody User user) {
+    public ResponseEntity startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
-        User owner = userRepo.findOne(user.getId());
+        User owner = userRepo.findByToken(userToken);
 
-        if (owner != null && game != null && game.getOwner().equals(owner.getUsername())) {
+        if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
+                game.getPlayers().size() >= GameConstants.MIN_PLAYERS) {
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
+        else if(game.getPlayers().size() <= GameConstants.MIN_PLAYERS){
+            logger.error("Couldn't start game: Number of Minimum players required");
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.POST)
@@ -172,12 +179,19 @@ public class GameServiceController
 
         if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().size()==0) {
             game.getPlayers().add(player);
+            //TODO check who is the nextplayer
+            game.setCurrentPlayer(0);
+
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
-        } else if(player.getGames().size()>=0){
+        }else if(player.getGames().size()>0){
             logger.error("Error adding player with token, since he already joined a game: " + userToken);
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
+        }
+        else if(game.getPlayers().size() == GameConstants.MAX_PLAYERS){
+            logger.error("Already max number of players in chosen game");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
