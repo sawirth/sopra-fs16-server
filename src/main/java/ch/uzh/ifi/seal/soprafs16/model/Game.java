@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.*;
 
@@ -34,6 +35,12 @@ public class Game implements Serializable {
     
     @ManyToMany(cascade = CascadeType.ALL)
     private List<User> players;
+
+	/*@Column
+	private List<Round> rounds;
+
+	@Column
+	private List<Wagon> train;*/
 
 	public Game() {
 		this.moves = new ArrayList<>();
@@ -91,4 +98,12 @@ public class Game implements Serializable {
 	public User getNextPlayer() {
 		return getPlayers().get((getCurrentPlayer() + 1) % getPlayers().size());
 	}
+
+	/*public List<Round> getRounds() {
+		return rounds;
+	}
+
+	public List<Wagon> getTrain() {
+		return train;
+	}*/
 }

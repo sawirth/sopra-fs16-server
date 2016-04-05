@@ -57,7 +57,7 @@ public class GameServiceController
         if (owner != null && owner.getGames().size()==0) {
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
-            game.setCurrentPlayer(1);
+            game.setCurrentPlayer(-1);
             game.getPlayers().add(owner);
             game = gameRepo.save(game);
 
@@ -86,7 +86,7 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public HttpStatus startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
@@ -95,13 +95,13 @@ public class GameServiceController
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return HttpStatus.ACCEPTED;
         }
         else if(game.getPlayers().size() <= GameConstants.MIN_PLAYERS){
             logger.error("Couldn't start game: Number of Minimum players required");
-            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
+            return HttpStatus.PRECONDITION_REQUIRED;
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.POST)
