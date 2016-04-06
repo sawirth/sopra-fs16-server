@@ -80,7 +80,7 @@ public class UserServiceController
     }
 
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/login")
+    @RequestMapping(method = RequestMethod.POST, value = "/login")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<User> login(@RequestParam String username) {
         logger.debug("login: " + username);
@@ -88,6 +88,7 @@ public class UserServiceController
         User user = userRepo.findByUsername(username);
         if (user != null) {
             userRepo.save(UserService.login(user));
+            logger.info("Logged in: "+username);
             return ResponseEntity.ok(user);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
