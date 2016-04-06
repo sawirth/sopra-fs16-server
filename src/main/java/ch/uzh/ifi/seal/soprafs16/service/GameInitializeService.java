@@ -136,4 +136,15 @@ public class GameInitializeService {
         train.get(train.size()-2).getLowerLevel().setUsers(playersSecondLastWagon);
     }
 
+    /**
+     * Adds the first treasure to every user in a game
+     * @param users
+     */
+    public void giveUsersTreasue(List<User> users){
+        for(User user : users){
+            List<Treasure> treasures = new ArrayList<>();
+            treasures.add(new Treasure(250,TreasureType.MONEYBAG));
+            user.setTreasures(treasures);
+        }
+    }
 }

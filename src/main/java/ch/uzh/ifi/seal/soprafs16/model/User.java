@@ -39,6 +39,9 @@ public class User implements Serializable {
     @OneToMany(mappedBy="user")
     private List<Move> moves;
 
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<Treasure> treasures;
+
 	public User(String name, String username) {
 		this.name = name;
 		this.username = username;
@@ -101,5 +104,13 @@ public class User implements Serializable {
 
 	public void setStatus(UserStatus status) {
 		this.status = status;
+	}
+
+	public List<Treasure> getTreasures() {
+		return treasures;
+	}
+
+	public void setTreasures(List<Treasure> treasures) {
+		this.treasures = treasures;
 	}
 }

@@ -96,6 +96,7 @@ public class GameServiceController
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
                 game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
+            gameInitializeService.giveUsersTreasue(game.getPlayers());
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
@@ -183,9 +184,7 @@ public class GameServiceController
 
         if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().size()==0) {
             game.getPlayers().add(player);
-            //TODO check who is the nextplayer
             game.setCurrentPlayer(0);
-
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
