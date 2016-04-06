@@ -95,7 +95,7 @@ public class GameServiceController
 
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
                 game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
-            game.setTrain(gameInitializeService.createTrain(game.getPlayers().size()));
+            game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");

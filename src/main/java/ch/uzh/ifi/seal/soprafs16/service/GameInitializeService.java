@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
+import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -12,11 +13,12 @@ import java.util.List;
 public class GameInitializeService {
 
     /**
-     * Creates the train for a game
-     * @param numberOfPlayers This defines the number of wagons
+     * Creates a train for a specific game
+     *
+     * @param players
      * @return
      */
-    public List<Wagon> createTrain(int numberOfPlayers) {
+    public List<Wagon> createTrain(List<User> players) {
         List<Wagon> allWagons = new ArrayList<>();
         allWagons.addAll(createWagons());
 
@@ -29,9 +31,11 @@ public class GameInitializeService {
 
         //add random wagons based on the number of players. A wagon for each player
         Collections.shuffle(allWagons);
-        for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < players.size(); i++) {
             train.add(allWagons.get(i));
         }
+
+        addUsersToTrain(train,players);
 
         return train;
     }
@@ -107,4 +111,29 @@ public class GameInitializeService {
         }
         return treasures;
     }
+
+    /**
+     * Adds players to the
+     *
+     * @param train
+     * @param players
+     * @return List<Wagon>
+     */
+    private void addUsersToTrain(List<Wagon> train, List<User> players){
+        List<User> playersLastWagon = new ArrayList<>();
+        List<User> playersSecondLastWagon = new ArrayList<>();
+
+        for(int i=0;i < players.size();i++){
+            if(i % 2 == 0){
+                playersLastWagon.add(players.get(i));
+            }
+            else{
+                playersSecondLastWagon.add(players.get(i));
+            }
+        }
+
+        train.get(train.size()-1).getLowerLevel().setUsers(playersLastWagon);
+        train.get(train.size()-2).getLowerLevel().setUsers(playersSecondLastWagon);
+    }
+
 }
