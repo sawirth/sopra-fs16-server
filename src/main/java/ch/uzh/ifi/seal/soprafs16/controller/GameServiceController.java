@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class GameServiceController
     @Autowired
     private GameInitializeService gameInitializeService;
 
-    private final String   CONTEXT = "/game";
+    private final String   CONTEXT = "/games";
 
     /*
      * Context: /game
@@ -58,6 +59,7 @@ public class GameServiceController
         User owner = userRepo.findByToken(token);
 
         if (owner != null && owner.getGames().size()==0) {
+            owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(0);
@@ -89,23 +91,24 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public HttpStatus startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
         if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
                 game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
-            game.setTrain(gameInitializeService.createTrain(game.getPlayers().size()));
+            game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
+            gameInitializeService.giveUsersTreasue(game.getPlayers());
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
-            return HttpStatus.ACCEPTED;
+            return ResponseEntity.ok(game);
         }
         else if(game.getPlayers().size() < GameConstants.MIN_PLAYERS){
             logger.error("Couldn't start game: Number of Minimum players required");
-            return HttpStatus.PRECONDITION_REQUIRED;
+            return new ResponseEntity(HttpStatus.PRECONDITION_REQUIRED);
         }
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.POST)
@@ -181,23 +184,36 @@ public class GameServiceController
         Game game = gameRepo.findOne(gameId);
         User player = userRepo.findByToken(userToken);
 
-        if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().size()==0) {
-            game.getPlayers().add(player);
-            //TODO check who is the nextplayer
-            game.setCurrentPlayer(0);
+        if (game == null || player == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().isEmpty()) {
+            List<CharacterType> allCharacters = new ArrayList<>();
+            allCharacters.add(CharacterType.BELLE);
+            allCharacters.add(CharacterType.DOC);
+            allCharacters.add(CharacterType.GHOST);
+            allCharacters.add(CharacterType.JANGO);
+            allCharacters.add(CharacterType.TUCO);
+            for(User user : game.getPlayers()){
+                allCharacters.remove(user.getCharacterType());
+            }
 
+            player.setCharacterType(allCharacters.get(0));
+            game.getPlayers().add(player);
+            game.setCurrentPlayer(0);
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
-        }else if(player.getGames().size()>0){
+        } else if (game.getPlayers().size() == GameConstants.MAX_PLAYERS) {
+            logger.error("Already max number of players in chosen game");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else if (player.getGames().get(0).getId() == gameId) {
+            //TODO change player games to single field not a list
+            return ResponseEntity.ok(game);
+        } else {
             logger.error("Error adding player with token, since he already joined a game: " + userToken);
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
-        else if(game.getPlayers().size() == GameConstants.MAX_PLAYERS){
-            logger.error("Already max number of players in chosen game");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player/{playerId}")

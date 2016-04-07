@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class UserServiceController
 
     Logger                 logger  = LoggerFactory.getLogger(UserServiceController.class);
 
-    static final String    CONTEXT = "/user";
+    static final String    CONTEXT = "/users";
 
     @Autowired
     private UserRepository userRepo;
@@ -80,7 +81,7 @@ public class UserServiceController
     }
 
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/login")
+    @RequestMapping(method = RequestMethod.POST, value = "/login")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<User> login(@RequestParam String username) {
         logger.debug("login: " + username);
@@ -88,6 +89,7 @@ public class UserServiceController
         User user = userRepo.findByUsername(username);
         if (user != null) {
             userRepo.save(UserService.login(user));
+            logger.info("Logged in: "+username);
             return ResponseEntity.ok(user);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -104,6 +106,21 @@ public class UserServiceController
             return ResponseEntity.ok(userRepo.save(UserService.logout(user)));
         } else {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/character")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<User> chooseCharacter(@RequestParam("token") String userToken, @RequestParam("character") CharacterType characterType) {
+        logger.info(userToken+"choosed Character: "+characterType);
+        User user = userRepo.findByToken(userToken);
+
+        if (user != null) {
+            user.setCharacterType(characterType);
+            userRepo.save(user);
+            return ResponseEntity.ok(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

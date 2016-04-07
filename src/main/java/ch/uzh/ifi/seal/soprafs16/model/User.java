@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -32,12 +33,18 @@ public class User implements Serializable {
 	@Column(nullable = false) 
 	private UserStatus status;
 
+	@Column
+	private CharacterType characterType;
+
     @ManyToMany(mappedBy = "players", cascade = CascadeType.ALL)
 	@JsonIgnore
     private List<Game> games;
 	
     @OneToMany(mappedBy="user")
     private List<Move> moves;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<Treasure> treasures;
 
 	public User(String name, String username) {
 		this.name = name;
@@ -101,5 +108,21 @@ public class User implements Serializable {
 
 	public void setStatus(UserStatus status) {
 		this.status = status;
+	}
+
+	public List<Treasure> getTreasures() {
+		return treasures;
+	}
+
+	public void setTreasures(List<Treasure> treasures) {
+		this.treasures = treasures;
+	}
+
+	public CharacterType getCharacterType() {
+		return characterType;
+	}
+
+	public void setCharacterType(CharacterType characterType) {
+		this.characterType = characterType;
 	}
 }
