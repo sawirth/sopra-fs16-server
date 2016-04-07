@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class GameServiceController
         User owner = userRepo.findByToken(token);
 
         if (owner != null && owner.getGames().size()==0) {
+            owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(0);
@@ -185,8 +187,18 @@ public class GameServiceController
         if (game == null || player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().isEmpty()) {
+            List<CharacterType> allCharacters = new ArrayList<>();
+            allCharacters.add(CharacterType.BELLE);
+            allCharacters.add(CharacterType.DOC);
+            allCharacters.add(CharacterType.GHOST);
+            allCharacters.add(CharacterType.JANGO);
+            allCharacters.add(CharacterType.TUCO);
+            for(User user : game.getPlayers()){
+                allCharacters.remove(user.getCharacterType());
+            }
+
+            player.setCharacterType(allCharacters.get(0));
             game.getPlayers().add(player);
             game.setCurrentPlayer(0);
             game = gameRepo.save(game);
