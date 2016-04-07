@@ -47,7 +47,7 @@ public class GameServiceControllerIT {
         User user = addUser();
 
         HttpEntity<User> requestBody = new HttpEntity<>(user);
-        ResponseEntity<Game> response = template.exchange(base + "/game/new?token="+user.getToken(), HttpMethod.POST, requestBody, Game.class);
+        ResponseEntity<Game> response = template.exchange(base + "/games/new?token="+user.getToken(), HttpMethod.POST, requestBody, Game.class);
         Assert.assertSame(1L, response.getBody().getId());
     }
 
@@ -55,24 +55,24 @@ public class GameServiceControllerIT {
     public void testStartGame() {
         User owner = addUser();
         HttpEntity<User> requestBody = new HttpEntity<>(owner);
-        ResponseEntity<Game> response = template.exchange(base + "/game/new?token=" + owner.getToken(), HttpMethod.POST, requestBody, Game.class);
+        ResponseEntity<Game> response = template.exchange(base + "/games/new?token=" + owner.getToken(), HttpMethod.POST, requestBody, Game.class);
 
         Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
 
         //Trying to start the game with one player which should not be possible
-        template.postForLocation(base + "/game/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
-        response = template.getForEntity(base + "/game/" + response.getBody().getId(), Game.class);
+        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
+        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
         Assert.assertNotEquals(GameStatus.RUNNING, response.getBody().getStatus());
 
         //Add a second player and check if adding was successful
         User secondPlayer = addUser();
-        template.postForLocation(base +  "/game/" + response.getBody().getId() + "/player?token=" + secondPlayer.getToken(), null);
-        response = template.getForEntity(base + "/game/" + response.getBody().getId(), Game.class);
+        template.postForLocation(base +  "/games/" + response.getBody().getId() + "/player?token=" + secondPlayer.getToken(), null);
+        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
         Assert.assertEquals(2, response.getBody().getPlayers().size());
 
         //Now the owner tries to start the game which must be possible
-        template.postForLocation(base + "/game/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
-        response = template.getForEntity(base + "/game/" + response.getBody().getId(), Game.class);
+        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
+        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
         Assert.assertEquals(GameStatus.RUNNING, response.getBody().getStatus());
     }
 
@@ -82,7 +82,7 @@ public class GameServiceControllerIT {
         request.setUsername(String.valueOf(Math.random()));
 
         HttpEntity<User> httpEntity = new HttpEntity<>(request);
-        ResponseEntity<User> response = template.exchange(base + "/user/", HttpMethod.POST, httpEntity, User.class);
+        ResponseEntity<User> response = template.exchange(base + "/users/", HttpMethod.POST, httpEntity, User.class);
         return response.getBody();
     }
 }
