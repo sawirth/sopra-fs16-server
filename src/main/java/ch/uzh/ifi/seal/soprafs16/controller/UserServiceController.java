@@ -33,7 +33,7 @@ public class UserServiceController
 
     Logger                 logger  = LoggerFactory.getLogger(UserServiceController.class);
 
-    static final String    CONTEXT = "/user";
+    static final String    CONTEXT = "/users";
 
     @Autowired
     private UserRepository userRepo;
