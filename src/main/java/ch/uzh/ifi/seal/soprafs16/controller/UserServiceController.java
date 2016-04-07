@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,21 @@ public class UserServiceController
             return ResponseEntity.ok(userRepo.save(UserService.logout(user)));
         } else {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/character")
+    @ResponseStatus(HttpStatus.OK)
+    public HttpStatus chooseCharacter(@RequestParam("token") String userToken, @RequestParam("character") CharacterType characterType) {
+        logger.info(userToken+"choosed Character: "+characterType);
+        User user = userRepo.findByToken(userToken);
+
+        if (user != null) {
+            user.setCharacterType(characterType);
+            userRepo.save(user);
+            return HttpStatus.ACCEPTED;
+        } else {
+            return HttpStatus.NOT_FOUND;
         }
     }
 }
