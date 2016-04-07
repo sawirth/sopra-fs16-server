@@ -111,16 +111,16 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.POST, value = "/character")
     @ResponseStatus(HttpStatus.OK)
-    public HttpStatus chooseCharacter(@RequestParam("token") String userToken, @RequestParam("character") CharacterType characterType) {
+    public ResponseEntity<User> chooseCharacter(@RequestParam("token") String userToken, @RequestParam("character") CharacterType characterType) {
         logger.info(userToken+"choosed Character: "+characterType);
         User user = userRepo.findByToken(userToken);
 
         if (user != null) {
             user.setCharacterType(characterType);
             userRepo.save(user);
-            return HttpStatus.ACCEPTED;
+            return ResponseEntity.ok(user);
         } else {
-            return HttpStatus.NOT_FOUND;
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
