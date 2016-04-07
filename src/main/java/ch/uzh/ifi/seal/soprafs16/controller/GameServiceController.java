@@ -182,21 +182,26 @@ public class GameServiceController
         Game game = gameRepo.findOne(gameId);
         User player = userRepo.findByToken(userToken);
 
-        if (game != null && player != null && game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().size()==0) {
+        if (game == null || player == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().isEmpty()) {
             game.getPlayers().add(player);
             game.setCurrentPlayer(0);
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
-        }else if(player.getGames().size()>0){
+        } else if (game.getPlayers().size() == GameConstants.MAX_PLAYERS) {
+            logger.error("Already max number of players in chosen game");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else if (player.getGames().get(0).getId() == gameId) {
+            //TODO change player games to single field not a list
+            return ResponseEntity.ok(game);
+        } else {
             logger.error("Error adding player with token, since he already joined a game: " + userToken);
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
-        else if(game.getPlayers().size() == GameConstants.MAX_PLAYERS){
-            logger.error("Already max number of players in chosen game");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player/{playerId}")
