@@ -38,6 +38,11 @@ public class GameInitializeService {
 
         addUsersToTrain(train,players);
 
+        //Reset the shots taken for each player
+        for (User player : players) {
+            player.setShotsTaken(0);
+        }
+
         return train;
     }
 
