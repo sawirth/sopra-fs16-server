@@ -27,7 +27,7 @@ import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 public class GameServiceController
         extends GenericService {
 
-    Logger                 logger  = LoggerFactory.getLogger(GameServiceController.class);
+    Logger logger  = LoggerFactory.getLogger(GameServiceController.class);
 
     @Autowired
     private UserRepository userRepo;
@@ -38,7 +38,7 @@ public class GameServiceController
     @Autowired
     private GameInitializeService gameInitializeService;
 
-    private final String   CONTEXT = "/games";
+    private static final String   CONTEXT = "/games";
 
 
     @RequestMapping(value = CONTEXT)
@@ -60,7 +60,11 @@ public class GameServiceController
         Game game = new Game();
         User owner = userRepo.findByToken(token);
 
-        if (owner != null && owner.getGames().size()==0) {
+        if (owner == null) {
+            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+        }
+
+        if (owner.getGames().isEmpty()) {
             owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
@@ -70,14 +74,12 @@ public class GameServiceController
 
             logger.info("Game " + game.getId() + " successfully created");
             return ResponseEntity.ok(game);
-        }
-
-        else if(owner.getGames().size()>0){
+        } else if (owner.getGames().size() > 0) {
             logger.info("User already created or joined a game");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -86,20 +88,22 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        Game game = gameRepo.findOne(gameId);
-        return game;
+        return gameRepo.findOne(gameId);
     }
 
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
     @JsonView(Views.Extended.class)
     public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
-        if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
-                game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
+        if (game == null || owner == null) {
+            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+        }
+
+        if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
+                && game.getStatus() == GameStatus.PENDING) {
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasue(game.getPlayers());
             game.setStatus(GameStatus.RUNNING);
@@ -109,9 +113,9 @@ public class GameServiceController
         }
         else if(game.getPlayers().size() < GameConstants.MIN_PLAYERS){
             logger.error("Couldn't start game: Number of Minimum players required");
-            return new ResponseEntity(HttpStatus.PRECONDITION_REQUIRED);
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -139,7 +143,7 @@ public class GameServiceController
             return game.getMoves();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
 
@@ -176,7 +180,7 @@ public class GameServiceController
             return game.getPlayers();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
 
@@ -228,9 +232,9 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public User getPlayer(@PathVariable Long gameId, @PathVariable Integer playerId) {
         logger.info("getPlayer: " + gameId);
-
         Game game = gameRepo.findOne(gameId);
-        return game.getPlayers().get(--playerId);
+        int id = playerId;
+        return game.getPlayers().get(--id);
     }
 
 
