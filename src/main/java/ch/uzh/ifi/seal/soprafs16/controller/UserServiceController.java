@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.UUID;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.model.Views;
 import ch.uzh.ifi.seal.soprafs16.service.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Public.class)
     public List<User> listUsers() {
         logger.debug("listUsers");
 
@@ -51,6 +55,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
+    @JsonView(Views.Extended.class)
     public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
@@ -69,6 +74,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.GET, value = "{userId}")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public ResponseEntity<User> getUser(@PathVariable Long userId) {
         logger.debug("getUser: " + userId);
 
@@ -83,6 +89,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.POST, value = "/login")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public ResponseEntity<User> login(@RequestParam String username) {
         logger.debug("login: " + username);
 
@@ -98,6 +105,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public ResponseEntity<User> logout(@RequestParam("username") String username) {
         logger.debug("Logout: " + username);
 
@@ -111,6 +119,7 @@ public class UserServiceController
 
     @RequestMapping(method = RequestMethod.POST, value = "/character")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public ResponseEntity<User> chooseCharacter(@RequestParam("token") String userToken, @RequestParam("character") CharacterType characterType) {
         logger.info(userToken+"choosed Character: "+characterType);
         User user = userRepo.findByToken(userToken);

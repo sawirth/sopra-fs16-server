@@ -7,7 +7,9 @@ import javax.persistence.*;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class User implements Serializable {
@@ -19,31 +21,39 @@ public class User implements Serializable {
 
 	@Id
 	@GeneratedValue
+	@JsonView(Views.Public.class)
 	private Long id;
 	
-	@Column(nullable = false) 
+	@Column(nullable = false)
+	@JsonView(Views.Public.class)
 	private String name;
 	
-	@Column(nullable = false, unique = true) 
+	@Column(nullable = false, unique = true)
+	@JsonView(Views.Public.class)
 	private String username;
 	
-	@Column(nullable = false, unique = true) 
+	@Column(nullable = false, unique = true)
+	@JsonView(Views.Extended.class)
 	private String token;
 	
-	@Column(nullable = false) 
+	@Column(nullable = false)
+	@JsonView(Views.Public.class)
 	private UserStatus status;
 
 	@Column
+	@JsonView(Views.Public.class)
 	private CharacterType characterType;
 
     @ManyToMany(mappedBy = "players", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonView(Views.Internal.class)
     private List<Game> games;
 	
     @OneToMany(mappedBy="user")
+	@JsonView(Views.Internal.class)
     private List<Move> moves;
 
 	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
 	private List<Treasure> treasures;
 
 	public User(String name, String username) {

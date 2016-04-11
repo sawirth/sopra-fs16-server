@@ -8,6 +8,7 @@ import java.util.Random;
 import javax.persistence.*;
 
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Game implements Serializable {
@@ -19,35 +20,34 @@ public class Game implements Serializable {
 	
 	@Id
 	@GeneratedValue
+	@JsonView(Views.Public.class)
 	private Long id;
 	
-	@Column(nullable = false) 
+	@Column(nullable = false)
+	@JsonView(Views.Public.class)
 	private String owner;
 	
-	@Column 
+	@Column
+	@JsonView(Views.Public.class)
 	private GameStatus status;
 	
-	@Column 
+	@Column
+	@JsonView(Views.Public.class)
 	private Integer currentPlayer;
 
     @OneToMany(mappedBy="game")
+	@JsonView(Views.Extended.class)
     private List<Move> moves;
     
     @ManyToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Public.class)
     private List<User> players;
 
 	//@Column
 	//private List<Round> rounds;
 
-	public List<Wagon> getTrain() {
-		return train;
-	}
-
-	public void setTrain(List<Wagon> train) {
-		this.train = train;
-	}
-
 	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
 	private List<Wagon> train;
 
 	public Game() {
@@ -105,6 +105,14 @@ public class Game implements Serializable {
    
 	public User getNextPlayer() {
 		return getPlayers().get((getCurrentPlayer() + 1) % getPlayers().size());
+	}
+
+	public List<Wagon> getTrain() {
+		return train;
+	}
+
+	public void setTrain(List<Wagon> train) {
+		this.train = train;
 	}
 
 	/*public List<Round> getRounds() {
