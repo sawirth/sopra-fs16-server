@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,21 +49,19 @@ public class GameInitializeService {
         List<Wagon> allWagons = new ArrayList<>();
         List<Treasure> allMoneyBags = new ArrayList<>();
 
-        for(int i=0;i<14;i++){
+        for (int i = 0; i < 14; i++) {
             //TODO Check which and how many Moneybags exists
-            if(i<4){
+            if (i < 4) {
                 allMoneyBags.add(new Treasure(250, TreasureType.MONEYBAG));
-            }
-            else if(i>=4 && i<10){
+            } else if (i >= 4 && i < 10) {
                 allMoneyBags.add(new Treasure(350, TreasureType.MONEYBAG));
-            }
-            else if(i>=10){
+            } else if (i >= 10) {
                 allMoneyBags.add(new Treasure(500, TreasureType.MONEYBAG));
             }
         }
 
         Collections.shuffle(allMoneyBags);
-        //TODO Create the six different wagons from which each game selects 4 randomly
+
         Wagon wagon1 = new Wagon(addTreasures(allMoneyBags,0,2,0,0),false);
         allWagons.add(wagon1);
 
@@ -98,49 +97,48 @@ public class GameInitializeService {
         List<Treasure> treasures = new ArrayList<>();
 
         //adds moneybags to the list
-        for(int i = fromIndex; i < toIndex; i++){
+        for (int i = fromIndex; i < toIndex; i++) {
             treasures.add(moneybags.get(i));
         }
         //adds diamonds to the list
-        for(int i=0;i<diamonds;i++){
-            treasures.add(new Treasure(500,TreasureType.DIAMOND));
+        for (int i = 0; i < diamonds; i++) {
+            treasures.add(new Treasure(500, TreasureType.DIAMOND));
         }
         //adds cashboxes to the list
-        for(int i=0;i<cashboxes;i++){
-            treasures.add(new Treasure(1000,TreasureType.CASHBOX));
+        for (int i = 0; i < cashboxes; i++) {
+            treasures.add(new Treasure(1000, TreasureType.CASHBOX));
         }
         return treasures;
     }
 
     /**
-     * Adds players to the
+     * Adds players to the train
      *
-     * @param train
-     * @param players
-     * @return List<Wagon>
+     * @param train List of wagons
+     * @param players List of players
+     * @return List<Wagon> train
      */
     private void addUsersToTrain(List<Wagon> train, List<User> players){
         List<User> playersLastWagon = new ArrayList<>();
         List<User> playersSecondLastWagon = new ArrayList<>();
 
-        for(int i=0;i < players.size();i++){
-            if(i % 2 == 0){
+        for (int i = 0; i < players.size(); i++) {
+            if (i % 2 == 0) {
                 playersLastWagon.add(players.get(i));
-            }
-            else{
+            } else {
                 playersSecondLastWagon.add(players.get(i));
             }
         }
 
-        train.get(train.size()-1).getLowerLevel().setUsers(playersLastWagon);
-        train.get(train.size()-2).getLowerLevel().setUsers(playersSecondLastWagon);
+        train.get(train.size() - 1).getLowerLevel().setUsers(playersLastWagon);
+        train.get(train.size() - 2).getLowerLevel().setUsers(playersSecondLastWagon);
     }
 
     /**
      * Adds the first treasure to every user in a game
      * @param users
      */
-    public void giveUsersTreasue(List<User> users){
+    public void giveUsersTreasure(List<User> users){
         for(User user : users){
             List<Treasure> treasures = new ArrayList<>();
             treasures.add(new Treasure(250,TreasureType.MONEYBAG));
