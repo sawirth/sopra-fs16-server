@@ -62,6 +62,7 @@ public class RoundServiceTest {
 
         //If the user plays as Doc, he has 7 cards at the beginning and the deck contains the other 3 cards
         player.setCharacterType(CharacterType.DOC);
+        roundService.resetPlayer(this.player);
         roundService.drawStartCards(this.player);
         assertThat(player.getHandCards().size(), is(7));
         assertThat(player.getDeckCards().size(), is(3));

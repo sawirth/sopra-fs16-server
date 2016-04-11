@@ -73,7 +73,7 @@ public class RoundService {
 
         //Remove card from deck and put into handCards
         for (int i = 0; i < 6; i++) {
-            player.getHandCards().add(player.getDeckCards().remove(i));
+            player.getHandCards().add(player.getDeckCards().remove(0));
         }
 
         //Special case for Doc as he can draw 7 cards each round
