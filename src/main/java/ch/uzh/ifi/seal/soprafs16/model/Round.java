@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -21,6 +22,10 @@ public class Round implements Serializable{
     @GeneratedValue
     private Long id;
 
+    @Column
+    @JsonView(Views.Public.class)
+    private RoundType roundType;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="GAME_ID")
     private Game game;
@@ -37,10 +42,11 @@ public class Round implements Serializable{
 
     //TODO implement roundfinisher
 
-    public Round(int numberOfMoves, Game game, List<MoveType> moveTypes){
+    public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes){
         NUMBER_OF_MOVES = numberOfMoves;
         this.game=game;
         this.moveTypes=moveTypes;
+        this.roundType=roundType;
     }
 
     public Round(){
