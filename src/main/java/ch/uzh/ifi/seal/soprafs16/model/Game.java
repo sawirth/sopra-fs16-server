@@ -43,7 +43,7 @@ public class Game implements Serializable {
 	@JsonView(Views.Public.class)
     private List<User> players;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy="game")
 	@JsonView(Views.Public.class)
 	private List<Round> rounds;
 

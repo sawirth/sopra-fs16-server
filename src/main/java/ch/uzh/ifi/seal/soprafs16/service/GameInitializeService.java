@@ -6,6 +6,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -212,17 +213,20 @@ public class GameInitializeService {
      * 2 stands for moveType.HIDDEN
      * 3 stands for moveType.REVERSE
      * 4 stands for moveType.DOUBLE
+     * 0 stands for an empty move
      *
-     * @param a
-     * @param b
-     * @param c
-     * @param d
-     * @param e
+     * @param firstMove
+     * @param secondMove
+     * @param thirdMove
+     * @param fourthMove
+     * @param fithMove
      * @return List<Round>
      */
-    public List<MoveType> createMoveTypes(int a, int b, int c, int d, int e){
+    private List<MoveType> createMoveTypes(int firstMove, int secondMove,
+                                           int thirdMove, int fourthMove, int fithMove){
         List<Integer> list = new ArrayList<>();
-        list.add(a); list.add(b); list.add(c); list.add(d); list.add(e);
+        list.add(firstMove); list.add(secondMove);
+        list.add(thirdMove); list.add(fourthMove); list.add(fithMove);
 
         List<MoveType> moveTypes = new ArrayList<>();
         for(Integer integer: list){

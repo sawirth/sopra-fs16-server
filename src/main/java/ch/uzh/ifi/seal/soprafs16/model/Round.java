@@ -16,6 +16,8 @@ import java.util.List;
 @Entity
 public class Round implements Serializable{
 
+    private static final long serialVersionUID = 1L;
+
     private final int NUMBER_OF_MOVES;
 
     @Id
