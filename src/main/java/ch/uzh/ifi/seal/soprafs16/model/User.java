@@ -1,9 +1,11 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.swing.text.View;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
@@ -56,9 +58,33 @@ public class User implements Serializable {
 	@JsonView(Views.Extended.class)
 	private List<Treasure> treasures;
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
+	private List<Move> deckCards;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
+	private List<Move> handCards;
+
+	@Column
+	@JsonView(Views.Public.class)
+	private int numberOfShots;
+
+	@Column
+	@JsonView(Views.Internal.class)
+	private int shotsTaken;
+
+
 	public User(String name, String username) {
 		this.name = name;
 		this.username = username;
+
+		//Initialize lists to avoid NullPointers
+		games = new ArrayList<>();
+		moves = new ArrayList<>();
+		treasures = new ArrayList<>();
+		deckCards = new ArrayList<>();
+		handCards = new ArrayList<>();
 	}
 
 	public User() {
@@ -134,5 +160,37 @@ public class User implements Serializable {
 
 	public void setCharacterType(CharacterType characterType) {
 		this.characterType = characterType;
+	}
+
+	public List<Move> getDeckCards() {
+		return deckCards;
+	}
+
+	public void setDeckCards(List<Move> deckCards) {
+		this.deckCards = deckCards;
+	}
+
+	public int getShotsTaken() {
+		return shotsTaken;
+	}
+
+	public void setShotsTaken(int shotsTaken) {
+		this.shotsTaken = shotsTaken;
+	}
+
+	public int getNumberOfShots() {
+		return numberOfShots;
+	}
+
+	public void setNumberOfShots(int numberOfShots) {
+		this.numberOfShots = numberOfShots;
+	}
+
+	public List<Move> getHandCards() {
+		return handCards;
+	}
+
+	public void setHandCards(List<Move> handCards) {
+		this.handCards = handCards;
 	}
 }

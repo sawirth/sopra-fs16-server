@@ -43,8 +43,9 @@ public class Game implements Serializable {
 	@JsonView(Views.Public.class)
     private List<User> players;
 
-	//@Column
-	//private List<Round> rounds;
+	@OneToMany(mappedBy="game")
+	@JsonView(Views.Public.class)
+	private List<Round> rounds;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JsonView(Views.Extended.class)
@@ -115,11 +116,11 @@ public class Game implements Serializable {
 		this.train = train;
 	}
 
-	/*public List<Round> getRounds() {
-		return rounds;
+	public void setRounds(List<Round> rounds){
+		this.rounds=rounds;
 	}
 
-	public List<Wagon> getTrain() {
-		return train;
-	}*/
+	public List<Round> getRounds() {
+		return rounds;
+	}
 }

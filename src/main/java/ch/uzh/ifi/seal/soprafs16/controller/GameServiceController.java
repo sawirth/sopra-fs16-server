@@ -6,6 +6,7 @@ import java.util.List;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.Views;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
@@ -31,6 +32,9 @@ public class GameServiceController
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private RoundRepository roundRepo;
 
     @Autowired
     private GameRepository gameRepo;
@@ -99,13 +103,19 @@ public class GameServiceController
         User owner = userRepo.findByToken(userToken);
 
         if (game == null || owner == null) {
-            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
                 && game.getStatus() == GameStatus.PENDING) {
+
+            //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
+
+            //initializes the rounds with the number of rounds that will be played
+            roundRepo.save(gameInitializeService.initializeRounds(5,game));
+
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
