@@ -99,13 +99,19 @@ public class GameServiceController
         User owner = userRepo.findByToken(userToken);
 
         if (game == null || owner == null) {
-            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
                 && game.getStatus() == GameStatus.PENDING) {
+
+            //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
+
+            //initializes the rounds with the number of rounds that will be played
+            game.setRounds(gameInitializeService.initializeRounds(5,game));
+
             game.setStatus(GameStatus.RUNNING);
             gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
