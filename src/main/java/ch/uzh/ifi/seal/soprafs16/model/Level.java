@@ -6,9 +6,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * Created by Ada on 28.03.2016.
- */
+
 @Entity
 public class Level {
 
@@ -19,8 +17,11 @@ public class Level {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Treasure> treasures;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<User> users;
+
+    @OneToOne
+    private Wagon wagon;
 
     public Level(List<Treasure> treasures){
         this.treasures=treasures;
@@ -42,5 +43,21 @@ public class Level {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Wagon getWagon() {
+        return wagon;
+    }
+
+    public void setWagon(Wagon wagon) {
+        this.wagon = wagon;
     }
 }

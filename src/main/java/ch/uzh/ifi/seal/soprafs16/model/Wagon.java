@@ -2,26 +2,32 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
-/**
- * Created by Ada on 28.03.2016.
- */
+
 @Entity
 public class Wagon implements Serializable {
 
     @Id
     @GeneratedValue
+    @JsonView(Views.Public.class)
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
+    @JoinColumn(name = "LEVEL_ID")
     private Level lowerLevel;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
     private Level upperLevel;
 
     @Column
+    @JsonView(Views.Public.class)
     private Boolean hasMarshal;
 
     public Wagon(List<Treasure> treasures, boolean hasMarshal){
@@ -49,11 +55,19 @@ public class Wagon implements Serializable {
         this.upperLevel = upperLevel;
     }
 
-    public Boolean getHasMarshal() {
+    public Boolean hasMarshal() {
         return hasMarshal;
     }
 
     public void setHasMarshal(Boolean hasMarshal) {
         this.hasMarshal = hasMarshal;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

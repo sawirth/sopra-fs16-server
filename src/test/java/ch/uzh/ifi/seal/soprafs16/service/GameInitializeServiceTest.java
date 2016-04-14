@@ -40,14 +40,14 @@ public class GameInitializeServiceTest {
         assertEquals(4, train.size());
 
         //The first wagon is the locomotive and must contain the marshal and a cashbox with value of 1000
-        assertTrue(train.get(0).getHasMarshal());
+        assertTrue(train.get(0).hasMarshal());
         assertEquals(1, train.get(0).getLowerLevel().getTreasures().size());
         assertEquals(1000, train.get(0).getLowerLevel().getTreasures().get(0).getValue());
         assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
 
         //No wagon does contain the marshal
         for (int i = 1; i < train.size(); i++) {
-            assertFalse(train.get(i).getHasMarshal());
+            assertFalse(train.get(i).hasMarshal());
         }
 
         //The lower level of each wagon must have at least one treasure

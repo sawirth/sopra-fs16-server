@@ -109,15 +109,15 @@ public class GameServiceController
         if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
                 && game.getStatus() == GameStatus.PENDING) {
 
+            game.setStatus(GameStatus.RUNNING);
+
             //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
 
             //initializes the rounds with the number of rounds that will be played
-            roundRepo.save(gameInitializeService.initializeRounds(5,game));
-
-            game.setStatus(GameStatus.RUNNING);
-            gameRepo.save(game);
+            game.setRounds(gameInitializeService.initializeRounds(5, game));
+            game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
         }

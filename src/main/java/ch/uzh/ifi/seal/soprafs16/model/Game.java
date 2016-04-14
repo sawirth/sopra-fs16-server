@@ -3,10 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 import javax.persistence.*;
-
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -43,7 +40,7 @@ public class Game implements Serializable {
 	@JsonView(Views.Public.class)
     private List<User> players;
 
-	@OneToMany(mappedBy="game")
+	@OneToMany(cascade = CascadeType.ALL)
 	@JsonView(Views.Public.class)
 	private List<Round> rounds;
 

@@ -28,8 +28,7 @@ public class Round implements Serializable{
     @JsonView(Views.Public.class)
     private RoundType roundType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="GAME_ID")
+    @ManyToOne
     private Game game;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -83,4 +82,11 @@ public class Round implements Serializable{
         this.moveTypes = moveType;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
