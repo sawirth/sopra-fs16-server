@@ -3,11 +3,9 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
 import javax.persistence.*;
-
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Game implements Serializable {
@@ -19,39 +17,34 @@ public class Game implements Serializable {
 	
 	@Id
 	@GeneratedValue
+	@JsonView(Views.Public.class)
 	private Long id;
 	
-	@Column(nullable = false) 
+	@Column(nullable = false)
+	@JsonView(Views.Public.class)
 	private String owner;
 	
-	@Column 
+	@Column
+	@JsonView(Views.Public.class)
 	private GameStatus status;
 	
-	@Column 
+	@Column
+	@JsonView(Views.Public.class)
 	private Integer currentPlayer;
-
-    @OneToMany(mappedBy="game")
-    private List<Move> moves;
     
     @ManyToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Public.class)
     private List<User> players;
 
-	//@Column
-	//private List<Round> rounds;
-
-	public List<Wagon> getTrain() {
-		return train;
-	}
-
-	public void setTrain(List<Wagon> train) {
-		this.train = train;
-	}
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Public.class)
+	private List<Round> rounds;
 
 	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
 	private List<Wagon> train;
 
 	public Game() {
-		this.moves = new ArrayList<>();
 		this.players = new ArrayList<>();
 	}
 
@@ -69,14 +62,6 @@ public class Game implements Serializable {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
-	}
-
-	public List<Move> getMoves() {
-		return moves;
-	}
-
-	public void setMoves(List<Move> moves) {
-		this.moves = moves;
 	}
 
 	public List<User> getPlayers() {
@@ -107,11 +92,19 @@ public class Game implements Serializable {
 		return getPlayers().get((getCurrentPlayer() + 1) % getPlayers().size());
 	}
 
-	/*public List<Round> getRounds() {
-		return rounds;
-	}
-
 	public List<Wagon> getTrain() {
 		return train;
-	}*/
+	}
+
+	public void setTrain(List<Wagon> train) {
+		this.train = train;
+	}
+
+	public void setRounds(List<Round> rounds){
+		this.rounds=rounds;
+	}
+
+	public List<Round> getRounds() {
+		return rounds;
+	}
 }

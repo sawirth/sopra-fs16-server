@@ -1,6 +1,8 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,9 +16,11 @@ public class Treasure {
     private Long id;
 
     @Column
+    @JsonView(Views.Public.class)
     private int value;
 
     @Column
+    @JsonView(Views.Public.class)
     private TreasureType type;
 
     public Treasure(int value, TreasureType type){
@@ -42,5 +46,13 @@ public class Treasure {
 
     public void setType(TreasureType type) {
         this.type = type;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

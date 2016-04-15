@@ -1,14 +1,13 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * Created by Ada on 28.03.2016.
- */
+
 @Entity
 public class Level {
 
@@ -17,10 +16,16 @@ public class Level {
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
     private List<Treasure> treasures;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
     private List<User> users;
+
+    @OneToOne
+    @JsonView(Views.Public.class)
+    private Wagon wagon;
 
     public Level(List<Treasure> treasures){
         this.treasures=treasures;
@@ -42,5 +47,21 @@ public class Level {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Wagon getWagon() {
+        return wagon;
+    }
+
+    public void setWagon(Wagon wagon) {
+        this.wagon = wagon;
     }
 }

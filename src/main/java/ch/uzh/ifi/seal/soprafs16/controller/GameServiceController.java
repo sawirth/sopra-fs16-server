@@ -5,7 +5,10 @@ import java.util.List;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.model.Views;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,23 +28,26 @@ import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 public class GameServiceController
         extends GenericService {
 
-    Logger                 logger  = LoggerFactory.getLogger(GameServiceController.class);
+    Logger logger  = LoggerFactory.getLogger(GameServiceController.class);
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private RoundRepository roundRepo;
+
     @Autowired
     private GameRepository gameRepo;
+
     @Autowired
     private GameInitializeService gameInitializeService;
 
-    private final String   CONTEXT = "/games";
+    private static final String   CONTEXT = "/games";
 
-    /*
-     * Context: /game
-     */
 
     @RequestMapping(value = CONTEXT)
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Public.class)
     public List<Game> listGames() {
         logger.debug("listGames");
         List<Game> result = new ArrayList<>();
@@ -52,13 +58,17 @@ public class GameServiceController
     @RequestMapping(value = CONTEXT + "/new", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
+    @JsonView(Views.Extended.class)
     public ResponseEntity<Game> createGame(@RequestParam("token") String token) {
-        logger.info("Create new game");
 
         Game game = new Game();
         User owner = userRepo.findByToken(token);
 
-        if (owner != null && owner.getGames().size()==0) {
+        if (owner == null) {
+            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+        }
+
+        if (owner.getGames().isEmpty()) {
             owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
@@ -68,48 +78,56 @@ public class GameServiceController
 
             logger.info("Game " + game.getId() + " successfully created");
             return ResponseEntity.ok(game);
-        }
-
-        else if(owner.getGames().size()>0){
+        } else if (owner.getGames().size() > 0) {
             logger.info("User already created or joined a game");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /*
-     * Context: /game/{game-id}
-     */
+
     @RequestMapping(value = CONTEXT + "/{gameId}")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        Game game = gameRepo.findOne(gameId);
-        return game;
+        return gameRepo.findOne(gameId);
     }
 
+
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
-        if (owner != null && game != null && game.getOwner().equals(owner.getUsername()) &&
-                game.getPlayers().size() >= GameConstants.MIN_PLAYERS && game.getStatus()==GameStatus.PENDING) {
-            game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
-            gameInitializeService.giveUsersTreasue(game.getPlayers());
+        if (game == null || owner == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
+                && game.getStatus() == GameStatus.PENDING) {
+
             game.setStatus(GameStatus.RUNNING);
-            gameRepo.save(game);
+
+            //initializes the train, rounds for this game, and gives users treasures
+            game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
+            gameInitializeService.giveUsersTreasure(game.getPlayers());
+
+            //initializes the rounds with the number of rounds that will be played
+            game.setRounds(gameInitializeService.initializeRounds(5, game));
+            game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
         }
         else if(game.getPlayers().size() < GameConstants.MIN_PLAYERS){
             logger.error("Couldn't start game: Number of Minimum players required");
-            return new ResponseEntity(HttpStatus.PRECONDITION_REQUIRED);
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
@@ -124,47 +142,10 @@ public class GameServiceController
         }
     }
 
-    /*
-     * Context: /game/{game-id}/move
-     */
-    @RequestMapping(value = CONTEXT + "/{gameId}/move")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Move> listMoves(@PathVariable Long gameId) {
-        logger.debug("listMoves");
 
-        Game game = gameRepo.findOne(gameId);
-        if (game != null) {
-            return game.getMoves();
-        }
-
-        return null;
-    }
-
-    @RequestMapping(value = CONTEXT + "/{gameId}/move", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void addMove(@RequestBody Move move) {
-        logger.debug("addMove: " + move);
-        // TODO Mapping into Move + execution of move
-    }
-
-    @RequestMapping(value = CONTEXT + "/{gameId}/move/{moveId}")
-    @ResponseStatus(HttpStatus.OK)
-    public Move getMove(@PathVariable Long gameId, @PathVariable Integer moveId) {
-        logger.debug("getMove: " + gameId);
-
-        Game game = gameRepo.findOne(gameId);
-        if (game != null) {
-            return game.getMoves().get(moveId);
-        }
-
-        return null;
-    }
-
-    /*
-     * Context: /game/{game-id}/player
-     */
     @RequestMapping(value = CONTEXT + "/{gameId}/player")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Public.class)
     public List<User> listPlayers(@PathVariable Long gameId) {
         logger.info("listPlayers");
 
@@ -173,11 +154,13 @@ public class GameServiceController
             return game.getPlayers();
         }
 
-        return null;
+        return new ArrayList<>();
     }
+
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Public.class)
     public ResponseEntity<Game> addPlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         logger.info("addPlayer: " + userToken);
 
@@ -194,6 +177,7 @@ public class GameServiceController
             allCharacters.add(CharacterType.GHOST);
             allCharacters.add(CharacterType.JANGO);
             allCharacters.add(CharacterType.TUCO);
+
             for(User user : game.getPlayers()){
                 allCharacters.remove(user.getCharacterType());
             }
@@ -216,17 +200,21 @@ public class GameServiceController
         }
     }
 
+
     @RequestMapping(value = CONTEXT + "/{gameId}/player/{playerId}")
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
     public User getPlayer(@PathVariable Long gameId, @PathVariable Integer playerId) {
         logger.info("getPlayer: " + gameId);
-
         Game game = gameRepo.findOne(gameId);
-        return game.getPlayers().get(--playerId);
+        int id = playerId;
+        return game.getPlayers().get(--id);
     }
+
 
     @RequestMapping(value = CONTEXT + "/{gameId}/player/remove", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Public.class)
     public ResponseEntity<Game> removePlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
         logger.info("remove Player: " + userToken);
 
