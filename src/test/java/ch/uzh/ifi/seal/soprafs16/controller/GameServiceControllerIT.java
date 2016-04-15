@@ -2,8 +2,10 @@ package ch.uzh.ifi.seal.soprafs16.controller;
 
 import ch.uzh.ifi.seal.soprafs16.Application;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
+import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import org.junit.Assert;
@@ -101,6 +103,32 @@ public class GameServiceControllerIT {
         Assert.assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
 
         //Test rounds
+        List<Round> rounds =response.getBody().getRounds();
+        Assert.assertNotNull(rounds);
+
+        //5 rounds must be implemented
+        Assert.assertThat(rounds.size(), is(5));
+
+        //First four rounds cannot be an endRound
+        for(int i=0;i<4;i++){
+            Assert.assertTrue(rounds.get(i).getRoundType()!=RoundType.END_ROUND1 &&
+                    rounds.get(i).getRoundType()!=RoundType.END_ROUND2 && rounds.get(i).getRoundType()!=RoundType.END_ROUND3);
+        }
+
+        //Last round must be an endRound
+        Assert.assertTrue(rounds.get(4).getRoundType()==RoundType.END_ROUND1 ||
+                rounds.get(4).getRoundType()==RoundType.END_ROUND2 || rounds.get(4).getRoundType()==RoundType.END_ROUND3);
+
+        //Moves must be empty for all rounds
+        for(int i=0;i<rounds.size();i++){
+            Assert.assertThat(rounds.get(i).getMoves().size(), is(0));
+        }
+
+        //MoveTypes list must not be empty
+        for(int i=0;i<rounds.size();i++){
+            Assert.assertThat(rounds.get(i).getMoveType().size(), not(0));
+        }
+
     }
 
     private User addUser() {

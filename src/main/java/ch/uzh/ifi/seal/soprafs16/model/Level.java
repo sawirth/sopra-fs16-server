@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.*;
@@ -15,12 +16,15 @@ public class Level {
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
     private List<Treasure> treasures;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
     private List<User> users;
 
     @OneToOne
+    @JsonView(Views.Public.class)
     private Wagon wagon;
 
     public Level(List<Treasure> treasures){

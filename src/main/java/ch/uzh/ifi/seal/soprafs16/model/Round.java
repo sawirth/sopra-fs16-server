@@ -89,4 +89,12 @@ public class Round implements Serializable{
     public void setId(Long id) {
         this.id = id;
     }
+
+    public RoundType getRoundType() {
+        return roundType;
+    }
+
+    public void setRoundType(RoundType roundType) {
+        this.roundType = roundType;
+    }
 }
