@@ -16,10 +16,6 @@ public abstract class Move implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
-	
-    @ManyToOne
-    @JoinColumn(name="GAME_ID")
-    private Game game;
     
     @ManyToOne
     @JoinColumn(name="USER_ID")
@@ -31,14 +27,6 @@ public abstract class Move implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Game getGame() {
-		return game;
-	}
-
-	public void setGame(Game game) {
-		this.game = game;
 	}
 
 	public User getUser() {

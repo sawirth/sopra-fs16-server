@@ -31,10 +31,6 @@ public class Game implements Serializable {
 	@Column
 	@JsonView(Views.Public.class)
 	private Integer currentPlayer;
-
-    @OneToMany(mappedBy="game")
-	@JsonView(Views.Extended.class)
-    private List<Move> moves;
     
     @ManyToMany(cascade = CascadeType.ALL)
 	@JsonView(Views.Public.class)
@@ -49,7 +45,6 @@ public class Game implements Serializable {
 	private List<Wagon> train;
 
 	public Game() {
-		this.moves = new ArrayList<>();
 		this.players = new ArrayList<>();
 	}
 
@@ -67,14 +62,6 @@ public class Game implements Serializable {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
-	}
-
-	public List<Move> getMoves() {
-		return moves;
-	}
-
-	public void setMoves(List<Move> moves) {
-		this.moves = moves;
 	}
 
 	public List<User> getPlayers() {
