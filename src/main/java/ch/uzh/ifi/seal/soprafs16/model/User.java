@@ -9,9 +9,7 @@ import javax.swing.text.View;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 @Entity
 public class User implements Serializable {
@@ -47,6 +45,7 @@ public class User implements Serializable {
 	private CharacterType characterType;
 
     @ManyToMany(mappedBy = "players", cascade = CascadeType.ALL)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
 	@JsonView(Views.Internal.class)
     private List<Game> games;
 	

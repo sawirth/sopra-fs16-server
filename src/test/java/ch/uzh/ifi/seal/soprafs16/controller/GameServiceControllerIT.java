@@ -68,7 +68,7 @@ public class GameServiceControllerIT {
         Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
 
         //Trying to start the game with one player which should not be possible
-        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
+        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), null);
         response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
         Assert.assertNotEquals(GameStatus.RUNNING, response.getBody().getStatus());
 

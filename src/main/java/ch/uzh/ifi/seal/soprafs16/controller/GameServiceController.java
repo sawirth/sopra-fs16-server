@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.helper.UserUtils;
 import ch.uzh.ifi.seal.soprafs16.model.Views;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
@@ -58,17 +59,17 @@ public class GameServiceController
     @RequestMapping(value = CONTEXT + "/new", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    @JsonView(Views.Extended.class)
+    @JsonView(Views.Public.class)
     public ResponseEntity<Game> createGame(@RequestParam("token") String token) {
 
         Game game = new Game();
         User owner = userRepo.findByToken(token);
 
         if (owner == null) {
-            return new ResponseEntity<Game>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if (owner.getGames().isEmpty()) {
+        if (!UserUtils.isInOpenGame(owner)) {
             owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
@@ -92,7 +93,8 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        return gameRepo.findOne(gameId);
+        Game game = gameRepo.findOne(gameId);
+        return game;
     }
 
 
@@ -129,16 +131,24 @@ public class GameServiceController
     }
 
 
-    @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void stopGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
-        logger.info("stopGame: " + gameId);
+    @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.PUT)
+    public ResponseEntity<Game> stopGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
 
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
-        if (owner != null && game != null && game.getOwner().equals(owner.getUsername())) {
-            // TODO: Stop game
+        if (game == null || owner == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(game);
+        }
+
+        if (game.getOwner().equals(owner.getUsername())) {
+            game.setStatus(GameStatus.FINISHED);
+            game = gameRepo.save(game);
+            logger.info("Game " + gameId + " finished");
+            return ResponseEntity.ok(game);
+        } else {
+            logger.info("Game " + gameId + " cannot be stopped. User is not  the owner");
+            return ResponseEntity.badRequest().body(game);
         }
     }
 
@@ -162,7 +172,6 @@ public class GameServiceController
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Views.Public.class)
     public ResponseEntity<Game> addPlayer(@PathVariable Long gameId, @RequestParam("token") String userToken) {
-        logger.info("addPlayer: " + userToken);
 
         Game game = gameRepo.findOne(gameId);
         User player = userRepo.findByToken(userToken);
@@ -170,7 +179,7 @@ public class GameServiceController
         if (game == null || player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && player.getGames().isEmpty()) {
+        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && !UserUtils.isInOpenGame(player)) {
             List<CharacterType> allCharacters = new ArrayList<>();
             allCharacters.add(CharacterType.BELLE);
             allCharacters.add(CharacterType.DOC);
