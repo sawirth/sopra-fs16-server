@@ -30,7 +30,6 @@ public class Treasure implements Serializable {
     }
 
     public Treasure(){
-
     }
 
     public int getValue() {
