@@ -13,30 +13,34 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0" })
+@WebIntegrationTest(randomPort = true)
 public class GameServiceControllerIT {
 
     @Value("${local.server.port}")
-    private int          port;
+    private int port;
 
     private URL base;
     private RestTemplate template;
@@ -46,17 +50,55 @@ public class GameServiceControllerIT {
             throws Exception {
         this.base = new URL("http://localhost:" + port + "/");
         this.template = new TestRestTemplate();
-
-        addUser();
     }
 
     @Test
     public void testAddGame() {
         User user = addUser();
+        ResponseEntity<Game> gameEntity = template.exchange(base + "/games/new?token=" + user.getToken(), HttpMethod.POST, null, Game.class);
 
-        HttpEntity<User> requestBody = new HttpEntity<>(user);
-        ResponseEntity<Game> response = template.exchange(base + "/games/new?token="+user.getToken(), HttpMethod.POST, requestBody, Game.class);
-        Assert.assertSame(1L, response.getBody().getId());
+        Assert.assertThat(gameEntity.getStatusCode(), is(HttpStatus.OK));
+        Assert.assertThat(gameEntity.getBody().getOwner(), is(user.getUsername()));
+        Assert.assertNotNull(gameEntity.getBody().getId());
+    }
+
+    @Test
+    public void testStartStopReEnterNewGame() {
+
+        //Create new game
+        User owner = addUser();
+        ResponseEntity<Game> game = template.postForEntity(base + "/games/new?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getOwner(), is(owner.getUsername()));
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.PENDING));
+
+        //Add second player
+        User player2 = addUser();
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + player2.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getPlayers().size(), is(2));
+
+        //Start and Stop game
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/start?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.RUNNING));
+        String url = base + "/games/{gameId}/stop?token={token}";
+        Map<String, String> map = new HashMap<>();
+        map.put("gameId", game.getBody().getId().toString());
+        map.put("token", owner.getToken());
+        template.put(url, null, map);
+        url = base + "/games/{gameId}";
+        game = template.getForEntity(url, Game.class, map);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.FINISHED));
+
+        //Create a new game
+        game = template.postForEntity(base + "/games/new?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.PENDING));
+
+        //Add second player
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + player2.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getPlayers().size(), is(2));
+
+        //Start game
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/start?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.RUNNING));
     }
 
     @Test
@@ -68,7 +110,7 @@ public class GameServiceControllerIT {
         Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
 
         //Trying to start the game with one player which should not be possible
-        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
+        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), null);
         response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
         Assert.assertNotEquals(GameStatus.RUNNING, response.getBody().getStatus());
 
@@ -130,6 +172,7 @@ public class GameServiceControllerIT {
         }
 
     }
+
 
     private User addUser() {
         User request = new User();

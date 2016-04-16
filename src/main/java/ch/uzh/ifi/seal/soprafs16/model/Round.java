@@ -2,8 +2,10 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +24,7 @@ public class Round implements Serializable{
 
     @Id
     @GeneratedValue
+    @JsonView(Views.Public.class)
     private Long id;
 
     @Column
@@ -29,16 +32,17 @@ public class Round implements Serializable{
     private RoundType roundType;
 
     @ManyToOne
+    @JsonIgnore
     private Game game;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Extended.class)
     private List<Move> moves;
 
     @Column
     @Enumerated
     @ElementCollection(targetClass = MoveType.class)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Extended.class)
     private List<MoveType> moveTypes;
 
     @OneToOne
