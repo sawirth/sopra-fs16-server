@@ -13,15 +13,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URL;
 import java.util.List;
@@ -31,12 +33,11 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.port=0" })
+@WebIntegrationTest(randomPort = true)
 public class GameServiceControllerIT {
 
     @Value("${local.server.port}")
-    private int          port;
+    private int port;
 
     private URL base;
     private RestTemplate template;
@@ -46,17 +47,35 @@ public class GameServiceControllerIT {
             throws Exception {
         this.base = new URL("http://localhost:" + port + "/");
         this.template = new TestRestTemplate();
-
-        addUser();
     }
 
     @Test
     public void testAddGame() {
         User user = addUser();
+        ResponseEntity<Game> gameEntity = template.exchange(base + "/games/new?token=" + user.getToken(), HttpMethod.POST, null, Game.class);
 
-        HttpEntity<User> requestBody = new HttpEntity<>(user);
-        ResponseEntity<Game> response = template.exchange(base + "/games/new?token="+user.getToken(), HttpMethod.POST, requestBody, Game.class);
-        Assert.assertSame(1L, response.getBody().getId());
+        Assert.assertThat(gameEntity.getStatusCode(), is(HttpStatus.OK));               //This works
+        Assert.assertThat(gameEntity.getBody().getOwner(), is(user.getUsername()));     //This works too
+        Assert.assertThat(gameEntity.getBody().getId(), is(not(null)));                 //This doesn't work
+    }
+
+    @Test
+    public void testStartStopReEnterNewGame() {
+        /*
+        - Create player 1
+        - Create new game
+        - Create player 2
+        - Add player 2 to game
+        - Stop game
+        - Create new game
+        - Add player 2 to new game
+         */
+
+        User owner = addUser();
+        ResponseEntity<Game> game = template.postForEntity(base + "/games/new?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getOwner(), is(owner.getUsername()));
+
+
     }
 
     @Test
@@ -130,6 +149,7 @@ public class GameServiceControllerIT {
         }
 
     }
+
 
     private User addUser() {
         User request = new User();
