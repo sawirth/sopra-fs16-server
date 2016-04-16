@@ -54,9 +54,9 @@ public class GameServiceControllerIT {
         User user = addUser();
         ResponseEntity<Game> gameEntity = template.exchange(base + "/games/new?token=" + user.getToken(), HttpMethod.POST, null, Game.class);
 
-        Assert.assertThat(gameEntity.getStatusCode(), is(HttpStatus.OK));               //This works
-        Assert.assertThat(gameEntity.getBody().getOwner(), is(user.getUsername()));     //This works too
-        Assert.assertThat(gameEntity.getBody().getId(), is(not(null)));                 //This doesn't work
+        Assert.assertThat(gameEntity.getStatusCode(), is(HttpStatus.OK));
+        Assert.assertThat(gameEntity.getBody().getOwner(), is(user.getUsername()));
+        Assert.assertNotNull(gameEntity.getBody().getId());
     }
 
     @Test

@@ -45,7 +45,7 @@ public class User implements Serializable {
 	private CharacterType characterType;
 
     @ManyToMany(mappedBy = "players", cascade = CascadeType.ALL)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+	@JsonIgnore
 	@JsonView(Views.Internal.class)
     private List<Game> games;
 	

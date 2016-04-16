@@ -32,7 +32,7 @@ public class Round implements Serializable{
     private RoundType roundType;
 
     @ManyToOne
-    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "id")
+    @JsonIgnore
     private Game game;
 
     @OneToMany(cascade = CascadeType.ALL)
