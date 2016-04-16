@@ -2,10 +2,8 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;

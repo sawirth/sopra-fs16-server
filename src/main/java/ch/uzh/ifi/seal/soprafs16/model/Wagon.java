@@ -1,12 +1,10 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import ch.uzh.ifi.seal.soprafs16.model.Treasure;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 
 
 @Entity

@@ -4,9 +4,6 @@ import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

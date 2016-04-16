@@ -2,14 +2,14 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
-public class Level {
+public class Level implements Serializable{
 
     @Id
     @GeneratedValue

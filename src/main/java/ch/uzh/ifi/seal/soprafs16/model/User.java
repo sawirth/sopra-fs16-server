@@ -1,15 +1,14 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.*;
-import javax.swing.text.View;
-
-import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
-import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
-import com.fasterxml.jackson.annotation.*;
 
 @Entity
 public class User implements Serializable {
@@ -58,7 +57,7 @@ public class User implements Serializable {
 	private List<Treasure> treasures;
 
 	@OneToMany(cascade = CascadeType.ALL)
-	@JsonView(Views.Extended.class)
+	@JsonView(Views.Internal.class)
 	private List<Move> deckCards;
 
 	@OneToMany(cascade = CascadeType.ALL)
