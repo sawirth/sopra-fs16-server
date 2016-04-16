@@ -41,13 +41,16 @@ public class Round implements Serializable{
     @JsonView(Views.Public.class)
     private List<MoveType> moveTypes;
 
-    //TODO implement roundfinisher
+    @OneToOne
+    @JsonView(Views.Public.class)
+    private RoundFinisher roundFinisher;
 
-    public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes){
+    public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes, RoundFinisher roundFinisher){
         NUMBER_OF_MOVES = numberOfMoves;
         this.game=game;
         this.moveTypes=moveTypes;
         this.roundType=roundType;
+        this.roundFinisher=roundFinisher;
     }
 
     public Round(){

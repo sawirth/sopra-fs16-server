@@ -29,7 +29,6 @@ public class Treasure {
     }
 
     public Treasure(){
-
     }
 
     public int getValue() {
