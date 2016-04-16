@@ -19,7 +19,7 @@ public class Level {
     @JsonView(Views.Public.class)
     private List<Treasure> treasures;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private List<User> users;
 

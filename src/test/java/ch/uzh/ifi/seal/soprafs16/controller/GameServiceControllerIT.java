@@ -25,8 +25,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -61,21 +64,41 @@ public class GameServiceControllerIT {
 
     @Test
     public void testStartStopReEnterNewGame() {
-        /*
-        - Create player 1
-        - Create new game
-        - Create player 2
-        - Add player 2 to game
-        - Stop game
-        - Create new game
-        - Add player 2 to new game
-         */
 
+        //Create new game
         User owner = addUser();
         ResponseEntity<Game> game = template.postForEntity(base + "/games/new?token=" + owner.getToken(), null, Game.class);
         Assert.assertThat(game.getBody().getOwner(), is(owner.getUsername()));
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.PENDING));
 
+        //Add second player
+        User player2 = addUser();
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + player2.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getPlayers().size(), is(2));
 
+        //Start and Stop game
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/start?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.RUNNING));
+        String url = base + "/games/{gameId}/stop?token={token}";
+        Map<String, String> map = new HashMap<>();
+        map.put("gameId", game.getBody().getId().toString());
+        map.put("token", owner.getToken());
+        template.put(url, null, map);
+        url = base + "/games/{gameId}";
+        game = template.getForEntity(url, Game.class, map);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.FINISHED));
+
+        //Create a new game
+        game = template.postForEntity(base + "/games/new?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.PENDING));
+
+        //Add second player
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + player2.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getPlayers().size(), is(2));
+
+        //Start game
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/start?token=" + owner.getToken(), null, Game.class);
+        Assert.assertThat(game.getBody().getStatus(), is(GameStatus.RUNNING));
     }
 
     @Test
