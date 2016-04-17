@@ -2,10 +2,8 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,7 +43,7 @@ public class Round implements Serializable{
     @JsonView(Views.Extended.class)
     private List<MoveType> moveTypes;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private RoundFinisher roundFinisher;
 
@@ -103,5 +101,13 @@ public class Round implements Serializable{
 
     public void setRoundType(RoundType roundType) {
         this.roundType = roundType;
+    }
+
+    public RoundFinisher getRoundFinisher() {
+        return roundFinisher;
+    }
+
+    public void setRoundFinisher(RoundFinisher roundFinisher) {
+        this.roundFinisher = roundFinisher;
     }
 }

@@ -1,14 +1,15 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import ch.uzh.ifi.seal.soprafs16.GameConstants;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.helper.UserUtils;
-import ch.uzh.ifi.seal.soprafs16.model.Views;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
+import ch.uzh.ifi.seal.soprafs16.service.RoundService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import ch.uzh.ifi.seal.soprafs16.GameConstants;
-import ch.uzh.ifi.seal.soprafs16.model.Game;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.User;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 @RestController
@@ -42,6 +40,9 @@ public class GameServiceController
 
     @Autowired
     private GameInitializeService gameInitializeService;
+
+    @Autowired
+    private RoundService roundService;
 
     private static final String   CONTEXT = "/games";
 
@@ -118,7 +119,21 @@ public class GameServiceController
             gameInitializeService.giveUsersTreasure(game.getPlayers());
 
             //initializes the rounds with the number of rounds that will be played
-            game.setRounds(gameInitializeService.initializeRounds(5, game));
+            for (Round round : gameInitializeService.initializeRounds(5, game)) {
+                round.setGame(game);
+                round = roundRepo.save(round);
+                game.getRounds().add(round);
+            }
+
+            //Draw cards for first round
+            Iterator<User> iter = game.getPlayers().iterator();
+
+            while (iter.hasNext()) {
+                User u = iter.next();
+                roundService.resetPlayer(u);
+                roundService.drawStartCards(u);
+            }
+
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
@@ -132,23 +147,23 @@ public class GameServiceController
 
 
     @RequestMapping(value = CONTEXT + "/{gameId}/stop", method = RequestMethod.PUT)
-    public ResponseEntity<Game> stopGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public HttpStatus stopGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
 
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
         if (game == null || owner == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(game);
+            return HttpStatus.NOT_FOUND;
         }
 
         if (game.getOwner().equals(owner.getUsername())) {
             game.setStatus(GameStatus.FINISHED);
             game = gameRepo.save(game);
             logger.info("Game " + gameId + " finished");
-            return ResponseEntity.ok(game);
+            return HttpStatus.OK;
         } else {
             logger.info("Game " + gameId + " cannot be stopped. User is not  the owner");
-            return ResponseEntity.badRequest().body(game);
+            return HttpStatus.BAD_REQUEST;
         }
     }
 

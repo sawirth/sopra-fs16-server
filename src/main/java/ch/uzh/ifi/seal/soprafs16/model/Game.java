@@ -1,11 +1,12 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 public class Game implements Serializable {
