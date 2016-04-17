@@ -30,7 +30,9 @@ public class Wagon implements Serializable {
 
     public Wagon(List<Treasure> treasures, boolean hasMarshal){
         lowerLevel = new Level(treasures);
+        lowerLevel.setWagon(this);
         upperLevel = new Level();
+        upperLevel.setWagon(this);
         this.hasMarshal = hasMarshal;
     }
 

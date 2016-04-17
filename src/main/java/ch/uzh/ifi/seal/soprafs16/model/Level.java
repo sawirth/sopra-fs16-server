@@ -24,7 +24,7 @@ public class Level implements Serializable{
     private List<User> users;
 
     @OneToOne
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     private Wagon wagon;
 
     public Level(List<Treasure> treasures){

@@ -4,6 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +45,9 @@ public class GameInitializeServiceTest {
         assertEquals(1, train.get(0).getLowerLevel().getTreasures().size());
         assertEquals(1000, train.get(0).getLowerLevel().getTreasures().get(0).getValue());
         assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
+
+        //Level must have reference to wagon
+        assertNotNull(train.get(0).getLowerLevel().getWagon());
 
         //No wagon does contain the marshal
         for (int i = 1; i < train.size(); i++) {
