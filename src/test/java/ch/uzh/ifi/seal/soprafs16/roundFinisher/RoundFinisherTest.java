@@ -131,6 +131,8 @@ public class RoundFinisherTest {
 
     }
 
+    //TODO test pickpocketing event
+
     private Game createGame(){
         Game game = new Game();
         List<Wagon> train = new ArrayList<>();

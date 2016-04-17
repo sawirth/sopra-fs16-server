@@ -22,10 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -153,13 +150,13 @@ public class GameServiceControllerIT {
 
         //First four rounds cannot be an endRound
         for(int i=0;i<4;i++){
-            Assert.assertTrue(rounds.get(i).getRoundType()!=RoundType.END_ROUND1 &&
-                    rounds.get(i).getRoundType()!=RoundType.END_ROUND2 && rounds.get(i).getRoundType()!=RoundType.END_ROUND3);
+            Assert.assertTrue(rounds.get(i).getRoundType()!=RoundType.PICK_POCKETING &&
+                    rounds.get(i).getRoundType()!=RoundType.REVENGE_MARSHAL && rounds.get(i).getRoundType()!=RoundType.HOSTAGE);
         }
 
         //Last round must be an endRound
-        Assert.assertTrue(rounds.get(4).getRoundType()==RoundType.END_ROUND1 ||
-                rounds.get(4).getRoundType()==RoundType.END_ROUND2 || rounds.get(4).getRoundType()==RoundType.END_ROUND3);
+        Assert.assertTrue(rounds.get(4).getRoundType()==RoundType.PICK_POCKETING ||
+                rounds.get(4).getRoundType()==RoundType.REVENGE_MARSHAL || rounds.get(4).getRoundType()==RoundType.HOSTAGE);
 
         //Moves must be empty for all rounds
         for(int i=0;i<rounds.size();i++){

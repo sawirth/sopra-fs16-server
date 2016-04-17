@@ -4,10 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
-import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherCrane;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -165,35 +162,25 @@ public class GameInitializeService {
         List<Round> endRounds = new ArrayList<>();
         List<Round> allRounds = new ArrayList<>();
 
-        //TODO add AngryMarshalEvent
-        normalRounds.add(new Round(4, RoundType.ROUND1, game, createMoveTypes(1,1,2,3,0), null));
+        normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1,1,2,3,0), new RoundFinisherAngryMarshal()));
 
-        //TODO add CraneEvent
-        normalRounds.add(new Round(4, RoundType.ROUND2, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));
+        normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));
 
-        //TODO add BreakEvent
-        normalRounds.add(new Round(4, RoundType.ROUND3, game, createMoveTypes(1,1,1,1,0), null));
+        normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1,1,1,1,0), new RoundFinisherBreak()));
 
-        //TODO add TakeAllEvent
-        normalRounds.add(new Round(5, RoundType.ROUND4, game, createMoveTypes(1,2,4,1,0), null));
+        normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1,2,4,1,0), new RoundFinisherTakeAll()));
 
-        //TODO add ResistanceEvent
-        normalRounds.add(new Round(5, RoundType.ROUND5, game, createMoveTypes(1,1,2,1,1), null));
+        normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1,1,2,1,1), new RoundFinisherResistance()));
 
-        //TODO no event
-        normalRounds.add(new Round(4, RoundType.ROUND6, game, createMoveTypes(1,4,1,0,0), null));
+        normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1,4,1,0,0), null));
 
-        //TODO no event
-        normalRounds.add(new Round(5, RoundType.ROUND7, game, createMoveTypes(1,2,1,2,1), null));
+        normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1,2,1,2,1), null));
 
-        //TODO add PickpocketingEvent
-        endRounds.add(new Round(4, RoundType.END_ROUND1, game, createMoveTypes(1,1,2,1,0), null));
+        endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1,1,2,1,0), new RoundFinisherPickPocketing()));
 
-        //TODO add RevengeMarshalEvent
-        endRounds.add(new Round(4, RoundType.END_ROUND2, game, createMoveTypes(1,2,1,1,0), null));
+        endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1,2,1,1,0), new RoundFinisherRevengeMarshal()));
 
-        //TODO add HostageEvent
-        endRounds.add(new Round(4, RoundType.END_ROUND3, game, createMoveTypes(1,2,1,1,0), null));
+        endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherHostage()));
 
         //Shuffles the rounds
         Collections.shuffle(normalRounds);
