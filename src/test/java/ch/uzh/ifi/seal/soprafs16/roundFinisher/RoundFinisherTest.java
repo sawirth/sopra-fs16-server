@@ -25,6 +25,7 @@ public class RoundFinisherTest {
     private RoundFinisherBreak roundFinisherBreak = new RoundFinisherBreak();
     private RoundFinisherAngryMarshal roundFinisherAngryMarshal = new RoundFinisherAngryMarshal();
     private RoundFinisherResistance roundFinisherResistance = new RoundFinisherResistance();
+    private RoundFinisherHostage roundFinisherHostage = new RoundFinisherHostage();
 
     @Test
     public void testRoundFinisherCrane(){
@@ -98,6 +99,20 @@ public class RoundFinisherTest {
             for(User user: wagon.getUpperLevel().getUsers()){
                 Assert.assertThat(user.getDeckCards().size(), is(0));
             }
+        }
+    }
+
+    @Test
+    public void testRoundFinisherHostage(){
+        Game game = createGame();
+        roundFinisherHostage.finishRound(game);
+
+        //every user in the first wagon got a treasure
+        for(User user: game.getTrain().get(0).getLowerLevel().getUsers()){
+            Assert.assertThat(user.getTreasures().size(), is(1));
+        }
+        for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
+            Assert.assertThat(user.getTreasures().size(), is(1));
         }
     }
 
