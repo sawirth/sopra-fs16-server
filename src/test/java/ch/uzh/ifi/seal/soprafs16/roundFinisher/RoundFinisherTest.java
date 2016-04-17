@@ -2,6 +2,8 @@ package ch.uzh.ifi.seal.soprafs16.roundFinisher;
 
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherAngryMarshal;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherCrane;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherTakeAll;
@@ -24,6 +26,7 @@ public class RoundFinisherTest {
     private RoundFinisherCrane roundFinisherCrane = new RoundFinisherCrane();
     private RoundFinisherTakeAll roundFinisherTakeAll = new RoundFinisherTakeAll();
     private RoundFinisherBreak roundFinisherBreak = new RoundFinisherBreak();
+    private RoundFinisherAngryMarshal roundFinisherAngryMarshal = new RoundFinisherAngryMarshal();
 
     @Test
     public void testRoundFinisherCrane(){
@@ -64,28 +67,44 @@ public class RoundFinisherTest {
         Assert.assertThat(game.getTrain().get(2).getUpperLevel().getUsers().size(), is(0));
     }
 
+    @Test
+    public void testRoundFinisherAngryMarshal(){
+        Game game = createGame();
+        roundFinisherAngryMarshal.finishRound(game);
+
+        //Every user on first wagon gets an BlockerMove
+        List<User> users = game.getTrain().get(0).getUpperLevel().getUsers();
+        for(User user: users){
+            Assert.assertThat(user.getDeckCards().size(), is(1));
+        }
+
+        //Marshal is on second wagon now and not on first
+        Assert.assertFalse(game.getTrain().get(0).hasMarshal());
+        Assert.assertTrue(game.getTrain().get(1).hasMarshal());
+    }
+
     private Game createGame(){
         Game game = new Game();
         List<Wagon> train = new ArrayList<>();
 
         List<User> users1 = new ArrayList<>();
-        users1.add(new User());
-        users1.add(new User());
+        users1.add(new User("Hans","Hansi"));
+        users1.add(new User("Dave","dave"));
         Wagon wagon1 = new Wagon(createTreasures(),true);
         wagon1.getUpperLevel().setUsers(users1);
         train.add(wagon1);
 
         List<User> users2 = new ArrayList<>();
-        users2.add(new User());
+        users2.add(new User("Wayne","Wayne"));
         List<User> users3 = new ArrayList<>();
-        users3.add(new User());
+        users3.add(new User("Fritz","Fritz"));
         Wagon wagon2 = new Wagon(createTreasures(),false);
         wagon2.getLowerLevel().setUsers(users2);
         wagon2.getUpperLevel().setUsers(users3);
         train.add(wagon2);
 
         List<User> users4 = new ArrayList<>();
-        users4.add(new User());
+        users4.add(new User("Sigmund","Siggi"));
         Wagon wagon3 = new Wagon(createTreasures(),false);
         wagon3.getUpperLevel().setUsers(users4);
         train.add(wagon3);
