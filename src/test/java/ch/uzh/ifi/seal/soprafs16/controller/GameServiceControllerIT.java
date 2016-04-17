@@ -4,10 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.Application;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
-import ch.uzh.ifi.seal.soprafs16.model.Game;
-import ch.uzh.ifi.seal.soprafs16.model.Round;
-import ch.uzh.ifi.seal.soprafs16.model.User;
-import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,31 +101,31 @@ public class GameServiceControllerIT {
     public void testStartGame() {
         User owner = addUser();
         HttpEntity<User> requestBody = new HttpEntity<>(owner);
-        ResponseEntity<Game> response = template.exchange(base + "/games/new?token=" + owner.getToken(), HttpMethod.POST, requestBody, Game.class);
+        ResponseEntity<Game> gameResponse = template.exchange(base + "/games/new?token=" + owner.getToken(), HttpMethod.POST, requestBody, Game.class);
 
-        Assert.assertEquals(GameStatus.PENDING, response.getBody().getStatus());
+        Assert.assertEquals(GameStatus.PENDING, gameResponse.getBody().getStatus());
 
         //Trying to start the game with one player which should not be possible
-        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), null);
-        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
-        Assert.assertNotEquals(GameStatus.RUNNING, response.getBody().getStatus());
+        template.postForLocation(base + "/games/" + gameResponse.getBody().getId() + "/start?token=" + owner.getToken(), null);
+        gameResponse = template.getForEntity(base + "/games/" + gameResponse.getBody().getId(), Game.class);
+        Assert.assertNotEquals(GameStatus.RUNNING, gameResponse.getBody().getStatus());
 
         //Add a second player and check if adding was successful
         User secondPlayer = addUser();
-        template.postForLocation(base +  "/games/" + response.getBody().getId() + "/player?token=" + secondPlayer.getToken(), null);
-        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
-        Assert.assertEquals(2, response.getBody().getPlayers().size());
+        template.postForLocation(base +  "/games/" + gameResponse.getBody().getId() + "/player?token=" + secondPlayer.getToken(), null);
+        gameResponse = template.getForEntity(base + "/games/" + gameResponse.getBody().getId(), Game.class);
+        Assert.assertEquals(2, gameResponse.getBody().getPlayers().size());
 
         //Now the owner tries to start the game which must be possible
-        template.postForLocation(base + "/games/" + response.getBody().getId() + "/start?token=" + owner.getToken(), response.getBody().getNextPlayer());
-        response = template.getForEntity(base + "/games/" + response.getBody().getId(), Game.class);
-        Assert.assertEquals(GameStatus.RUNNING, response.getBody().getStatus());
+        template.postForLocation(base + "/games/" + gameResponse.getBody().getId() + "/start?token=" + owner.getToken(), gameResponse.getBody().getNextPlayer());
+        gameResponse = template.getForEntity(base + "/games/" + gameResponse.getBody().getId(), Game.class);
+        Assert.assertEquals(GameStatus.RUNNING, gameResponse.getBody().getStatus());
 
 
         /*
          * Test train setup
          */
-        List<Wagon> train = response.getBody().getTrain();
+        List<Wagon> train = gameResponse.getBody().getTrain();
         Assert.assertNotNull(train);
 
         //First wagon is locomotive so it must have the marshal
@@ -144,7 +141,7 @@ public class GameServiceControllerIT {
         Assert.assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
 
         //Test rounds
-        List<Round> rounds =response.getBody().getRounds();
+        List<Round> rounds =gameResponse.getBody().getRounds();
         Assert.assertNotNull(rounds);
 
         //5 rounds must be implemented
@@ -170,9 +167,43 @@ public class GameServiceControllerIT {
             Assert.assertThat(rounds.get(i).getMoveType().size(), not(0));
         }
 
-        //TODO test shift of moves
+
+        /* ========================
+        Tests for moves (shift etc.)
+         =========================*/
+
+        //At the beginning the list of moves from the round must be empty
+        Game game = gameResponse.getBody();
+        Assert.assertThat(game.getRounds().get(0).getMoves().isEmpty(), is(true));
+
+        //TODO Test: Second user should not be able to make a move
+        //At the moment the logic for this is not yet implemented
 
 
+
+        //First we have to get the handCards of the user
+        ResponseEntity<User> userResponse = template.getForEntity(base + "/users/" + owner.getId(), User.class, new Object());
+        Assert.assertThat(userResponse.getBody().getId(), is(owner.getId()));
+        Move move = userResponse.getBody().getHandCards().get(0);
+
+        //Then the user posts his move which means that the move is removed from his handCards and put into the list of moves from the round
+        template.postForLocation(base + "/moves/" + move.getId() + "?token=" + owner.getToken(), null, new Object());
+        ResponseEntity<Round> roundResponse = template.getForEntity(base + "/rounds/" + game.getRounds().get(0).getId(), Round.class, new Object());
+        Assert.assertThat(roundResponse.getStatusCode(), is(HttpStatus.OK));
+        Assert.assertThat(roundResponse.getBody().getMoves().size(), is(1));
+
+        //Check that user now only has 5 cards remaining in his hand
+        userResponse = template.getForEntity(base + "/users/" + owner.getId(), User.class, new Object());
+        Assert.assertThat(userResponse.getBody().getHandCards().size(), is(5));
+
+        //Check getMove in MoveController
+        ResponseEntity<Move> moveResponse = template.getForEntity(base + "/moves/" + move.getId(), Move.class, new Object());
+        Assert.assertThat(moveResponse.getStatusCode(), is(HttpStatus.OK));
+        moveResponse = template.getForEntity(base + "/moves/1000", Move.class, new Object());
+        Assert.assertThat(moveResponse.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+
+        //TODO Second player is now able to make a move
     }
 
 
