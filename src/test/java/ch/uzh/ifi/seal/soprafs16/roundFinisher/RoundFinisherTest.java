@@ -26,6 +26,7 @@ public class RoundFinisherTest {
     private RoundFinisherAngryMarshal roundFinisherAngryMarshal = new RoundFinisherAngryMarshal();
     private RoundFinisherResistance roundFinisherResistance = new RoundFinisherResistance();
     private RoundFinisherHostage roundFinisherHostage = new RoundFinisherHostage();
+    private RoundFinisherRevengeMarshal roundFinisherRevengeMarshal = new RoundFinisherRevengeMarshal();
 
     @Test
     public void testRoundFinisherCrane(){
@@ -50,9 +51,9 @@ public class RoundFinisherTest {
         Game game = createGame();
         roundFinisherTakeAll.finishRound(game);
 
-        //Marshal is on first wagon, treasuresList should be of size 4
-        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().size(), is(4));
-        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().get(3).getType(), is(TreasureType.CASHBOX));
+        //Marshal is on first wagon, treasuresList should be of size 5
+        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().size(), is(5));
+        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().get(4).getType(), is(TreasureType.CASHBOX));
     }
 
     @Test
@@ -112,8 +113,22 @@ public class RoundFinisherTest {
             Assert.assertThat(user.getTreasures().size(), is(1));
         }
         for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
-            Assert.assertThat(user.getTreasures().size(), is(1));
+            Assert.assertTrue(user.getTreasures().size()==2 || user.getTreasures().size()==5);
         }
+    }
+
+    @Test
+    public void testRoundFinisherRevengeMarshal(){
+        Game game = createGame();
+        roundFinisherRevengeMarshal.finishRound(game);
+
+        for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
+            Assert.assertTrue(user.getTreasures().size()==1 || user.getTreasures().size()==3);
+        }
+        for(Treasure treasure: game.getTrain().get(0).getUpperLevel().getUsers().get(0).getTreasures()){
+            Assert.assertTrue(treasure.getValue()!=250);
+        }
+
     }
 
     private Game createGame(){
@@ -121,8 +136,15 @@ public class RoundFinisherTest {
         List<Wagon> train = new ArrayList<>();
 
         List<User> users1 = new ArrayList<>();
-        users1.add(new User("Hans","Hansi"));
-        users1.add(new User("Dave","dave"));
+        User user1 = new User("Hans","Hansi");
+        user1.setTreasures(createTreasures());
+
+        User user2 = new User("Dave","Dave");
+        user2.setTreasures(createTreasures2());
+
+        users1.add(user1);
+        users1.add(user2);
+
         List<User> users2 = new ArrayList<>();
         users2.add(new User("Severin","Sevi"));
         Wagon wagon1 = new Wagon(createTreasures(),true);
@@ -151,8 +173,16 @@ public class RoundFinisherTest {
 
     private List<Treasure> createTreasures(){
         List<Treasure> treasures = new ArrayList<>();
+        treasures.add(new Treasure(300, TreasureType.MONEYBAG));
         treasures.add(new Treasure(250, TreasureType.MONEYBAG));
         treasures.add(new Treasure(1000, TreasureType.CASHBOX));
+        treasures.add(new Treasure(500, TreasureType.DIAMOND));
+        return treasures;
+    }
+
+    //to test for another user that only has a diamond
+    private List<Treasure> createTreasures2(){
+        List<Treasure> treasures = new ArrayList<>();
         treasures.add(new Treasure(500, TreasureType.DIAMOND));
         return treasures;
     }
