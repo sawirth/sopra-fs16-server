@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,9 +30,12 @@ public class Level {
 
     public Level(List<Treasure> treasures){
         this.treasures=treasures;
+        users = new ArrayList<>();
     }
 
-    public Level(){}
+    public Level(){
+        users = new ArrayList<>();
+    }
 
     public List<Treasure> getTreasures() {
         return treasures;

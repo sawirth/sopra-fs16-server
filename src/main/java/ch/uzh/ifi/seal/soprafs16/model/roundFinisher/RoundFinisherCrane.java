@@ -20,7 +20,7 @@ public class RoundFinisherCrane extends RoundFinisher {
             if(wagon.getUpperLevel().getUsers()!=null){
                 users.addAll(wagon.getUpperLevel().getUsers());
             }
-            wagon.getUpperLevel().setUsers(null);
+            wagon.getUpperLevel().getUsers().clear();
         }
         train.get(train.size()-1).getUpperLevel().setUsers(users);
         game.setTrain(train);
