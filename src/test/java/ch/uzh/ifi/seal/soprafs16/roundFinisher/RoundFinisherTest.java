@@ -3,10 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.roundFinisher;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherAngryMarshal;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherCrane;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherTakeAll;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -27,6 +24,7 @@ public class RoundFinisherTest {
     private RoundFinisherTakeAll roundFinisherTakeAll = new RoundFinisherTakeAll();
     private RoundFinisherBreak roundFinisherBreak = new RoundFinisherBreak();
     private RoundFinisherAngryMarshal roundFinisherAngryMarshal = new RoundFinisherAngryMarshal();
+    private RoundFinisherResistance roundFinisherResistance = new RoundFinisherResistance();
 
     @Test
     public void testRoundFinisherCrane(){
@@ -83,6 +81,26 @@ public class RoundFinisherTest {
         Assert.assertTrue(game.getTrain().get(1).hasMarshal());
     }
 
+    @Test
+    public void testRoundFinisherResistance(){
+        Game game = createGame();
+        roundFinisherResistance.finishRound(game);
+
+        //every user on a lower level got a BlockerMove
+        for(Wagon wagon: game.getTrain()){
+            for(User user: wagon.getLowerLevel().getUsers()){
+                Assert.assertThat(user.getDeckCards().size(), is(1));
+            }
+        }
+
+        //no user got a BlockerMove on the upper level
+        for(Wagon wagon: game.getTrain()){
+            for(User user: wagon.getUpperLevel().getUsers()){
+                Assert.assertThat(user.getDeckCards().size(), is(0));
+            }
+        }
+    }
+
     private Game createGame(){
         Game game = new Game();
         List<Wagon> train = new ArrayList<>();
@@ -90,23 +108,26 @@ public class RoundFinisherTest {
         List<User> users1 = new ArrayList<>();
         users1.add(new User("Hans","Hansi"));
         users1.add(new User("Dave","dave"));
+        List<User> users2 = new ArrayList<>();
+        users2.add(new User("Severin","Sevi"));
         Wagon wagon1 = new Wagon(createTreasures(),true);
         wagon1.getUpperLevel().setUsers(users1);
+        wagon1.getLowerLevel().setUsers(users2);
         train.add(wagon1);
 
-        List<User> users2 = new ArrayList<>();
-        users2.add(new User("Wayne","Wayne"));
         List<User> users3 = new ArrayList<>();
-        users3.add(new User("Fritz","Fritz"));
+        users3.add(new User("Wayne","Wayne"));
+        List<User> users4 = new ArrayList<>();
+        users4.add(new User("Fritz","Fritz"));
         Wagon wagon2 = new Wagon(createTreasures(),false);
-        wagon2.getLowerLevel().setUsers(users2);
-        wagon2.getUpperLevel().setUsers(users3);
+        wagon2.getLowerLevel().setUsers(users3);
+        wagon2.getUpperLevel().setUsers(users4);
         train.add(wagon2);
 
-        List<User> users4 = new ArrayList<>();
-        users4.add(new User("Sigmund","Siggi"));
+        List<User> users5 = new ArrayList<>();
+        users5.add(new User("Sigmund","Siggi"));
         Wagon wagon3 = new Wagon(createTreasures(),false);
-        wagon3.getUpperLevel().setUsers(users4);
+        wagon3.getUpperLevel().setUsers(users5);
         train.add(wagon3);
 
         game.setTrain(train);
