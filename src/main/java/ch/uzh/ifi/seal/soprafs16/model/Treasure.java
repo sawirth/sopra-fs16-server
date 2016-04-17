@@ -17,7 +17,7 @@ public class Treasure implements Serializable {
     private Long id;
 
     @Column
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     private int value;
 
     @Column

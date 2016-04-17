@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.helper.UserUtils;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
+import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Views;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
@@ -121,7 +122,11 @@ public class GameServiceController
             gameInitializeService.giveUsersTreasure(game.getPlayers());
 
             //initializes the rounds with the number of rounds that will be played
-            game.setRounds(gameInitializeService.initializeRounds(5, game));
+            for (Round round : gameInitializeService.initializeRounds(5, game)) {
+                round.setGame(game);
+                round = roundRepo.save(round);
+                game.getRounds().add(round);
+            }
 
             //Draw cards for first round
             Iterator<User> iter = game.getPlayers().iterator();
@@ -131,7 +136,6 @@ public class GameServiceController
                 roundService.resetPlayer(u);
                 roundService.drawStartCards(u);
             }
-
 
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");

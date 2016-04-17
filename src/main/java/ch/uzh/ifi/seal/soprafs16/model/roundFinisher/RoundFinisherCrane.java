@@ -8,10 +8,9 @@ import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by David on 16.04.2016.
- */
+
 public class RoundFinisherCrane extends RoundFinisher {
+
     @Override
     public void finishRound(Game game) {
         List<Wagon> train = game.getTrain();

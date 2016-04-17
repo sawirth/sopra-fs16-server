@@ -18,7 +18,7 @@ public class Move implements Serializable {
     
     @ManyToOne
     @JoinColumn
-	@JsonView(Views.Public.class)
+	@JsonView(Views.Internal.class)
     private User user;
 
 	@ManyToOne

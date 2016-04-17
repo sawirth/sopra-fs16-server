@@ -25,11 +25,18 @@ public class RoundService {
         //Make sure both deck and hand are empty before adding action moves
         player.getDeckCards().clear();
         player.getHandCards().clear();
-        player.setDeckCards(createActionMoves());
+
+        //Set properties bi-directional
+        for (Move move : createActionMoves()) {
+            move.setUser(player);
+            player.getDeckCards().add(move);
+        }
 
         //Add blocker moves
         for (int i = 0; i < player.getShotsTaken(); i++) {
-            player.getDeckCards().add(new BlockerMove());
+            BlockerMove blockerMove = new BlockerMove();
+            blockerMove.setUser(player);
+            player.getDeckCards().add(blockerMove);
         }
 
         //Shuffle

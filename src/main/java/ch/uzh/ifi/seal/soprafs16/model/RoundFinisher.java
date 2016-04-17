@@ -1,17 +1,25 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-/**
- * Created by David on 16.04.2016.
- */
+import javax.persistence.*;
+import java.io.Serializable;
+
 @Entity
-public abstract class RoundFinisher {
+public class RoundFinisher implements Serializable{
     @Id
     @GeneratedValue
     private Long id;
 
-    public abstract void finishRound(Game game);
+    public void finishRound(Game game){
+        /*
+        INFO: Ich musste das abstract entfernen als Quick-Fix, da Hibernate die ganze Zeit motzt, dass es keine abstrakten Klassen
+        instanzieren kann und ich nicht rausgefunden habe, wie es gehen würde
+        */
+
+    }
+
+    public Long getId() {
+        return id;
+    }
 }
