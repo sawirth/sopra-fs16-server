@@ -1,8 +1,10 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Views;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
+import ch.uzh.ifi.seal.soprafs16.service.RoundService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(MoveServiceController.CONTEXT)
@@ -24,6 +23,15 @@ public class MoveServiceController {
 
     @Autowired
     private MoveRepository moveRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private RoundService roundService;
+
+    @Autowired
+    private GameRepository gameRepo;
 
 
     @RequestMapping(method = RequestMethod.GET, value = "{moveId}")
@@ -45,15 +53,28 @@ public class MoveServiceController {
      * @param moveId The id of the move
      * @return HttpStatus
      */
-    @RequestMapping(method = RequestMethod.POST, value = "{moveId")
+    @RequestMapping(method = RequestMethod.POST, value = "{moveId}")
+    @ResponseBody
     public HttpStatus makeMove(@PathVariable Long moveId, @RequestParam String token) {
-        /*
-        TODO makeMove implementieren
-        - User kann Move nur machen, wenn er der current player ist
-        - User kann Move nur machen, wenn es sein Move ist d.h. der Token muss übereinstimmen
-        - Nachdem er den Move gemacht hat, muss der current player geändert werden und Rücksicht auf Double oder Reverse moveTypes genommen werden
-         */
 
+        //Check that token is of the same user as the move
+        Move move = moveRepo.findOne(moveId);
+        User user = userRepo.findByToken(token);
+
+        if (!roundService.isUserAllowedToMakeMove(move, user)) {
+            logger.info("User " + user.getId() + " is not allowed to make Move " + move.getId());
+            return HttpStatus.BAD_REQUEST;
+        }
+
+        //Switch Move
+        Game game = move.getGame();
+        Round round = game.getRounds().get(game.getCurrentRound());
+        roundService.shiftMove(move, round);
+
+        //TODO implement this method in Roundservice
+        game = roundService.updateGameAfterMove(game);
+
+        gameRepo.save(game);
         return HttpStatus.OK;
     }
 }

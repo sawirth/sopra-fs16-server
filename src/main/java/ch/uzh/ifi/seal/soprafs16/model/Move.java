@@ -23,7 +23,7 @@ public class Move implements Serializable {
     private User user;
 
 	@ManyToOne
-	@JsonView(Views.Public.class)
+	@JsonView(Views.Internal.class)
 	private Round round;
 
 	@Column
@@ -33,6 +33,10 @@ public class Move implements Serializable {
 	@Column
 	@JsonView(Views.Public.class)
 	private ActionMoveType actionMoveType;
+
+	@ManyToOne
+	@JsonView(Views.Internal.class)
+	private Game game;
 
 	public Long getId() {
 		return id;
@@ -76,5 +80,13 @@ public class Move implements Serializable {
 
 	public void setCharacterType(CharacterType characterType) {
 		this.characterType = characterType;
+	}
+
+	public Game getGame() {
+		return game;
+	}
+
+	public void setGame(Game game) {
+		this.game = game;
 	}
 }

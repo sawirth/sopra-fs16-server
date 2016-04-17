@@ -32,10 +32,14 @@ public class Game implements Serializable {
 	@Column
 	@JsonView(Views.Public.class)
 	private Integer currentPlayer;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
+
+	@Column
 	@JsonView(Views.Public.class)
-    private List<User> players;
+	private Integer currentRound;
+
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Public.class)
+	private List<User> players;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JsonView(Views.Public.class)
@@ -47,6 +51,7 @@ public class Game implements Serializable {
 
 	public Game() {
 		this.players = new ArrayList<>();
+		currentRound = 0;
 	}
 
 	public Long getId() {
@@ -107,5 +112,13 @@ public class Game implements Serializable {
 
 	public List<Round> getRounds() {
 		return rounds;
+	}
+
+	public Integer getCurrentRound() {
+		return currentRound;
+	}
+
+	public void setCurrentRound(Integer currentRound) {
+		this.currentRound = currentRound;
 	}
 }

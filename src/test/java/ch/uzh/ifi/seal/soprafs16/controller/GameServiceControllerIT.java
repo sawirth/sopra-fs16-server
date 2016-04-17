@@ -170,6 +170,9 @@ public class GameServiceControllerIT {
             Assert.assertThat(rounds.get(i).getMoveType().size(), not(0));
         }
 
+        //TODO test shift of moves
+
+
     }
 
 

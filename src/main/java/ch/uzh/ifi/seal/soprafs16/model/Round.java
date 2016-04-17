@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +58,7 @@ public class Round implements Serializable{
 
     public Round(){
         NUMBER_OF_MOVES=0;
+        moves = new ArrayList<>();
     }
 
     public Game getGame() {

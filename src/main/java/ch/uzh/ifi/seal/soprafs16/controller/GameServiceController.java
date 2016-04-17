@@ -130,7 +130,7 @@ public class GameServiceController
 
             while (iter.hasNext()) {
                 User u = iter.next();
-                roundService.resetPlayer(u);
+                roundService.resetPlayer(u, game);
                 roundService.drawStartCards(u);
             }
 
