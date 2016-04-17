@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
@@ -24,6 +25,10 @@ public class Move implements Serializable {
 	@ManyToOne
 	@JsonView(Views.Public.class)
 	private Round round;
+
+	@Column
+	@JsonView(Views.Public.class)
+	private CharacterType characterType;
 
 	@Column
 	@JsonView(Views.Public.class)
@@ -63,5 +68,13 @@ public class Move implements Serializable {
 
 	public void setActionMoveType(ActionMoveType actionMoveType) {
 		this.actionMoveType = actionMoveType;
+	}
+
+	public CharacterType getCharacterType() {
+		return characterType;
+	}
+
+	public void setCharacterType(CharacterType characterType) {
+		this.characterType = characterType;
 	}
 }

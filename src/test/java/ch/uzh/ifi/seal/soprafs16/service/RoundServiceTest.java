@@ -66,5 +66,8 @@ public class RoundServiceTest {
         roundService.drawStartCards(this.player);
         assertThat(player.getHandCards().size(), is(7));
         assertThat(player.getDeckCards().size(), is(3));
+
+        //Move must have correct CharacterType
+        assertThat(player.getHandCards().get(0).getCharacterType(), is(CharacterType.DOC));
     }
 }

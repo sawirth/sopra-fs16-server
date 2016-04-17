@@ -29,6 +29,7 @@ public class RoundService {
         //Set properties bi-directional
         for (Move move : createActionMoves()) {
             move.setUser(player);
+            move.setCharacterType(player.getCharacterType());
             player.getDeckCards().add(move);
         }
 
@@ -36,6 +37,7 @@ public class RoundService {
         for (int i = 0; i < player.getShotsTaken(); i++) {
             BlockerMove blockerMove = new BlockerMove();
             blockerMove.setUser(player);
+            blockerMove.setCharacterType(player.getCharacterType());
             player.getDeckCards().add(blockerMove);
         }
 
