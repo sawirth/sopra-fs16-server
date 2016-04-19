@@ -192,6 +192,13 @@ public class GameInitializeService {
         }
         allRounds.add(endRounds.get(0));
 
+        //sets the first player of a round
+        for(int i=0;i<allRounds.size();i++){
+            int k = game.getPlayers().size();
+            int j = (i+game.getPlayers().size()) % game.getPlayers().size();
+            allRounds.get(i).setFirstPlayer((i+game.getPlayers().size()) % game.getPlayers().size());
+        }
+
         return allRounds;
     }
 

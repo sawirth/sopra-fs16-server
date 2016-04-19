@@ -158,6 +158,13 @@ public class GameServiceControllerIT {
         Assert.assertTrue(rounds.get(4).getRoundType()==RoundType.PICK_POCKETING ||
                 rounds.get(4).getRoundType()==RoundType.REVENGE_MARSHAL || rounds.get(4).getRoundType()==RoundType.HOSTAGE);
 
+        //test first player of round
+        Assert.assertThat(rounds.get(0).getFirstPlayer(), is(0));
+        Assert.assertThat(rounds.get(1).getFirstPlayer(), is(1));
+        Assert.assertThat(rounds.get(2).getFirstPlayer(), is(0));
+        Assert.assertThat(rounds.get(3).getFirstPlayer(), is(1));
+        Assert.assertThat(rounds.get(4).getFirstPlayer(), is(0));
+
         //Moves must be empty for all rounds
         for(int i=0;i<rounds.size();i++){
             Assert.assertThat(rounds.get(i).getMoves().size(), is(0));

@@ -44,6 +44,10 @@ public class Round implements Serializable{
     @JsonView(Views.Extended.class)
     private List<MoveType> moveTypes;
 
+    @Column
+    @JsonView(Views.Extended.class)
+    private int firstPlayer;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private RoundFinisher roundFinisher;
@@ -111,5 +115,13 @@ public class Round implements Serializable{
 
     public void setRoundFinisher(RoundFinisher roundFinisher) {
         this.roundFinisher = roundFinisher;
+    }
+
+    public int getFirstPlayer() {
+        return firstPlayer;
+    }
+
+    public void setFirstPlayer(int firstPlayer) {
+        this.firstPlayer = firstPlayer;
     }
 }
