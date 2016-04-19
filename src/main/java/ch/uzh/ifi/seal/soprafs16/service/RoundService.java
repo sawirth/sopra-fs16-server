@@ -162,7 +162,7 @@ public class RoundService {
         }
 
         //if the current move is a hidden moveType
-        if (moveType==MoveType.HIDDEN){
+        else if (moveType==MoveType.HIDDEN){
             game.setCurrentPlayer(game.getNextPlayer());
             //sets the current MoveType to the next MoveType
             if (game.getCurrentPlayer()==round.getFirstPlayer()){
@@ -171,9 +171,9 @@ public class RoundService {
         }
 
         //if the current move is a reverse moveType
-        if (moveType==MoveType.REVERSE){
+        else if (moveType==MoveType.REVERSE){
             //sets the current player to the player last in the list
-            game.setCurrentPlayer(game.getCurrentPlayer()+game.getPlayers().size()-1
+            game.setCurrentPlayer((game.getCurrentPlayer()+game.getPlayers().size()-1)
                     % game.getPlayers().size());
             if (game.getCurrentPlayer()==round.getFirstPlayer()){
                 round.setCurrentMoveType(round.getCurrentMoveType()+1);
@@ -181,7 +181,7 @@ public class RoundService {
         }
 
         //if the current move is a double MoveType
-        if (moveType==MoveType.DOUBLE){
+        else if (moveType==MoveType.DOUBLE){
             //checks if the move before this one was made by the same user
             //-2 since the move was already shifted to the list of moves in the round
             if (round.getMoves().get(round.getMoves().size()-2).getUser()
@@ -190,6 +190,11 @@ public class RoundService {
             }
             else {
             }
+        }
+
+        if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
+            //TODO end planning phase
+            // no player is allowed to play a card anymore
         }
 
         return game;
