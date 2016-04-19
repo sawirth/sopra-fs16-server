@@ -1,12 +1,10 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import ch.uzh.ifi.seal.soprafs16.model.Treasure;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 
 
 @Entity
@@ -32,7 +30,9 @@ public class Wagon implements Serializable {
 
     public Wagon(List<Treasure> treasures, boolean hasMarshal){
         lowerLevel = new Level(treasures);
+        lowerLevel.setWagon(this);
         upperLevel = new Level();
+        upperLevel.setWagon(this);
         this.hasMarshal = hasMarshal;
     }
 

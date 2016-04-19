@@ -2,14 +2,15 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
-public class Level {
+public class Level implements Serializable{
 
     @Id
     @GeneratedValue
@@ -19,19 +20,22 @@ public class Level {
     @JsonView(Views.Public.class)
     private List<Treasure> treasures;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private List<User> users;
 
     @OneToOne
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Internal.class)
     private Wagon wagon;
 
     public Level(List<Treasure> treasures){
         this.treasures=treasures;
+        users = new ArrayList<>();
     }
 
-    public Level(){}
+    public Level(){
+        users = new ArrayList<>();
+    }
 
     public List<Treasure> getTreasures() {
         return treasures;

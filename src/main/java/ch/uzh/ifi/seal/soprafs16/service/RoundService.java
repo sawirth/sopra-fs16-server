@@ -1,13 +1,16 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
+import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @Service("roundService")
@@ -18,18 +21,29 @@ public class RoundService {
      * plus blocker moves corresponding to the shots taken by other players into his deck and the number of shots is set to 6
      * @param player
      */
-    public void resetPlayer(User player) {
+    public void resetPlayer(User player, Game game) {
         //Reset shots taken and number of shots to initial values
         player.setNumberOfShots(6);
 
         //Make sure both deck and hand are empty before adding action moves
         player.getDeckCards().clear();
         player.getHandCards().clear();
-        player.setDeckCards(createActionMoves());
+
+        //Set properties bi-directional
+        for (Move move : createActionMoves()) {
+            move.setUser(player);
+            move.setCharacterType(player.getCharacterType());
+            move.setGame(game);
+            player.getDeckCards().add(move);
+        }
 
         //Add blocker moves
         for (int i = 0; i < player.getShotsTaken(); i++) {
-            player.getDeckCards().add(new BlockerMove());
+            BlockerMove blockerMove = new BlockerMove();
+            blockerMove.setUser(player);
+            blockerMove.setCharacterType(player.getCharacterType());
+            blockerMove.setGame(game);
+            player.getDeckCards().add(blockerMove);
         }
 
         //Shuffle
@@ -80,5 +94,65 @@ public class RoundService {
         if (player.getCharacterType().equals(CharacterType.DOC)) {
             player.getHandCards().add(player.getDeckCards().remove(0));
         }
+    }
+
+    /**
+     * Shifts the move from the handCards of the user to the list of moves of the round
+     * @param move Move that shifts
+     * @param round Round that move will be added to
+     */
+    public void shiftMove(Move move, Round round) {
+        Move m = move;
+
+        //Find where the move is in the list
+        User user = move.getUser();
+        int i = 0;
+        for (Move handCard : user.getHandCards()) {
+            if (handCard.getId() == m.getId()) {
+               break;
+            }
+            i++;
+        }
+
+        //Remove the move (pun intended)
+        user.getHandCards().remove(i);
+
+        //Add to round
+        m.setRound(round);
+        round.getMoves().add(m);
+    }
+
+    /**
+     * This method checks if the user is allowed to make the move. It checks if the user is the owner of the move and
+     * if the move is in his hands
+     * @param move The Move the user wants to make
+     * @param user The user which makes the move
+     * @return True if allowed, otherwise false
+     */
+    public boolean isUserAllowedToMakeMove(Move move, User user) {
+
+        //Check token
+        if (move.getUser().getId() != user.getId()) {
+            return false;
+        }
+
+        //Check if in hand
+        if (user.getHandCards().contains(move)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Game updateGameAfterMove(Game game) {
+        /*
+        TODO updateGameAfterMove implementieren
+        - normal: currentPlayer++
+        - reverse: currentPlayer--
+        - double: currentPlayer unverändert, falls erst ein Zug gemacht wurde, sonst currentPlayer++
+        - falls der letzte Move gemacht wurde, muss der currentPlayer auf den User gesetzt werden, der in der nächsten Runde beginnt
+         */
+
+        return game;
     }
 }

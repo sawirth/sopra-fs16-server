@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ public class Round implements Serializable{
 
     @Id
     @GeneratedValue
+    @JsonView(Views.Public.class)
     private Long id;
 
     @Column
@@ -29,29 +31,34 @@ public class Round implements Serializable{
     private RoundType roundType;
 
     @ManyToOne
+    @JsonIgnore
     private Game game;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Extended.class)
     private List<Move> moves;
 
     @Column
     @Enumerated
     @ElementCollection(targetClass = MoveType.class)
-    @JsonView(Views.Public.class)
+    @JsonView(Views.Extended.class)
     private List<MoveType> moveTypes;
 
-    //TODO implement roundfinisher
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonView(Views.Public.class)
+    private RoundFinisher roundFinisher;
 
-    public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes){
+    public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes, RoundFinisher roundFinisher){
         NUMBER_OF_MOVES = numberOfMoves;
         this.game=game;
         this.moveTypes=moveTypes;
         this.roundType=roundType;
+        this.roundFinisher=roundFinisher;
     }
 
     public Round(){
         NUMBER_OF_MOVES=0;
+        moves = new ArrayList<>();
     }
 
     public Game getGame() {
@@ -96,5 +103,13 @@ public class Round implements Serializable{
 
     public void setRoundType(RoundType roundType) {
         this.roundType = roundType;
+    }
+
+    public RoundFinisher getRoundFinisher() {
+        return roundFinisher;
+    }
+
+    public void setRoundFinisher(RoundFinisher roundFinisher) {
+        this.roundFinisher = roundFinisher;
     }
 }

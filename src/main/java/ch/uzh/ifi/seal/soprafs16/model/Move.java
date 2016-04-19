@@ -1,25 +1,42 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 @Entity
-public abstract class Move implements Serializable {
+public class Move implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue
+	@JsonView(Views.Public.class)
 	private Long id;
     
     @ManyToOne
-    @JoinColumn(name="USER_ID")
+    @JoinColumn
+	@JsonView(Views.Internal.class)
     private User user;
+
+	@ManyToOne
+	@JsonView(Views.Internal.class)
+	private Round round;
+
+	@Column
+	@JsonView(Views.Public.class)
+	private CharacterType characterType;
+
+	@Column
+	@JsonView(Views.Public.class)
+	private ActionMoveType actionMoveType;
+
+	@ManyToOne
+	@JsonView(Views.Internal.class)
+	private Game game;
 
 	public Long getId() {
 		return id;
@@ -35,5 +52,41 @@ public abstract class Move implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	public Round getRound() {
+		return round;
+	}
+
+	public void setRound(Round round) {
+		this.round = round;
+	}
+
+	public ActionMoveType getActionMoveType() {
+		return actionMoveType;
+	}
+
+	public void setActionMoveType(ActionMoveType actionMoveType) {
+		this.actionMoveType = actionMoveType;
+	}
+
+	public CharacterType getCharacterType() {
+		return characterType;
+	}
+
+	public void setCharacterType(CharacterType characterType) {
+		this.characterType = characterType;
+	}
+
+	public Game getGame() {
+		return game;
+	}
+
+	public void setGame(Game game) {
+		this.game = game;
 	}
 }
