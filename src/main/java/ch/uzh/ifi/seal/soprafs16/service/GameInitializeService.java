@@ -162,7 +162,6 @@ public class GameInitializeService {
         List<Round> endRounds = new ArrayList<>();
         List<Round> allRounds = new ArrayList<>();
 
-        /* TODO comment out for tests
         normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1,1,2,3,0), new RoundFinisherAngryMarshal()));
 
         normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));
@@ -191,10 +190,7 @@ public class GameInitializeService {
         for(int i=0;i<numberOfRounds-1;i++){
             allRounds.add(normalRounds.get(i));
         }
-        allRounds.add(endRounds.get(0));*/
-
-        //just for tests to have the reverse double etc. as first round
-        allRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1,3,4,0,0), new RoundFinisherHostage()));
+        allRounds.add(endRounds.get(0));
 
         //sets the first player of a round
         for(int i=0;i<allRounds.size();i++){

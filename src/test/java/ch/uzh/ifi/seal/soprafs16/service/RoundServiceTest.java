@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
@@ -77,8 +78,15 @@ public class RoundServiceTest {
         User player2 = new User("Horst", "hh");
         player2.setId(2L);
 
+        Game game = new Game();
+        game.setId(1L);
+        game.getPlayers().add(player);
+        game.getPlayers().add(player2);
+        game.setCurrentPlayer(0);
+
         //User allowed
         Move allowedMove = new Move();
+        allowedMove.setGame(game);
         allowedMove.setUser(player);
 
         Move falseMove = new Move();

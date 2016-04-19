@@ -76,7 +76,7 @@ public class MoveServiceController {
         game = roundService.updateGameAfterMove(game);
 
         if (move.getActionMoveType()== ActionMoveType.DRAW){
-            //TODO add method draw cards 
+            //TODO add method draw cards
         }
 
         gameRepo.save(game);
