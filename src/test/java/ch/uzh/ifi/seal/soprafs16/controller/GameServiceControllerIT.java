@@ -172,7 +172,7 @@ public class GameServiceControllerIT {
 
         //MoveTypes list must not be empty
         for(int i=0;i<rounds.size();i++){
-            Assert.assertThat(rounds.get(i).getMoveType().size(), not(0));
+            Assert.assertThat(rounds.get(i).getMoveTypes().size(), not(0));
         }
 
 

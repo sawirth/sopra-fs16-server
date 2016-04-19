@@ -94,8 +94,8 @@ public class Game implements Serializable {
 		this.currentPlayer = currentPlayer;
 	}
    
-	public User getNextPlayer() {
-		return getPlayers().get((getCurrentPlayer() + 1) % getPlayers().size());
+	public int getNextPlayer() {
+		return (getCurrentPlayer() + 1) % getPlayers().size();
 	}
 
 	public List<Wagon> getTrain() {

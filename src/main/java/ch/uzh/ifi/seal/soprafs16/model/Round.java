@@ -46,6 +46,10 @@ public class Round implements Serializable{
 
     @Column
     @JsonView(Views.Extended.class)
+    private Integer currentMoveType;
+
+    @Column
+    @JsonView(Views.Extended.class)
     private int firstPlayer;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -85,11 +89,11 @@ public class Round implements Serializable{
         this.moves = moves;
     }
 
-    public List<MoveType> getMoveType() {
+    public List<MoveType> getMoveTypes() {
         return moveTypes;
     }
 
-    public void setMoveType(List<MoveType> moveType) {
+    public void setMoveTypes(List<MoveType> moveType) {
         this.moveTypes = moveType;
     }
 
@@ -123,5 +127,13 @@ public class Round implements Serializable{
 
     public void setFirstPlayer(int firstPlayer) {
         this.firstPlayer = firstPlayer;
+    }
+
+    public Integer getCurrentMoveType() {
+        return currentMoveType;
+    }
+
+    public void setCurrentMoveType(Integer currentMoveType) {
+        this.currentMoveType = currentMoveType;
     }
 }
