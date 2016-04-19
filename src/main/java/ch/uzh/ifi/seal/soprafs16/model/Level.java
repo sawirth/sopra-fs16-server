@@ -35,6 +35,7 @@ public class Level implements Serializable{
 
     public Level(){
         users = new ArrayList<>();
+        treasures=new ArrayList<>();
     }
 
     public List<Treasure> getTreasures() {

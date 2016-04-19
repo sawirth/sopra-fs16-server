@@ -27,6 +27,7 @@ public class RoundFinisherTest {
     private RoundFinisherResistance roundFinisherResistance = new RoundFinisherResistance();
     private RoundFinisherHostage roundFinisherHostage = new RoundFinisherHostage();
     private RoundFinisherRevengeMarshal roundFinisherRevengeMarshal = new RoundFinisherRevengeMarshal();
+    private RoundFinisherPickPocketing roundFinisherPickPocketing = new RoundFinisherPickPocketing();
 
     @Test
     public void testRoundFinisherCrane(){
@@ -131,7 +132,23 @@ public class RoundFinisherTest {
 
     }
 
-    //TODO test pickpocketing event
+    @Test
+    public void testRoundFinisherPickPocketing(){
+        Game game = createGame();
+        roundFinisherPickPocketing.finishRound(game);
+        //no user on the lower level had an treasure and is alone
+        for(Wagon wagon: game.getTrain()){
+            for(User user: wagon.getLowerLevel().getUsers()){
+                Assert.assertThat(user.getTreasures().size(), is(1));
+            }
+        }
+        //users on the the first wagon aren't affected since they are together on a level
+        for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
+            Assert.assertTrue(user.getTreasures().size()==1 ||
+                    user.getTreasures().size()==4);
+        }
+
+    }
 
     private Game createGame(){
         Game game = new Game();
@@ -161,6 +178,7 @@ public class RoundFinisherTest {
         Wagon wagon2 = new Wagon(createTreasures(),false);
         wagon2.getLowerLevel().setUsers(users3);
         wagon2.getUpperLevel().setUsers(users4);
+        wagon2.getUpperLevel().setTreasures(createTreasures2());
         train.add(wagon2);
 
         List<User> users5 = new ArrayList<>();
