@@ -22,9 +22,6 @@ public class RoundService {
      * @param player
      */
     public void resetPlayer(User player, Game game) {
-        //Reset shots taken and number of shots to initial values
-        player.setNumberOfShots(6);
-
         //Make sure both deck and hand are empty before adding action moves
         player.getDeckCards().clear();
         player.getHandCards().clear();

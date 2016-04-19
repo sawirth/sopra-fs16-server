@@ -28,9 +28,6 @@ public class RoundServiceTest {
         //Reset player at the beginning of a round
         roundService.resetPlayer(this.player, null);
 
-        //Number of shots must be 6 at the beginning
-        assertThat(player.getNumberOfShots(), is(6));
-
         //In the first round the user should have 10 moves in his deck and no blocker moves
         assertThat(this.player.getDeckCards().size(), is(10));
         assertThat(this.player.getShotsTaken(), is(0));

@@ -132,6 +132,8 @@ public class GameServiceController
                 User u = iter.next();
                 roundService.resetPlayer(u, game);
                 roundService.drawStartCards(u);
+                //Reset shots taken and number of shots to initial values
+                u.setNumberOfShots(6);
             }
 
             game = gameRepo.save(game);

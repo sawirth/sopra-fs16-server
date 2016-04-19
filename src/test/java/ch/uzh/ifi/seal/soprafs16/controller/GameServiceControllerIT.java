@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -185,6 +186,9 @@ public class GameServiceControllerIT {
         ResponseEntity<User> userResponse = template.getForEntity(base + "/users/" + owner.getId(), User.class, new Object());
         Assert.assertThat(userResponse.getBody().getId(), is(owner.getId()));
         Move move = userResponse.getBody().getHandCards().get(0);
+
+        //Number of shots must be 6 at the beginning
+        assertThat(userResponse.getBody().getNumberOfShots(), is(6));
 
         //Then the user posts his move which means that the move is removed from his handCards and put into the list of moves from the round
         template.postForLocation(base + "/moves/" + move.getId() + "?token=" + owner.getToken(), null, new Object());
