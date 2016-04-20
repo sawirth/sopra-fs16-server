@@ -184,39 +184,60 @@ public class GameServiceControllerIT {
         Game game = gameResponse.getBody();
         Assert.assertThat(game.getRounds().get(0).getMoves().isEmpty(), is(true));
 
-        //TODO Test: Second user should not be able to make a move
-        //At the moment the logic for this is not yet implemented
-
-
+        //The second player now tries to make a move which is not possible
+        secondPlayer = getUser(secondPlayer.getId()).getBody();
+        HttpStatus httpStatus = makeMove(secondPlayer.getHandCards().get(0).getId(), secondPlayer.getToken());
+        Assert.assertThat(httpStatus, is(HttpStatus.BAD_REQUEST));
 
         //First we have to get the handCards of the user
-        ResponseEntity<User> userResponse = template.getForEntity(base + "/users/" + owner.getId(), User.class, new Object());
-        Assert.assertThat(userResponse.getBody().getId(), is(owner.getId()));
-        Move move = userResponse.getBody().getHandCards().get(0);
+
+        owner = getUser(owner.getId()).getBody();
+        Move move = owner.getHandCards().get(0);
 
         //Number of shots must be 6 at the beginning
-        assertThat(userResponse.getBody().getNumberOfShots(), is(6));
+        assertThat(owner.getNumberOfShots(), is(6));
 
         //Then the user posts his move which means that the move is removed from his handCards and put into the list of moves from the round
-        template.postForLocation(base + "/moves/" + move.getId() + "?token=" + owner.getToken(), null, new Object());
-        ResponseEntity<Round> roundResponse = template.getForEntity(base + "/rounds/" + game.getRounds().get(0).getId(), Round.class, new Object());
+        httpStatus = makeMove(move.getId(), owner.getToken());
+        Assert.assertThat(httpStatus, is(HttpStatus.OK));
+        ResponseEntity<Round> roundResponse = getRound(game.getRounds().get(0).getId());
         Assert.assertThat(roundResponse.getStatusCode(), is(HttpStatus.OK));
         Assert.assertThat(roundResponse.getBody().getMoves().size(), is(1));
 
         //Check that user now only has 5 cards remaining in his hand
-        userResponse = template.getForEntity(base + "/users/" + owner.getId(), User.class, new Object());
-        Assert.assertThat(userResponse.getBody().getHandCards().size(), is(5));
+        owner = getUser(owner.getId()).getBody();
+        Assert.assertThat(owner.getHandCards().size(), is(5));
 
         //Check getMove in MoveController
-        ResponseEntity<Move> moveResponse = template.getForEntity(base + "/moves/" + move.getId(), Move.class, new Object());
+        ResponseEntity<Move> moveResponse = getMove(move.getId());
         Assert.assertThat(moveResponse.getStatusCode(), is(HttpStatus.OK));
-        moveResponse = template.getForEntity(base + "/moves/1000", Move.class, new Object());
+        moveResponse = getMove(1000L);
         Assert.assertThat(moveResponse.getStatusCode(), is(HttpStatus.NOT_FOUND));
 
-
-        //TODO Second player is now able to make a move
+        //The second player is now able to make a move
+        httpStatus = makeMove(secondPlayer.getHandCards().get(0).getId(), secondPlayer.getToken());
+        Assert.assertThat(httpStatus, is(HttpStatus.OK));
     }
 
+    /*
+    * Helper Methods
+    * TODO: Move to separate helper class
+     */
+    private ResponseEntity<User> getUser(Long userId) {
+        return template.getForEntity(base + "/users/" + userId, User.class, new Object());
+    }
+
+    private ResponseEntity<Move> getMove(Long moveId) {
+        return template.getForEntity(base + "/moves/" + moveId, Move.class, new Object());
+    }
+
+    private ResponseEntity<Round> getRound(Long roundId) {
+        return template.getForEntity(base + "/rounds/" + roundId, Round.class, new Object());
+    }
+
+    private HttpStatus makeMove(Long moveId, String userToken) {
+        return template.postForObject(base + "/moves/" + moveId + "?token=" + userToken, null, HttpStatus.class, new Object());
+    }
 
     private User addUser() {
         User request = new User();
