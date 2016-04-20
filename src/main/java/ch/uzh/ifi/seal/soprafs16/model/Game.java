@@ -51,6 +51,7 @@ public class Game implements Serializable {
 
 	public Game() {
 		this.players = new ArrayList<>();
+		this.rounds = new ArrayList<>();
 		currentRound = 0;
 	}
 
