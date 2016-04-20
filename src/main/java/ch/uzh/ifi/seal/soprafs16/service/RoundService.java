@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Round;
@@ -133,6 +134,11 @@ public class RoundService {
             return false;
         }
 
+        //check if user is the current user
+        if (move.getGame().getPlayers().get(move.getGame().getCurrentPlayer())!=user){
+            return false;
+        }
+
         //Check if in hand
         if (user.getHandCards().contains(move)) {
             return true;
@@ -142,13 +148,50 @@ public class RoundService {
     }
 
     public Game updateGameAfterMove(Game game) {
-        /*
-        TODO updateGameAfterMove implementieren
-        - normal: currentPlayer++
-        - reverse: currentPlayer--
-        - double: currentPlayer unverändert, falls erst ein Zug gemacht wurde, sonst currentPlayer++
-        - falls der letzte Move gemacht wurde, muss der currentPlayer auf den User gesetzt werden, der in der nächsten Runde beginnt
-         */
+
+        Round round = game.getRounds().get(game.getCurrentRound());
+        MoveType moveType = round.getMoveTypes().get(round.getCurrentMoveType());
+
+        //if the current move is a visible moveType
+        if(moveType==MoveType.VISIBLE){
+            game.setCurrentPlayer(game.getNextPlayer());
+        }
+
+        //if the current move is a hidden moveType
+        else if (moveType==MoveType.HIDDEN){
+            game.setCurrentPlayer(game.getNextPlayer());
+        }
+
+        //if the current move is a reverse moveType
+        else if (moveType==MoveType.REVERSE){
+            //sets the current player to the player last in the list
+            game.setCurrentPlayer((game.getCurrentPlayer()+game.getPlayers().size()-1)
+                    % game.getPlayers().size());
+        }
+
+        //if the current move is a double MoveType
+        else if (moveType==MoveType.DOUBLE){
+            //checks if the move before this one was made by the same user
+            //-2 since the move was already shifted to the list of moves in the round
+            if (round.getMoves().get(round.getMoves().size()-2).getUser()
+                    == game.getPlayers().get(game.getCurrentPlayer())) {
+                game.setCurrentPlayer(game.getNextPlayer());
+            }
+        }
+
+        //sets the current MoveType to the next MoveType if the first player is at its turn again
+        //checks if the player made the move before this move in occurrence of a double MoveType
+        if (game.getCurrentPlayer()==round.getFirstPlayer() &&
+                round.getMoves().get(round.getMoves().size()-1).getUser() != game.getPlayers().get(game.getCurrentPlayer())){
+
+            if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
+                //TODO end planning phase
+                // no player is allowed to play a card anymore
+            }
+            else{
+                round.setCurrentMoveType(round.getCurrentMoveType()+1);
+            }
+        }
 
         return game;
     }
