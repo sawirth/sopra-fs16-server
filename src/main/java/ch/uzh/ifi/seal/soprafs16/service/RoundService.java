@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
@@ -114,6 +115,17 @@ public class RoundService {
 
         //Remove the move (pun intended)
         user.getHandCards().remove(i);
+
+        //Set hidden if moveType is currently hidden
+        if (round.getMoveTypes().get(round.getCurrentMoveType()) == MoveType.HIDDEN) {
+            m.setActionMoveType(ActionMoveType.HIDDEN);
+        }
+
+        //Special case for character Ghost: First move is always hidden
+        if (user.getCharacterType() == CharacterType.GHOST &&
+                round.getMoves().size() < move.getGame().getPlayers().size()) {
+            m.setActionMoveType(ActionMoveType.HIDDEN);
+        }
 
         //Add to round
         m.setRound(round);

@@ -1,9 +1,11 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -108,7 +110,9 @@ public class RoundServiceTest {
 
     @Test
     public void testShiftMove() throws Exception {
-        Round round = new Round();
+        List<MoveType> moveTypeList = new ArrayList<>();
+        moveTypeList.add(MoveType.HIDDEN);
+        Round round = new Round(1, null, null, moveTypeList, null);
         Move move = new Move();
         move.setId(1L);
 
@@ -125,6 +129,46 @@ public class RoundServiceTest {
 
         //Since the user only had one handCard, this list must now be empty
         assertThat(user.getHandCards().isEmpty(), is(true));
+    }
+
+    @Test
+    public void testShiftMoveGhost() throws Exception {
+        //Setup
+        Game game = createGame();
+        User player = game.getPlayers().get(0);
+        player.setCharacterType(CharacterType.GHOST);
+        Move move = new Move();
+        move.setActionMoveType(ActionMoveType.HIT);
+        move.setUser(player);
+        move.setGame(game);
+        player.getHandCards().add(move);
+
+        //ShiftMove -> ActionType must change from HIT to HIDDEN
+        roundService.shiftMove(move, game.getRounds().get(0));
+        Assert.assertThat(game.getRounds().get(0).getMoves().get(0).getActionMoveType(), is(ActionMoveType.HIDDEN));
+    }
+
+    @Test
+    public void testShiftMoveHidden() throws Exception {
+        //Setup game
+        Game game = createGame();
+        List<MoveType> moveTypeList = new ArrayList<>();
+        moveTypeList.add(MoveType.HIDDEN);
+        Round round = new Round(1, null, game, moveTypeList, null);
+
+        game.getRounds().clear();
+        game.getRounds().add(round);
+
+        User player = game.getPlayers().get(0);
+        Move move = new Move();
+        move.setUser(player);
+        move.setGame(game);
+        move.setActionMoveType(ActionMoveType.SHOOT);
+        player.getHandCards().add(move);
+
+        roundService.shiftMove(move, round);
+        assertThat(game.getRounds().get(0).getMoves().get(0).getActionMoveType(), is(ActionMoveType.HIDDEN));
+
     }
 
     @Test

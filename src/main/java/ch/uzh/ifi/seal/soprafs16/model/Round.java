@@ -63,6 +63,7 @@ public class Round implements Serializable{
         this.roundType=roundType;
         this.roundFinisher=roundFinisher;
         moves = new ArrayList<>();
+        currentMoveType = 0;
     }
 
     public Round(){
