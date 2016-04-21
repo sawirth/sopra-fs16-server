@@ -76,6 +76,7 @@ public class GameServiceController
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(0);
             game.getPlayers().add(owner);
+            game.addLog(owner.getCharacterType(), "Game created by " + owner.getUsername());
             game = gameRepo.save(game);
 
             logger.info("Game " + game.getId() + " successfully created");
@@ -113,7 +114,7 @@ public class GameServiceController
                 && game.getStatus() == GameStatus.PENDING) {
 
             game.setStatus(GameStatus.RUNNING);
-
+            game.addLog(owner.getCharacterType(), owner.getUsername() + " has started the game");
             //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
@@ -136,6 +137,7 @@ public class GameServiceController
                 u.setNumberOfShots(6);
             }
 
+            game.addLog(game.getPlayers().get(0).getCharacterType(), "It's " + game.getPlayers().get(0).getUsername() + "'s turn");
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
@@ -211,6 +213,7 @@ public class GameServiceController
             player.setCharacterType(allCharacters.get(0));
             game.getPlayers().add(player);
             game.setCurrentPlayer(0);
+            game.addLog(player.getCharacterType(), player.getUsername() + " joined the game");
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
@@ -270,5 +273,17 @@ public class GameServiceController
         }
 
         return new ResponseEntity<>(HttpStatus.MULTI_STATUS);
+    }
+
+
+    @RequestMapping(value = CONTEXT + "/{gameId}/log", method = RequestMethod.GET)
+    public ResponseEntity<List<LogEntry>> getGameLog(@PathVariable Long gameId) {
+        Game game = gameRepo.findOne(gameId);
+
+        if (game != null) {
+            return ResponseEntity.ok(game.getGameLog().getLogEntryList());
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

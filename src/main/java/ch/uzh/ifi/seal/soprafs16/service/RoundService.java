@@ -130,6 +130,7 @@ public class RoundService {
         //Add to round
         m.setRound(round);
         round.getMoves().add(m);
+        move.getGame().addLog(user.getCharacterType(), user.getUsername() + " played a " + move.getActionMoveType() + " card");
     }
 
     /**
@@ -205,6 +206,8 @@ public class RoundService {
             }
         }
 
+        User nextPlayer = game.getPlayers().get(game.getCurrentPlayer());
+        game.addLog(nextPlayer.getCharacterType(), "It's " + nextPlayer.getUsername() + "'s turn");
         return game;
     }
 }

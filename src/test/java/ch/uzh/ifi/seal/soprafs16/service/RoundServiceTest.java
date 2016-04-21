@@ -115,6 +115,7 @@ public class RoundServiceTest {
         Round round = new Round(1, null, null, moveTypeList, null);
         Move move = new Move();
         move.setId(1L);
+        move.setGame(createGame());
 
         User user = new User("Sandro", "sw");
         user.getHandCards().add(move);

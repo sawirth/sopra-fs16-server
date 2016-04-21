@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -10,10 +11,7 @@ import java.util.List;
 
 @Entity
 public class Game implements Serializable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -49,10 +47,19 @@ public class Game implements Serializable {
 	@JsonView(Views.Extended.class)
 	private List<Wagon> train;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonView(Views.Internal.class)
+	private GameLog gameLog;
+
 	public Game() {
 		this.players = new ArrayList<>();
 		this.rounds = new ArrayList<>();
 		currentRound = 0;
+		this.gameLog = new GameLog();
+	}
+
+	public void addLog(CharacterType characterType, String message) {
+		this.gameLog.addLog(characterType, message);
 	}
 
 	public Long getId() {
@@ -121,5 +128,9 @@ public class Game implements Serializable {
 
 	public void setCurrentRound(Integer currentRound) {
 		this.currentRound = currentRound;
+	}
+
+	public GameLog getGameLog() {
+		return gameLog;
 	}
 }
