@@ -72,7 +72,6 @@ public class MoveServiceController {
         Round round = game.getRounds().get(game.getCurrentRound());
         roundService.shiftMove(move, round);
 
-        //TODO implement this method in Roundservice
         game = roundService.updateGameAfterMove(game);
 
         if (move.getActionMoveType()== ActionMoveType.DRAW){
@@ -82,7 +81,7 @@ public class MoveServiceController {
         gameRepo.save(game);
         logger.info("User " + user.getId() + " makes Move " + move.getId() + ": " + move.getActionMoveType());
 
-        //TODO Stop round on last move and execute RoundFinisher
+        //TODO Stop round on last move and start action phase
 
         return HttpStatus.OK;
     }

@@ -1,7 +1,9 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 
+import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import org.springframework.stereotype.Service;
 
@@ -34,4 +36,17 @@ public class UserService {
     }
 
 
+    /**
+     * Returns true if the User is currently in a running or pending game
+     * @param user
+     * @return
+     */
+    public static boolean isInOpenGame(User user) {
+        for (Game game : user.getGames()) {
+            if (game.getStatus() == GameStatus.RUNNING || game.getStatus() == GameStatus.PENDING) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

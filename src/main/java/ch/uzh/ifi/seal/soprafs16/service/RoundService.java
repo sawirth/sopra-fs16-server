@@ -205,4 +205,15 @@ public class RoundService {
         game.addLog(nextPlayer.getCharacterType(), "It's " + nextPlayer.getUsername() + "'s turn");
         return game;
     }
+
+
+    /**
+     * Draws cards from the deck if the user plays a draw move. The maximum of drawn cards is 3.
+     * @param user User
+     */
+    public void drawDeckCards(User user) {
+        for (int i = 0; i < 3 && i <= user.getDeckCards().size(); i++) {
+            user.getHandCards().add(user.getDeckCards().remove(0));
+        }
+    }
 }
