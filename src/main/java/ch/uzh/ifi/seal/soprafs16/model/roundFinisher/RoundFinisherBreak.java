@@ -4,12 +4,9 @@ import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 
-import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by David on 17.04.2016.
- */
+
 public class RoundFinisherBreak extends RoundFinisher{
     @Override
     public void finishRound(Game game) {

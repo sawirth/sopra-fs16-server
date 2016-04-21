@@ -44,6 +44,14 @@ public class Round implements Serializable{
     @JsonView(Views.Extended.class)
     private List<MoveType> moveTypes;
 
+    @Column
+    @JsonView(Views.Extended.class)
+    private Integer currentMoveType;
+
+    @Column
+    @JsonView(Views.Extended.class)
+    private int firstPlayer;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private RoundFinisher roundFinisher;
@@ -54,6 +62,8 @@ public class Round implements Serializable{
         this.moveTypes=moveTypes;
         this.roundType=roundType;
         this.roundFinisher=roundFinisher;
+        moves = new ArrayList<>();
+        currentMoveType = 0;
     }
 
     public Round(){
@@ -81,11 +91,11 @@ public class Round implements Serializable{
         this.moves = moves;
     }
 
-    public List<MoveType> getMoveType() {
+    public List<MoveType> getMoveTypes() {
         return moveTypes;
     }
 
-    public void setMoveType(List<MoveType> moveType) {
+    public void setMoveTypes(List<MoveType> moveType) {
         this.moveTypes = moveType;
     }
 
@@ -111,5 +121,21 @@ public class Round implements Serializable{
 
     public void setRoundFinisher(RoundFinisher roundFinisher) {
         this.roundFinisher = roundFinisher;
+    }
+
+    public int getFirstPlayer() {
+        return firstPlayer;
+    }
+
+    public void setFirstPlayer(int firstPlayer) {
+        this.firstPlayer = firstPlayer;
+    }
+
+    public Integer getCurrentMoveType() {
+        return currentMoveType;
+    }
+
+    public void setCurrentMoveType(Integer currentMoveType) {
+        this.currentMoveType = currentMoveType;
     }
 }

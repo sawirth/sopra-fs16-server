@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
@@ -74,7 +75,15 @@ public class MoveServiceController {
         //TODO implement this method in Roundservice
         game = roundService.updateGameAfterMove(game);
 
+        if (move.getActionMoveType()== ActionMoveType.DRAW){
+            //TODO add method draw cards
+        }
+
         gameRepo.save(game);
+        logger.info("User " + user.getId() + " makes Move " + move.getId() + ": " + move.getActionMoveType());
+
+        //TODO Stop round on last move and execute RoundFinisher
+
         return HttpStatus.OK;
     }
 }

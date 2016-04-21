@@ -1,11 +1,16 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Round;
-import ch.uzh.ifi.seal.soprafs16.model.User;
+import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -27,9 +32,6 @@ public class RoundServiceTest {
 
         //Reset player at the beginning of a round
         roundService.resetPlayer(this.player, null);
-
-        //Number of shots must be 6 at the beginning
-        assertThat(player.getNumberOfShots(), is(6));
 
         //In the first round the user should have 10 moves in his deck and no blocker moves
         assertThat(this.player.getDeckCards().size(), is(10));
@@ -80,8 +82,15 @@ public class RoundServiceTest {
         User player2 = new User("Horst", "hh");
         player2.setId(2L);
 
+        Game game = new Game();
+        game.setId(1L);
+        game.getPlayers().add(player);
+        game.getPlayers().add(player2);
+        game.setCurrentPlayer(0);
+
         //User allowed
         Move allowedMove = new Move();
+        allowedMove.setGame(game);
         allowedMove.setUser(player);
 
         Move falseMove = new Move();
@@ -101,9 +110,12 @@ public class RoundServiceTest {
 
     @Test
     public void testShiftMove() throws Exception {
-        Round round = new Round();
+        List<MoveType> moveTypeList = new ArrayList<>();
+        moveTypeList.add(MoveType.HIDDEN);
+        Round round = new Round(1, null, null, moveTypeList, null);
         Move move = new Move();
         move.setId(1L);
+        move.setGame(createGame());
 
         User user = new User("Sandro", "sw");
         user.getHandCards().add(move);
@@ -118,5 +130,116 @@ public class RoundServiceTest {
 
         //Since the user only had one handCard, this list must now be empty
         assertThat(user.getHandCards().isEmpty(), is(true));
+    }
+
+    @Test
+    public void testShiftMoveGhost() throws Exception {
+        //Setup
+        Game game = createGame();
+        User player = game.getPlayers().get(0);
+        player.setCharacterType(CharacterType.GHOST);
+        Move move = new Move();
+        move.setActionMoveType(ActionMoveType.HIT);
+        move.setUser(player);
+        move.setGame(game);
+        player.getHandCards().add(move);
+
+        //ShiftMove -> ActionType must change from HIT to HIDDEN
+        roundService.shiftMove(move, game.getRounds().get(0));
+        Assert.assertThat(game.getRounds().get(0).getMoves().get(0).getActionMoveType(), is(ActionMoveType.HIDDEN));
+    }
+
+    @Test
+    public void testShiftMoveHidden() throws Exception {
+        //Setup game
+        Game game = createGame();
+        List<MoveType> moveTypeList = new ArrayList<>();
+        moveTypeList.add(MoveType.HIDDEN);
+        Round round = new Round(1, null, game, moveTypeList, null);
+
+        game.getRounds().clear();
+        game.getRounds().add(round);
+
+        User player = game.getPlayers().get(0);
+        Move move = new Move();
+        move.setUser(player);
+        move.setGame(game);
+        move.setActionMoveType(ActionMoveType.SHOOT);
+        player.getHandCards().add(move);
+
+        roundService.shiftMove(move, round);
+        assertThat(game.getRounds().get(0).getMoves().get(0).getActionMoveType(), is(ActionMoveType.HIDDEN));
+
+    }
+
+    @Test
+    public void testUpdateGameAfterMove(){
+        Game game = createGame();
+        Round round = game.getRounds().get(0);
+
+        //first three moves are made of MoveType visible
+        for (int i=0;i<3;i++){
+            makeMove(game);
+            assertThat(game.getCurrentPlayer(), is((i+1)%3));
+        }
+        assertThat(round.getCurrentMoveType(), is(1));
+
+        //next six moves are made of MoveType double
+        for (int i=0;i<3;i++){
+            makeMove(game);
+            assertThat(game.getCurrentPlayer(), is(i));
+            makeMove(game);
+            assertThat(game.getCurrentPlayer(), is((i+1)%3));
+        }
+        assertThat(round.getCurrentMoveType(), is(2));
+
+        //next three moves are made of MoveType reverse
+        makeMove(game);
+        assertThat(game.getCurrentPlayer(), is(2));
+        makeMove(game);
+        assertThat(game.getCurrentPlayer(), is(1));
+        makeMove(game);
+        assertThat(game.getCurrentPlayer(), is(0));
+
+        //end of planning phase so currentMoveType doesn't change anymore
+        assertThat(round.getCurrentMoveType(), is(2));
+    }
+
+    private void makeMove(Game game){
+        Round round = game.getRounds().get(0);
+        Move move = new Move();
+        move.setUser(game.getPlayers().get(game.getCurrentPlayer()));
+        round.getMoves().add(move);
+        roundService.updateGameAfterMove(game);
+    }
+
+    private Game createGame(){
+        Game game = new Game();
+        game.setId(1L);
+
+        List<MoveType> moveTypeList = new ArrayList<>();
+        moveTypeList.add(MoveType.VISIBLE);
+        moveTypeList.add(MoveType.DOUBLE);
+        moveTypeList.add(MoveType.REVERSE);
+
+        Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisher());
+        round.setFirstPlayer(0);
+        round.setCurrentMoveType(0);
+
+        User player = new User("Sandro", "sw");
+        player.setId(1L);
+        User player2 = new User("Horst", "hh");
+        player2.setId(2L);
+        User player3 = new User("Horst", "h2");
+        player3.setId(3L);
+
+        game.getPlayers().add(player);
+        game.getPlayers().add(player2);
+        game.getPlayers().add(player3);
+        game.setCurrentPlayer(0);
+        game.setCurrentRound(0);
+        game.getRounds().add(round);
+
+        return game;
     }
 }

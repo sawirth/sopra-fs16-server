@@ -76,11 +76,12 @@ public class GameServiceController
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(0);
             game.getPlayers().add(owner);
+            game.addLog(owner.getCharacterType(), "Game created by " + owner.getUsername());
             game = gameRepo.save(game);
 
             logger.info("Game " + game.getId() + " successfully created");
             return ResponseEntity.ok(game);
-        } else if (owner.getGames().size() > 0) {
+        } else if (owner.getGames().isEmpty()) {
             logger.info("User already created or joined a game");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         } else {
@@ -94,8 +95,7 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        Game game = gameRepo.findOne(gameId);
-        return game;
+        return gameRepo.findOne(gameId);
     }
 
 
@@ -113,7 +113,7 @@ public class GameServiceController
                 && game.getStatus() == GameStatus.PENDING) {
 
             game.setStatus(GameStatus.RUNNING);
-
+            game.addLog(owner.getCharacterType(), owner.getUsername() + " has started the game");
             //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
@@ -132,8 +132,11 @@ public class GameServiceController
                 User u = iter.next();
                 roundService.resetPlayer(u, game);
                 roundService.drawStartCards(u);
+                //Reset shots taken and number of shots to initial values
+                u.setNumberOfShots(6);
             }
 
+            game.addLog(game.getPlayers().get(0).getCharacterType(), "It's " + game.getPlayers().get(0).getUsername() + "'s turn");
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
@@ -158,7 +161,7 @@ public class GameServiceController
 
         if (game.getOwner().equals(owner.getUsername())) {
             game.setStatus(GameStatus.FINISHED);
-            game = gameRepo.save(game);
+            gameRepo.save(game);
             logger.info("Game " + gameId + " finished");
             return HttpStatus.OK;
         } else {
@@ -209,6 +212,7 @@ public class GameServiceController
             player.setCharacterType(allCharacters.get(0));
             game.getPlayers().add(player);
             game.setCurrentPlayer(0);
+            game.addLog(player.getCharacterType(), player.getUsername() + " joined the game");
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
@@ -268,5 +272,17 @@ public class GameServiceController
         }
 
         return new ResponseEntity<>(HttpStatus.MULTI_STATUS);
+    }
+
+
+    @RequestMapping(value = CONTEXT + "/{gameId}/log", method = RequestMethod.GET)
+    public ResponseEntity<List<LogEntry>> getGameLog(@PathVariable Long gameId) {
+        Game game = gameRepo.findOne(gameId);
+
+        if (game != null) {
+            return ResponseEntity.ok(game.getGameLog().getLogEntryList());
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

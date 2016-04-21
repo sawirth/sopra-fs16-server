@@ -9,4 +9,5 @@ public enum ActionMoveType {
     , HORIZONTAL
     , VERTICAL
     , SWITCH_MARSHAL
+    , HIDDEN
 }

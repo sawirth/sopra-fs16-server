@@ -1,7 +1,11 @@
 package ch.uzh.ifi.seal.soprafs16.model.roundFinisher;
 
-import ch.uzh.ifi.seal.soprafs16.model.Game;
-import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by David on 17.04.2016.
@@ -9,6 +13,35 @@ import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 public class RoundFinisherPickPocketing extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
-        //TODO implement method so that user can choose one moneybag, if he/she is alone in/on wagon
+        for(Wagon wagon: game.getTrain()){
+            if(wagon.getLowerLevel().getUsers().size()==1){
+                chooseRandomMoneybag(wagon.getLowerLevel());
+            }
+            if(wagon.getUpperLevel().getUsers().size()==1){
+                chooseRandomMoneybag(wagon.getUpperLevel());
+            }
+        }
+    }
+
+    /**
+     * chooses a random MoneyBag on the level and adds it to the user
+     * @param level
+     * @return
+     */
+    private void chooseRandomMoneybag(Level level){
+        List<Treasure> moneyBags = new ArrayList<>();
+        if(!level.getTreasures().isEmpty()){
+            for(Treasure treasure: level.getTreasures()){
+                if(treasure.getType()==TreasureType.MONEYBAG){
+                    moneyBags.add(treasure);
+                }
+            }
+            Collections.shuffle(moneyBags);
+            if(!moneyBags.isEmpty()){
+                //adds the moneybag to the only user on the level
+                level.getUsers().get(0).getTreasures().add(moneyBags.get(0));
+                level.getTreasures().remove(moneyBags.get(0));
+            }
+        }
     }
 }

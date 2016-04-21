@@ -192,6 +192,12 @@ public class GameInitializeService {
         }
         allRounds.add(endRounds.get(0));
 
+        //sets the first player of a round
+        for(int i=0;i<allRounds.size();i++){
+            allRounds.get(i).setFirstPlayer((i+game.getPlayers().size()) % game.getPlayers().size());
+            allRounds.get(i).setCurrentMoveType(0);
+        }
+
         return allRounds;
     }
 
@@ -232,6 +238,9 @@ public class GameInitializeService {
                     moveTypes.add(MoveType.DOUBLE);
                     break;
                 case 0:
+                    break;
+
+                default:
                     break;
             }
         }

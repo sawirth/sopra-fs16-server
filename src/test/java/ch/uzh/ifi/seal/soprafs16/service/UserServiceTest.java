@@ -12,7 +12,7 @@ public class UserServiceTest {
 
     @Test
     public void testLogin() throws Exception {
-        User user = new User();
+        User user = new User("sandro", "sw");
         user.setStatus(UserStatus.OFFLINE);
         UserService.login(user);
         assertEquals(UserStatus.ONLINE, user.getStatus());
@@ -21,7 +21,7 @@ public class UserServiceTest {
 
     @Test
     public void testLogout() throws Exception {
-        User user = new User();
+        User user = new User("sandro", "sw");
         user.setStatus(UserStatus.ONLINE);
         UserService.logout(user);
         assertEquals(UserStatus.OFFLINE, user.getStatus());
