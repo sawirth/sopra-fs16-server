@@ -72,6 +72,8 @@ public class User implements Serializable {
 	@JsonView(Views.Internal.class)
 	private int shotsTaken;
 
+	public User() {
+	}
 
 	public User(String name, String username) {
 		this.name = name;
@@ -83,9 +85,6 @@ public class User implements Serializable {
 		treasures = new ArrayList<>();
 		deckCards = new ArrayList<>();
 		handCards = new ArrayList<>();
-	}
-
-	public User() {
 	}
 
 	public Long getId() {

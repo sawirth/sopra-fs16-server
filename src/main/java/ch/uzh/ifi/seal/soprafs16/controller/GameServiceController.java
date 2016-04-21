@@ -81,7 +81,7 @@ public class GameServiceController
 
             logger.info("Game " + game.getId() + " successfully created");
             return ResponseEntity.ok(game);
-        } else if (owner.getGames().size() > 0) {
+        } else if (owner.getGames().isEmpty()) {
             logger.info("User already created or joined a game");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         } else {
@@ -95,8 +95,7 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public Game getGame(@PathVariable Long gameId) {
         logger.info("getGame: " + gameId);
-        Game game = gameRepo.findOne(gameId);
-        return game;
+        return gameRepo.findOne(gameId);
     }
 
 
@@ -162,7 +161,7 @@ public class GameServiceController
 
         if (game.getOwner().equals(owner.getUsername())) {
             game.setStatus(GameStatus.FINISHED);
-            game = gameRepo.save(game);
+            gameRepo.save(game);
             logger.info("Game " + gameId + " finished");
             return HttpStatus.OK;
         } else {

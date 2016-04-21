@@ -240,7 +240,7 @@ public class GameServiceControllerIT {
     }
 
     private User addUser() {
-        User request = new User();
+        User request = new User("sandro", "sw");
         request.setName(String.valueOf(Math.random()));
         request.setUsername(String.valueOf(Math.random()));
 

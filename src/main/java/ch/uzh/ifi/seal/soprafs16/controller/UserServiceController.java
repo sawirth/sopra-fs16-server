@@ -50,16 +50,18 @@ public class UserServiceController
     public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
-        user.setStatus(UserStatus.ONLINE);
-        user.setToken(UUID.randomUUID().toString());
+        User u = user;
+        u.setStatus(UserStatus.ONLINE);
+        u.setToken(UUID.randomUUID().toString());
         try {
-            user = userRepo.save(user);
+            u = userRepo.save(u);
         } catch (DataIntegrityViolationException e) {
-            logger.error("Username " + user.getUsername() + " already exists");
-            return ResponseEntity.status(409).body(user);
+            logger.error("Username " + u.getUsername() + " already exists");
+            logger.error(e.getLocalizedMessage());
+            return ResponseEntity.status(409).body(u);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(u);
     }
 
 
@@ -104,7 +106,7 @@ public class UserServiceController
         if (user != null) {
             return ResponseEntity.ok(userRepo.save(UserService.logout(user)));
         } else {
-            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

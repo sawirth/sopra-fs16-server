@@ -239,6 +239,9 @@ public class GameInitializeService {
                     break;
                 case 0:
                     break;
+
+                default:
+                    break;
             }
         }
         return moveTypes;

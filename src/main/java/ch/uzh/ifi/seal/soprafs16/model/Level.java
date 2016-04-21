@@ -4,8 +4,8 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 

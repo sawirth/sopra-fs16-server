@@ -1,8 +1,8 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity

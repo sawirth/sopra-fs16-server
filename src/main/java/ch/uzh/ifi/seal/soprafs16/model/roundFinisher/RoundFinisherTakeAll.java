@@ -4,10 +4,6 @@ import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
-import ch.uzh.ifi.seal.soprafs16.model.Wagon;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by David on 16.04.2016.

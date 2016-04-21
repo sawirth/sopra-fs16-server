@@ -49,7 +49,7 @@ public class UserServiceControllerIT {
     public void testCreateUserSuccess() {
         List<User> usersBefore = template.getForObject(base + "/users", List.class);
 
-        User request = new User();
+        User request = new User("sandro", "sw");
         request.setName("Mike Meyers");
         request.setUsername("mm");
         HttpEntity<User> httpEntity = new HttpEntity<>(request);
@@ -67,7 +67,7 @@ public class UserServiceControllerIT {
     @Test
     public void testLoginLogout() {
         //Create new user on server
-        User request = new User();
+        User request = new User("sandro", "sw");
         request.setName("Horst");
         request.setUsername("horst");
         HttpEntity<User> httpEntity = new HttpEntity<>(request);

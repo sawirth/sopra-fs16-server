@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 @Service("roundService")
@@ -153,11 +152,7 @@ public class RoundService {
         }
 
         //Check if in hand
-        if (user.getHandCards().contains(move)) {
-            return true;
-        } else {
-            return false;
-        }
+        return user.getHandCards().contains(move);
     }
 
     public Game updateGameAfterMove(Game game) {

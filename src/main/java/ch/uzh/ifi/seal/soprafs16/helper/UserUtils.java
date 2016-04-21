@@ -6,6 +6,9 @@ import ch.uzh.ifi.seal.soprafs16.model.User;
 
 public class UserUtils {
 
+    private UserUtils() {
+    }
+
     /**
      * Returns true if the User is currently in a running or pending game
      * @param user
