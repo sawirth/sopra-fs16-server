@@ -3,9 +3,10 @@ package ch.uzh.ifi.seal.soprafs16.model;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class LogEntry {
+public class LogEntry implements Serializable {
     @Id
     @GeneratedValue
     private Long id;

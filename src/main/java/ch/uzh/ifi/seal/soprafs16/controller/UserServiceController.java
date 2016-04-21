@@ -57,7 +57,7 @@ public class UserServiceController
             u = userRepo.save(u);
         } catch (DataIntegrityViolationException e) {
             logger.error("Username " + u.getUsername() + " already exists");
-            logger.error(e.getLocalizedMessage());
+            logger.info(e.getMessage());
             return ResponseEntity.status(409).body(u);
         }
 
