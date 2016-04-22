@@ -12,8 +12,8 @@ import java.util.UUID;
 @Service("userService")
 public class UserService {
 
-    private UserService() {
-    }
+    //private UserService() {
+    //}
 
     public static User login(User user) {
         if (user != null) {
@@ -30,6 +30,17 @@ public class UserService {
             user.setToken(UUID.randomUUID().toString());
             user.setStatus(UserStatus.OFFLINE);
             return user;
+        }
+
+        return null;
+    }
+
+    public Game findGameOfUser(User user){
+        for (int i=0; i<user.getGames().size(); i++) {
+            Game game = user.getGames().get(0);
+            if (game.getStatus() == GameStatus.RUNNING) {
+                return game;
+            }
         }
 
         return null;
