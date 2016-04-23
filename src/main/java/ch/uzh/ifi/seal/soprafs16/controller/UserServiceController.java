@@ -1,10 +1,12 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
-import ch.uzh.ifi.seal.soprafs16.model.User;
-import ch.uzh.ifi.seal.soprafs16.model.Views;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
+import ch.uzh.ifi.seal.soprafs16.service.RoundService;
 import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
@@ -30,7 +32,16 @@ public class UserServiceController
     static final String    CONTEXT = "/users";
 
     @Autowired
+    private UserService userService = new UserService();
+
+    @Autowired
+    private RoundService roundService = new RoundService();
+
+    @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private GameRepository gameRepo;
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
@@ -123,6 +134,44 @@ public class UserServiceController
             return ResponseEntity.ok(user);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/draw")
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(Views.Extended.class)
+    public ResponseEntity<User> drawCards(@RequestParam("token") String userToken) {
+        User user = userRepo.findByToken(userToken);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Game game = userService.findRunningGame(user);
+
+        if (game == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (game.getPlayers().get(game.getCurrentPlayer()) != user){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       //User is only allowed to draw cards if it's his turn
+        }
+
+        if (user.getDeckCards().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);      //User can only draw if he has at least one card in his deck
+        } else {
+            Move move = new Move();
+            move.setUser(user);
+            move.setCharacterType(user.getCharacterType());
+            move.setActionMoveType(ActionMoveType.DRAW);
+            roundService.drawDeckCards(user);
+
+            Round round = game.getRounds().get(game.getCurrentRound());
+            round.getMoves().add(move);
+            game.addLog(user.getCharacterType(), user.getUsername() + " has drawn cards");
+            roundService.updateGameAfterMove(game);
+            gameRepo.save(game);
+            logger.info("User " + user.getId() + " has drawn cards");
+            return ResponseEntity.ok(user);
         }
     }
 }

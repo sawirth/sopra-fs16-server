@@ -8,14 +8,11 @@ import ch.uzh.ifi.seal.soprafs16.model.User;
 
 import java.util.List;
 
-/**
- * Created by David on 17.04.2016.
- */
 public class RoundFinisherRevengeMarshal extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
         int i=0;
-        while(game.getTrain().get(i).hasMarshal()==false){
+        while(!game.getTrain().get(i).hasMarshal()){
             i++;
         }
         for(User user: game.getTrain().get(i).getUpperLevel().getUsers()){

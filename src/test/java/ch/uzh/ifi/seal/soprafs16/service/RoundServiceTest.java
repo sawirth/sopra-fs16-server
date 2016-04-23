@@ -205,6 +205,24 @@ public class RoundServiceTest {
         assertThat(round.getCurrentMoveType(), is(2));
     }
 
+    @Test
+    public void testDrawCardsMove() throws Exception {
+        User user = new User("sandro", "sw");
+        for (int i = 0; i < 5; i++) {
+            user.getDeckCards().add(new Move());
+        }
+
+        //The user has now 5 cards in his deck and makes a draw move which means he can draw 3 cards
+        roundService.drawDeckCards(user);
+        assertThat(user.getHandCards().size(), is(3));
+        assertThat(user.getDeckCards().size(), is(2));
+
+        //Now if the user again makes a draw move he can only draw two more cards
+        roundService.drawDeckCards(user);
+        assertThat(user.getHandCards().size(), is(5));
+        assertThat(user.getDeckCards().isEmpty(), is(true));
+    }
+
     private void makeMove(Game game){
         Round round = game.getRounds().get(0);
         Move move = new Move();

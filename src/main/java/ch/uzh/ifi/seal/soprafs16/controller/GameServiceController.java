@@ -3,13 +3,13 @@ package ch.uzh.ifi.seal.soprafs16.controller;
 import ch.uzh.ifi.seal.soprafs16.GameConstants;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
-import ch.uzh.ifi.seal.soprafs16.helper.UserUtils;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
 import ch.uzh.ifi.seal.soprafs16.service.RoundService;
+import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if (!UserUtils.isInOpenGame(owner)) {
+        if (!UserService.isInOpenGame(owner)) {
             owner.setCharacterType(CharacterType.CHEYENNE);
             game.setOwner(owner.getUsername());
             game.setStatus(GameStatus.PENDING);
@@ -197,7 +197,7 @@ public class GameServiceController
         if (game == null || player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && !UserUtils.isInOpenGame(player)) {
+        if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && !UserService.isInOpenGame(player)) {
             List<CharacterType> allCharacters = new ArrayList<>();
             allCharacters.add(CharacterType.BELLE);
             allCharacters.add(CharacterType.DOC);

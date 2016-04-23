@@ -217,6 +217,11 @@ public class GameServiceControllerIT {
         //The second player is now able to make a move
         httpStatus = makeMove(secondPlayer.getHandCards().get(0).getId(), secondPlayer.getToken());
         Assert.assertThat(httpStatus, is(HttpStatus.OK));
+
+        //Test of drawMove: user should have 3 more cards after draw
+        int cards = owner.getHandCards().size();
+        owner = drawCards(owner.getToken()).getBody();
+        assertThat(owner.getHandCards().size(), is(cards + 3));
     }
 
     /*
@@ -237,6 +242,10 @@ public class GameServiceControllerIT {
 
     private HttpStatus makeMove(Long moveId, String userToken) {
         return template.postForObject(base + "/moves/" + moveId + "?token=" + userToken, null, HttpStatus.class, new Object());
+    }
+
+    private ResponseEntity<User> drawCards(String userToken) {
+        return template.postForEntity(base + "/users/draw?token=" + userToken, null, User.class);
     }
 
     private User addUser() {
