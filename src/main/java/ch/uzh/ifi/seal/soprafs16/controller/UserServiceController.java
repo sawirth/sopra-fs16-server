@@ -62,7 +62,7 @@ public class UserServiceController
     public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
-        User u = user;
+        User u = new User(user.getName(), user.getUsername());
         u.setStatus(UserStatus.ONLINE);
         u.setToken(UUID.randomUUID().toString());
         try {

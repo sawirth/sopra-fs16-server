@@ -2,7 +2,6 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

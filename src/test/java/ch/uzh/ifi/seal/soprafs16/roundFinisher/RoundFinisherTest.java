@@ -2,16 +2,18 @@ package ch.uzh.ifi.seal.soprafs16.roundFinisher;
 
 import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
-import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
+import ch.uzh.ifi.seal.soprafs16.model.Treasure;
+import ch.uzh.ifi.seal.soprafs16.model.User;
+import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.List;
-import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests all RoundFinishers and their finishRound methods

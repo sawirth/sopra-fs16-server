@@ -8,9 +8,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class HitMoveTest {
 
