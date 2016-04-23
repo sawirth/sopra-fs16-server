@@ -182,8 +182,29 @@ public class User extends Target implements Serializable {
 			return false;
 		}
 
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+
 		final User otherUser = (User) obj;
 
 		return super.getId() == otherUser.getId();
+	}
+
+	@Override
+	public int hashCode() {
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (username != null ? username.hashCode() : 0);
+		result = 31 * result + (token != null ? token.hashCode() : 0);
+		result = 31 * result + (status != null ? status.hashCode() : 0);
+		result = 31 * result + (characterType != null ? characterType.hashCode() : 0);
+		result = 31 * result + (games != null ? games.hashCode() : 0);
+		result = 31 * result + (moves != null ? moves.hashCode() : 0);
+		result = 31 * result + (treasures != null ? treasures.hashCode() : 0);
+		result = 31 * result + (deckCards != null ? deckCards.hashCode() : 0);
+		result = 31 * result + (handCards != null ? handCards.hashCode() : 0);
+		result = 31 * result + numberOfShots;
+		result = 31 * result + shotsTaken;
+		return result;
 	}
 }

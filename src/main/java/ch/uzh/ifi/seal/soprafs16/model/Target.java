@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "targetType", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "target")
 @JsonDeserialize(as = User.class)
-public abstract class Target {
+public abstract class Target implements Serializable {
 
     @Id
     @GeneratedValue
