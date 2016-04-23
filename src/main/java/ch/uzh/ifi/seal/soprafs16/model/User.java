@@ -2,8 +2,10 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,31 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class User implements Serializable {
-	
-	/**
-	 * 
-	 */
+@DiscriminatorValue(value = "user")
+public class User extends Target implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue
-	@JsonView(Views.Public.class)
-	private Long id;
-	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@JsonView(Views.Public.class)
 	private String name;
 	
-	@Column(nullable = false, unique = true)
+	@Column(nullable = true, unique = true)
 	@JsonView(Views.Public.class)
 	private String username;
 	
-	@Column(nullable = false, unique = true)
+	@Column(nullable = true, unique = true)
 	@JsonView(Views.Extended.class)
 	private String token;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@JsonView(Views.Public.class)
 	private UserStatus status;
 
@@ -85,14 +80,6 @@ public class User implements Serializable {
 		treasures = new ArrayList<>();
 		deckCards = new ArrayList<>();
 		handCards = new ArrayList<>();
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -189,5 +176,16 @@ public class User implements Serializable {
 
 	public void setHandCards(List<Move> handCards) {
 		this.handCards = handCards;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		final User otherUser = (User) obj;
+
+		return super.getId() == otherUser.getId();
 	}
 }

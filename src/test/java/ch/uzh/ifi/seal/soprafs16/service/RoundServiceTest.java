@@ -5,6 +5,8 @@ import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
+import ch.uzh.ifi.seal.soprafs16.model.moves.VerticalMove;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,11 +91,11 @@ public class RoundServiceTest {
         game.setCurrentPlayer(0);
 
         //User allowed
-        Move allowedMove = new Move();
+        Move allowedMove = new HorizontalMove();
         allowedMove.setGame(game);
         allowedMove.setUser(player);
 
-        Move falseMove = new Move();
+        Move falseMove = new VerticalMove();
         allowedMove.setUser(player);
         player.getHandCards().add(falseMove);
 
@@ -113,7 +115,7 @@ public class RoundServiceTest {
         List<MoveType> moveTypeList = new ArrayList<>();
         moveTypeList.add(MoveType.HIDDEN);
         Round round = new Round(1, null, null, moveTypeList, null);
-        Move move = new Move();
+        Move move = new HorizontalMove();
         move.setId(1L);
         move.setGame(createGame());
 
@@ -138,7 +140,7 @@ public class RoundServiceTest {
         Game game = createGame();
         User player = game.getPlayers().get(0);
         player.setCharacterType(CharacterType.GHOST);
-        Move move = new Move();
+        Move move = new HorizontalMove();
         move.setActionMoveType(ActionMoveType.HIT);
         move.setUser(player);
         move.setGame(game);
@@ -161,7 +163,7 @@ public class RoundServiceTest {
         game.getRounds().add(round);
 
         User player = game.getPlayers().get(0);
-        Move move = new Move();
+        Move move = new HorizontalMove();
         move.setUser(player);
         move.setGame(game);
         move.setActionMoveType(ActionMoveType.SHOOT);
@@ -209,7 +211,7 @@ public class RoundServiceTest {
     public void testDrawCardsMove() throws Exception {
         User user = new User("sandro", "sw");
         for (int i = 0; i < 5; i++) {
-            user.getDeckCards().add(new Move());
+            user.getDeckCards().add(new HorizontalMove());
         }
 
         //The user has now 5 cards in his deck and makes a draw move which means he can draw 3 cards
@@ -225,7 +227,7 @@ public class RoundServiceTest {
 
     private void makeMove(Game game){
         Round round = game.getRounds().get(0);
-        Move move = new Move();
+        Move move = new HorizontalMove();
         move.setUser(game.getPlayers().get(game.getCurrentPlayer()));
         round.getMoves().add(move);
         roundService.updateGameAfterMove(game);

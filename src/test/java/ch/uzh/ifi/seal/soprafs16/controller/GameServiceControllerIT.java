@@ -139,7 +139,7 @@ public class GameServiceControllerIT {
 
         //First wagon must have Cashbox as the only treasure element
         Assert.assertThat(train.get(0).getLowerLevel().getTreasures().size(), is(1));
-        Assert.assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
+        Assert.assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getTreasureType(), is(TreasureType.CASHBOX));
 
         //Test rounds
         List<Round> rounds =gameResponse.getBody().getRounds();

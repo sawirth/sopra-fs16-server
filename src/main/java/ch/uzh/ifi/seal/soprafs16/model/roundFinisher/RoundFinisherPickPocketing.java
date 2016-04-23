@@ -28,7 +28,7 @@ public class RoundFinisherPickPocketing extends RoundFinisher{
         List<Treasure> moneyBags = new ArrayList<>();
         if(!level.getTreasures().isEmpty()){
             for(Treasure treasure: level.getTreasures()){
-                if(treasure.getType()==TreasureType.MONEYBAG){
+                if(treasure.getTreasureType()==TreasureType.MONEYBAG){
                     moneyBags.add(treasure);
                 }
             }

@@ -1,32 +1,30 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-public class Treasure implements Serializable {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+@DiscriminatorValue(value = "treasure")
+@JsonDeserialize(as = Treasure.class)
+public class Treasure extends Target implements Serializable {
 
     @Column
     @JsonView(Views.Internal.class)
     private int value;
 
     @Column
+    @Enumerated
     @JsonView(Views.Public.class)
-    private TreasureType type;
+    private TreasureType treasureType;
 
-    public Treasure(int value, TreasureType type){
+    public Treasure(int value, TreasureType treasureType){
         this.value = value;
-        this.type = type;
+        this.treasureType = treasureType;
     }
 
     public Treasure(){
@@ -40,19 +38,11 @@ public class Treasure implements Serializable {
         this.value = value;
     }
 
-    public TreasureType getType() {
-        return type;
+    public TreasureType getTreasureType() {
+        return treasureType;
     }
 
-    public void setType(TreasureType type) {
-        this.type = type;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setTreasureType(TreasureType treasureType) {
+        this.treasureType = treasureType;
     }
 }

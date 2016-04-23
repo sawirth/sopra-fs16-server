@@ -2,13 +2,21 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
+import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
-public class Move implements Serializable {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = "move")
+@JsonDeserialize(as = HorizontalMove.class)
+public abstract class Move implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -37,6 +45,14 @@ public class Move implements Serializable {
 	@ManyToOne
 	@JsonView(Views.Internal.class)
 	private Game game;
+
+	@OneToMany
+	@JsonView(Views.Extended.class)
+	private List<Target> possibleTargets;
+
+	@OneToOne
+	@JsonView(Views.Extended.class)
+	private Target target;
 
 	public Long getId() {
 		return id;
@@ -89,4 +105,24 @@ public class Move implements Serializable {
 	public void setGame(Game game) {
 		this.game = game;
 	}
+
+	public List<Target> getPossibleTargets() {
+		return possibleTargets;
+	}
+
+	public void setPossibleTargets(List<Target> possibleTargets) {
+		this.possibleTargets = possibleTargets;
+	}
+
+	public Target getTarget() {
+		return target;
+	}
+
+	public void setTarget(Target target) {
+		this.target = target;
+	}
+
+	public abstract void executeAction();
+
+	public abstract List<Target> calculateTargets();
 }
