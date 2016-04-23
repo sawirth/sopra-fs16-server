@@ -137,7 +137,7 @@ public class UserServiceController
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/draw")
+    @RequestMapping(method = RequestMethod.POST, value = "/draw")
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Views.Extended.class)
     public ResponseEntity<User> drawCards(@RequestParam("token") String userToken) {
@@ -148,9 +148,12 @@ public class UserServiceController
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if (game.getPlayers().get(game.getCurrentPlayer()) != user){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       //User is only allowed to draw cards if it's his turn
         }
-        else {
+
+        if (user.getDeckCards().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);      //User can only draw if he has at least one card in his deck
+        } else {
             Move move = new Move();
             move.setUser(user);
             move.setCharacterType(user.getCharacterType());
@@ -159,9 +162,10 @@ public class UserServiceController
 
             Round round = game.getRounds().get(game.getCurrentRound());
             round.getMoves().add(move);
+            game.addLog(user.getCharacterType(), user.getUsername() + " has drawn cards");
             roundService.updateGameAfterMove(game);
-
             gameRepo.save(game);
+            logger.info("User " + user.getId() + " has drawn cards");
             return ResponseEntity.ok(user);
         }
     }

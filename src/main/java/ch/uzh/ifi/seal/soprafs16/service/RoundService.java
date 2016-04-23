@@ -212,6 +212,10 @@ public class RoundService {
      * @param user User
      */
     public void drawDeckCards(User user) {
+        if (user.getDeckCards().isEmpty()) {
+            return;
+        }
+
         for (int i = 0; i < 3 && i <= user.getDeckCards().size(); i++) {
             user.getHandCards().add(user.getDeckCards().remove(0));
         }
