@@ -91,6 +91,7 @@ public class ShootMove extends Move {
             }
         }
 
+        super.setPossibleTargets(targets);
         return targets;
     }
 }

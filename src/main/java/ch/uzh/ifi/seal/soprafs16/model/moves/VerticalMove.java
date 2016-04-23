@@ -38,6 +38,7 @@ public class VerticalMove extends Move {
             targets.add(train.get(wagonPosition).getUpperLevel());
         }
 
+        super.setPossibleTargets(targets);
         return targets;
     }
 }

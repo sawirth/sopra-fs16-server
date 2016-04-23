@@ -68,6 +68,8 @@ public class HorizontalMove extends Move {
                 targets.add(train.get(wagonPosition - 1).getLowerLevel());
             }
         }
+
+        super.setPossibleTargets(targets);
         return targets;
     }
 }

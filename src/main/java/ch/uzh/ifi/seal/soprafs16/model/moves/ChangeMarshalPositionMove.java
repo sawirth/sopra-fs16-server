@@ -45,6 +45,7 @@ public class ChangeMarshalPositionMove extends Move {
             targets.add(train.get(position + 1).getLowerLevel());
         }
 
+        super.setPossibleTargets(targets);
         return targets;
     }
 }
