@@ -74,10 +74,6 @@ public class MoveServiceController {
 
         game = roundService.updateGameAfterMove(game);
 
-        if (move.getActionMoveType()== ActionMoveType.DRAW){
-            //TODO add method draw cards
-        }
-
         gameRepo.save(game);
         logger.info("User " + user.getId() + " makes Move " + move.getId() + ": " + move.getActionMoveType());
 

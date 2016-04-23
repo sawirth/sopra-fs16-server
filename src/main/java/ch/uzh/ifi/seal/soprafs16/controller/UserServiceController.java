@@ -142,10 +142,15 @@ public class UserServiceController
     @JsonView(Views.Extended.class)
     public ResponseEntity<User> drawCards(@RequestParam("token") String userToken) {
         User user = userRepo.findByToken(userToken);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         Game game = userService.findRunningGame(user);
 
         if (game == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (game.getPlayers().get(game.getCurrentPlayer()) != user){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       //User is only allowed to draw cards if it's his turn

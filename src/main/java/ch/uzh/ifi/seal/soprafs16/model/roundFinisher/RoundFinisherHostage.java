@@ -6,9 +6,7 @@ import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 
-/**
- * Created by David on 17.04.2016.
- */
+
 public class RoundFinisherHostage extends RoundFinisher{
     @Override
     public void finishRound(Game game) {

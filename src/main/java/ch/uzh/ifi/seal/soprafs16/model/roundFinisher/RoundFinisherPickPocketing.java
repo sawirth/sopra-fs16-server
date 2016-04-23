@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by David on 17.04.2016.
- */
 public class RoundFinisherPickPocketing extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
@@ -26,7 +23,6 @@ public class RoundFinisherPickPocketing extends RoundFinisher{
     /**
      * chooses a random MoneyBag on the level and adds it to the user
      * @param level
-     * @return
      */
     private void chooseRandomMoneybag(Level level){
         List<Treasure> moneyBags = new ArrayList<>();
