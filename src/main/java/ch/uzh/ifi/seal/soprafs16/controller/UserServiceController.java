@@ -142,7 +142,7 @@ public class UserServiceController
     @JsonView(Views.Extended.class)
     public ResponseEntity<User> drawCards(@RequestParam("token") String userToken) {
         User user = userRepo.findByToken(userToken);
-        Game game = userService.findGameOfUser(user);
+        Game game = userService.findRunningGame(user);
 
         if (game == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

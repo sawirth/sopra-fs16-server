@@ -35,9 +35,9 @@ public class UserService {
         return null;
     }
 
-    public Game findGameOfUser(User user){
+    public Game findRunningGame(User user){
         for (int i=0; i<user.getGames().size(); i++) {
-            Game game = user.getGames().get(0);
+            Game game = user.getGames().get(i);
             if (game.getStatus() == GameStatus.RUNNING) {
                 return game;
             }
