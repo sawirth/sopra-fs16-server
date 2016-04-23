@@ -21,11 +21,11 @@ public class RoundFinisherRevengeMarshal extends RoundFinisher{
 
             for(Treasure treasure: treasures){
                 //check for the first occurrence of a moneybag
-                if(minMoneybag==null && treasure.getType()==TreasureType.MONEYBAG){
+                if(minMoneybag==null && treasure.getTreasureType()==TreasureType.MONEYBAG){
                     minMoneybag=treasure;
                 }
                 //make minMoneybag the smallest moneybag
-                else if(treasure.getType()==TreasureType.MONEYBAG
+                else if(treasure.getTreasureType()==TreasureType.MONEYBAG
                         && treasure.getValue()<minMoneybag.getValue()){
                     minMoneybag=treasure;
                 }

@@ -4,6 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 import ch.uzh.ifi.seal.soprafs16.service.RoundService;
@@ -61,7 +62,7 @@ public class UserServiceController
     public ResponseEntity<User> addUser(@RequestBody User user) {
         logger.debug("addUser: " + user);
 
-        User u = user;
+        User u = new User(user.getName(), user.getUsername());
         u.setStatus(UserStatus.ONLINE);
         u.setToken(UUID.randomUUID().toString());
         try {
@@ -159,7 +160,7 @@ public class UserServiceController
         if (user.getDeckCards().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);      //User can only draw if he has at least one card in his deck
         } else {
-            Move move = new Move();
+            Move move = new BlockerMove();
             move.setUser(user);
             move.setCharacterType(user.getCharacterType());
             move.setActionMoveType(ActionMoveType.DRAW);

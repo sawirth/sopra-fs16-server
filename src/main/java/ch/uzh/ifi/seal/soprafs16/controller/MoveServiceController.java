@@ -1,6 +1,5 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
-import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
@@ -14,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(MoveServiceController.CONTEXT)
@@ -42,6 +43,8 @@ public class MoveServiceController {
         Move move = moveRepo.findOne(moveId);
 
         if (move != null) {
+            List<Target> targets = move.calculateTargets();
+            moveRepo.save(move);
             return ResponseEntity.ok(move);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

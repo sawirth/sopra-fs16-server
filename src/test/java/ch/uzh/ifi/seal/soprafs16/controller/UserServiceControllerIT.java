@@ -1,11 +1,8 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
-import java.net.URL;
-import java.util.List;
-
-//import static org.hamcrest.Matchers.is;
-//import static org.hamcrest.MatcherAssert.assertThat;
+import ch.uzh.ifi.seal.soprafs16.Application;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
+import ch.uzh.ifi.seal.soprafs16.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +18,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import ch.uzh.ifi.seal.soprafs16.Application;
-import ch.uzh.ifi.seal.soprafs16.model.User;
+import java.net.URL;
+import java.util.List;
+
+//import static org.hamcrest.Matchers.is;
+//import static org.hamcrest.MatcherAssert.assertThat;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

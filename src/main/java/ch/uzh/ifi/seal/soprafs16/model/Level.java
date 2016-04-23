@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,11 +11,9 @@ import java.util.List;
 
 
 @Entity
-public class Level implements Serializable{
-
-    @Id
-    @GeneratedValue
-    private Long id;
+@DiscriminatorValue(value = "level")
+@JsonDeserialize(as = Level.class)
+public class Level extends Target implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
@@ -52,14 +51,6 @@ public class Level implements Serializable{
 
     public void setUsers(List<User> users) {
         this.users = users;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Wagon getWagon() {

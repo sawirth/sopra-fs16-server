@@ -4,7 +4,6 @@ import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class GameInitializeServiceTest {
         assertTrue(train.get(0).hasMarshal());
         assertEquals(1, train.get(0).getLowerLevel().getTreasures().size());
         assertEquals(1000, train.get(0).getLowerLevel().getTreasures().get(0).getValue());
-        assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getType(), is(TreasureType.CASHBOX));
+        assertThat(train.get(0).getLowerLevel().getTreasures().get(0).getTreasureType(), is(TreasureType.CASHBOX));
 
         //Level must have reference to wagon
         assertNotNull(train.get(0).getLowerLevel().getWagon());
@@ -61,7 +60,7 @@ public class GameInitializeServiceTest {
 
             //Each treasure must be of type moneybag or diamond
             for (Treasure treasure : wagon.getLowerLevel().getTreasures()) {
-                assertThat(treasure.getType(), anyOf(equalTo(TreasureType.MONEYBAG), equalTo(TreasureType.DIAMOND)));
+                assertThat(treasure.getTreasureType(), anyOf(equalTo(TreasureType.MONEYBAG), equalTo(TreasureType.DIAMOND)));
             }
         }
 
@@ -77,7 +76,7 @@ public class GameInitializeServiceTest {
         gameInitializeService.giveUsersTreasure(this.players);
         for (User player : this.players) {
             assertThat(player.getTreasures().size(), is(1));
-            assertThat(player.getTreasures().get(0).getType(), is(equalTo(TreasureType.MONEYBAG)));
+            assertThat(player.getTreasures().get(0).getTreasureType(), is(equalTo(TreasureType.MONEYBAG)));
             assertThat(player.getTreasures().get(0).getValue(), is(250));
         }
     }

@@ -12,9 +12,6 @@ import java.util.UUID;
 @Service("userService")
 public class UserService {
 
-    //private UserService() {
-    //}
-
     public static User login(User user) {
         if (user != null) {
             user.setToken(UUID.randomUUID().toString());

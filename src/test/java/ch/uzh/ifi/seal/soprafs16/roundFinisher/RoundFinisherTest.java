@@ -1,18 +1,19 @@
 package ch.uzh.ifi.seal.soprafs16.roundFinisher;
 
+import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
-import ch.uzh.ifi.seal.soprafs16.model.*;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
+import ch.uzh.ifi.seal.soprafs16.model.Treasure;
+import ch.uzh.ifi.seal.soprafs16.model.User;
+import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
-import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests all RoundFinishers and their finishRound methods
@@ -31,7 +32,7 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherCrane(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherCrane.finishRound(game);
         List<Wagon> train = game.getTrain();
 
@@ -41,7 +42,7 @@ public class RoundFinisherTest {
         }
 
         //3 user on the roof of the last wagon
-        Assert.assertThat(train.get(train.size()-1).getUpperLevel().getUsers().size(), is(4));
+        Assert.assertThat(train.get(train.size()-1).getUpperLevel().getUsers().size(), is(5));
 
         //user in lower level is not effected
         Assert.assertThat(train.get(1).getLowerLevel().getUsers().size(), is(1));
@@ -49,28 +50,28 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherTakeAll(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherTakeAll.finishRound(game);
 
         //Marshal is on first wagon, treasuresList should be of size 5
         Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().size(), is(5));
-        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().get(4).getType(), is(TreasureType.CASHBOX));
+        Assert.assertThat(game.getTrain().get(0).getLowerLevel().getTreasures().get(4).getTreasureType(), is(TreasureType.CASHBOX));
     }
 
     @Test
     public void testRoundFinisherBreak(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherBreak.finishRound(game);
 
         //one player moved one wagon to the front
-        Assert.assertThat(game.getTrain().get(0).getUpperLevel().getUsers().size(), is(3));
+        Assert.assertThat(game.getTrain().get(0).getUpperLevel().getUsers().size(), is(4));
         //last wagon has no players on top anymore
         Assert.assertThat(game.getTrain().get(2).getUpperLevel().getUsers().size(), is(0));
     }
 
     @Test
     public void testRoundFinisherAngryMarshal(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherAngryMarshal.finishRound(game);
 
         //Every user on first wagon gets an BlockerMove
@@ -86,7 +87,7 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherResistance(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherResistance.finishRound(game);
 
         //every user on a lower level got a BlockerMove
@@ -106,7 +107,7 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherHostage(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherHostage.finishRound(game);
 
         //every user in the first wagon got a treasure
@@ -120,7 +121,7 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherRevengeMarshal(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherRevengeMarshal.finishRound(game);
 
         for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
@@ -134,7 +135,7 @@ public class RoundFinisherTest {
 
     @Test
     public void testRoundFinisherPickPocketing(){
-        Game game = createGame();
+        Game game = TestHelpers.createGame();
         roundFinisherPickPocketing.finishRound(game);
         //no user on the lower level had an treasure and is alone
         for(Wagon wagon: game.getTrain()){
@@ -148,62 +149,5 @@ public class RoundFinisherTest {
                     user.getTreasures().size()==4);
         }
 
-    }
-
-    private Game createGame(){
-        Game game = new Game();
-        List<Wagon> train = new ArrayList<>();
-
-        List<User> users1 = new ArrayList<>();
-        User user1 = new User("Hans","Hansi");
-        user1.setTreasures(createTreasures());
-
-        User user2 = new User("Dave","Dave");
-        user2.setTreasures(createTreasures2());
-
-        users1.add(user1);
-        users1.add(user2);
-
-        List<User> users2 = new ArrayList<>();
-        users2.add(new User("Severin","Sevi"));
-        Wagon wagon1 = new Wagon(createTreasures(),true);
-        wagon1.getUpperLevel().setUsers(users1);
-        wagon1.getLowerLevel().setUsers(users2);
-        train.add(wagon1);
-
-        List<User> users3 = new ArrayList<>();
-        users3.add(new User("Wayne","Wayne"));
-        List<User> users4 = new ArrayList<>();
-        users4.add(new User("Fritz","Fritz"));
-        Wagon wagon2 = new Wagon(createTreasures(),false);
-        wagon2.getLowerLevel().setUsers(users3);
-        wagon2.getUpperLevel().setUsers(users4);
-        wagon2.getUpperLevel().setTreasures(createTreasures2());
-        train.add(wagon2);
-
-        List<User> users5 = new ArrayList<>();
-        users5.add(new User("Sigmund","Siggi"));
-        Wagon wagon3 = new Wagon(createTreasures(),false);
-        wagon3.getUpperLevel().setUsers(users5);
-        train.add(wagon3);
-
-        game.setTrain(train);
-        return game;
-    }
-
-    private List<Treasure> createTreasures(){
-        List<Treasure> treasures = new ArrayList<>();
-        treasures.add(new Treasure(300, TreasureType.MONEYBAG));
-        treasures.add(new Treasure(250, TreasureType.MONEYBAG));
-        treasures.add(new Treasure(1000, TreasureType.CASHBOX));
-        treasures.add(new Treasure(500, TreasureType.DIAMOND));
-        return treasures;
-    }
-
-    //to test for another user that only has a diamond
-    private List<Treasure> createTreasures2(){
-        List<Treasure> treasures = new ArrayList<>();
-        treasures.add(new Treasure(500, TreasureType.DIAMOND));
-        return treasures;
     }
 }

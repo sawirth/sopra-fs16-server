@@ -121,7 +121,7 @@ public class GameServiceController
             //initializes the rounds with the number of rounds that will be played
             for (Round round : gameInitializeService.initializeRounds(5, game)) {
                 round.setGame(game);
-                round = roundRepo.save(round);
+//                round = roundRepo.save(round);
                 game.getRounds().add(round);
             }
 
