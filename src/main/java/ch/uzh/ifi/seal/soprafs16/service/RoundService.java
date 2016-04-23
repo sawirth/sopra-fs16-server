@@ -178,13 +178,11 @@ public class RoundService {
         }
 
         //if the current move is a double MoveType
-        else if (moveType==MoveType.DOUBLE){
+        else if (moveType==MoveType.DOUBLE &&
+                round.getMoves().get(round.getMoves().size() - 2).getUser() == game.getPlayers().get(game.getCurrentPlayer())){
             //checks if the move before this one was made by the same user
             //-2 since the move was already shifted to the list of moves in the round
-            if (round.getMoves().get(round.getMoves().size()-2).getUser()
-                    == game.getPlayers().get(game.getCurrentPlayer())) {
-                game.setCurrentPlayer(game.getNextPlayer());
-            }
+            game.setCurrentPlayer(game.getNextPlayer());
         }
 
         //sets the current MoveType to the next MoveType if the first player is at its turn again

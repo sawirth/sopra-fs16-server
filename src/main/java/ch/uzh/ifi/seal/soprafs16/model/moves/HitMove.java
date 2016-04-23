@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 
 import javax.persistence.DiscriminatorValue;
@@ -41,6 +42,11 @@ public class HitMove extends Move {
                 targets.remove(user);
                 break;
             }
+        }
+
+
+        if (targets.size() > 1) {
+            targets = TargetHelper.removeBelle(targets);
         }
 
         super.setPossibleTargets(targets);

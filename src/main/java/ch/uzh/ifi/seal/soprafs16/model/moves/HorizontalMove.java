@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
@@ -29,20 +30,8 @@ public class HorizontalMove extends Move {
         List<Wagon> train = super.getGame().getTrain();
 
         //Find position of wagon that the user is on
-        int wagonPosition = 0;
-        boolean isUpperLevel = false;
-        for (Wagon w : train) {
-            if (w.getLowerLevel().getUsers().contains(super.getUser())) {
-                break;
-            }
-
-            if (w.getUpperLevel().getUsers().contains(super.getUser())) {
-                isUpperLevel = true;
-                break;
-            }
-            wagonPosition++;
-        }
-
+        int wagonPosition = TargetHelper.getWagonPositionOfUser(super.getUser(), train);
+        boolean isUpperLevel = TargetHelper.isOnUpperLevel(super.getUser(), train);
 
         if (wagonPosition == 0) {
         //Lokomotive
