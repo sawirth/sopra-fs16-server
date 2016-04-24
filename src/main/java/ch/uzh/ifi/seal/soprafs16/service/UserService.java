@@ -33,6 +33,10 @@ public class UserService {
     }
 
     public Game findRunningGame(User user){
+        if (user.getGames() == null || user.getGames().isEmpty()) {
+            return null;
+        }
+
         for (int i=0; i<user.getGames().size(); i++) {
             Game game = user.getGames().get(i);
             if (game.getStatus() == GameStatus.RUNNING) {

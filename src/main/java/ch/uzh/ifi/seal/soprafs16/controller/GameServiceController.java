@@ -44,6 +44,9 @@ public class GameServiceController
     @Autowired
     private RoundService roundService;
 
+    @Autowired
+    private UserService userService;
+
     private static final String   CONTEXT = "/games";
 
 
@@ -202,6 +205,18 @@ public class GameServiceController
         if (game == null || player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        //This allows the user to reenter the game if for example the app crashed
+        if (userService.findRunningGame(player) != null && userService.findRunningGame(player).getId() == gameId) {
+            return ResponseEntity.ok(game);
+        }
+
+        //This prevents users that are not in the game from joining a running game
+        if (game.getStatus() == GameStatus.RUNNING) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
         if (game.getPlayers().size() < GameConstants.MAX_PLAYERS && !UserService.isInOpenGame(player)) {
             List<CharacterType> allCharacters = new ArrayList<>();
             allCharacters.add(CharacterType.BELLE);
