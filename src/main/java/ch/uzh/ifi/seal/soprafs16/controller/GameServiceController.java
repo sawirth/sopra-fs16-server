@@ -109,6 +109,11 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        //This allows all clients to enter the game as they need an OK from the server
+        if (game.getStatus() == GameStatus.RUNNING) {
+            return ResponseEntity.ok(game);
+        }
+
         if (game.getOwner().equals(owner.getUsername()) && game.getPlayers().size() >= GameConstants.MIN_PLAYERS
                 && game.getStatus() == GameStatus.PENDING) {
 

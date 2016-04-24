@@ -129,6 +129,11 @@ public class UserServiceController
         logger.info(userToken+"choosed Character: "+characterType);
         User user = userRepo.findByToken(userToken);
 
+        //The user is not allowed to change the character during a running game
+        if (userService.findRunningGame(user) != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         if (user != null) {
             user.setCharacterType(characterType);
             userRepo.save(user);
