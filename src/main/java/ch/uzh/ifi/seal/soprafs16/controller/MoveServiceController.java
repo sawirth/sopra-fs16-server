@@ -84,7 +84,7 @@ public class MoveServiceController {
 
         if(round.isActionPhase()){
             logger.info("Action phase has ended: User isn't allowed to make move");
-            return HttpStatus.BAD_REQUEST;
+            return ResponseEntity.badRequest().body(user);
         }
 
         //shift Move
