@@ -191,8 +191,7 @@ public class RoundService {
                 round.getMoves().get(round.getMoves().size()-1).getUser() != game.getPlayers().get(game.getCurrentPlayer())){
 
             if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
-                //TODO end planning phase
-                // no player is allowed to play a card anymore
+                round.setActionPhase(true);
             }
             else{
                 round.setCurrentMoveType(round.getCurrentMoveType()+1);

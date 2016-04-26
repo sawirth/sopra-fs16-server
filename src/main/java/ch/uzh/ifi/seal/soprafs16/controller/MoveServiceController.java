@@ -79,9 +79,15 @@ public class MoveServiceController {
             return ResponseEntity.badRequest().body(user);
         }
 
-        //Switch Move
         Game game = move.getGame();
         Round round = game.getRounds().get(game.getCurrentRound());
+
+        if(round.isActionPhase()){
+            logger.info("Action phase has ended: User isn't allowed to make move");
+            return HttpStatus.BAD_REQUEST;
+        }
+
+        //shift Move
         roundService.shiftMove(move, round);
 
         game = roundService.updateGameAfterMove(game);

@@ -205,6 +205,7 @@ public class RoundServiceTest {
 
         //end of planning phase so currentMoveType doesn't change anymore
         assertThat(round.getCurrentMoveType(), is(2));
+        assertThat(round.isActionPhase(), is(true));
     }
 
     @Test

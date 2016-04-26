@@ -56,6 +56,10 @@ public class Round implements Serializable{
     @JsonView(Views.Public.class)
     private RoundFinisher roundFinisher;
 
+    @Column
+    @JsonView(Views.Public.class)
+    private boolean isActionPhase;
+
     public Round(int numberOfMoves,RoundType roundType, Game game, List<MoveType> moveTypes, RoundFinisher roundFinisher){
         NUMBER_OF_MOVES = numberOfMoves;
         this.game=game;
@@ -64,6 +68,7 @@ public class Round implements Serializable{
         this.roundFinisher=roundFinisher;
         moves = new ArrayList<>();
         currentMoveType = 0;
+        isActionPhase=false;
     }
 
     public Round(){
@@ -137,5 +142,13 @@ public class Round implements Serializable{
 
     public void setCurrentMoveType(Integer currentMoveType) {
         this.currentMoveType = currentMoveType;
+    }
+
+    public boolean isActionPhase() {
+        return isActionPhase;
+    }
+
+    public void setActionPhase(boolean actionPhase) {
+        isActionPhase = actionPhase;
     }
 }
