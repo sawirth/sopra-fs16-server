@@ -241,7 +241,8 @@ public class GameServiceControllerIT {
     }
 
     private HttpStatus makeMove(Long moveId, String userToken) {
-        return template.postForObject(base + "/moves/" + moveId + "?token=" + userToken, null, HttpStatus.class, new Object());
+        ResponseEntity<User> response = template.postForEntity(base + "/moves/" + moveId + "?token=" + userToken, null, User.class, new Object());
+        return response.getStatusCode();
     }
 
     private ResponseEntity<User> drawCards(String userToken) {
