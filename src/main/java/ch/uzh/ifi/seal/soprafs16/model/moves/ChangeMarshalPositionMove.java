@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
@@ -19,8 +20,13 @@ public class ChangeMarshalPositionMove extends Move {
     }
 
     @Override
-    public void executeAction() {
+    public void executeAction(Target target) {
         //TODO implement switch marshal action
+        Game game = super.getGame();
+        List<Wagon> train = game.getTrain();
+
+        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched Marshal's Position");
+
     }
 
     @Override

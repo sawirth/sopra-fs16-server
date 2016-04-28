@@ -18,7 +18,7 @@ public class HitMove extends Move {
     }
 
     @Override
-    public void executeAction() {
+    public void executeAction(Target target) {
         //TODO implement hit action
     }
 

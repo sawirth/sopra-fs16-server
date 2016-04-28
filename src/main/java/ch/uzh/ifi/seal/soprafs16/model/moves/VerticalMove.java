@@ -21,7 +21,7 @@ public class VerticalMove extends Move {
     }
 
     @Override
-    public void executeAction() {
+    public void executeAction(Target target) {
         //TODO implement vertical move action
     }
 

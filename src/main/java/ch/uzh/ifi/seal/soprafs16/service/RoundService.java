@@ -18,8 +18,8 @@ import java.util.List;
 @Service("roundService")
 public class RoundService {
 
-    @Autowired
-    private GameService gameService;
+
+    private GameService gameService = new GameService();
 
     /**
      * Resets the player to the initial state before the next round starts. The player gets his 10 action moves (cards)

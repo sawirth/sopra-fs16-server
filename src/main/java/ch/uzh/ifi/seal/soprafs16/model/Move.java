@@ -45,7 +45,7 @@ public abstract class Move implements Serializable {
 	@JsonView(Views.Internal.class)
 	private Game game;
 
-	@OneToMany
+	@ManyToMany
 	@JsonView(Views.Extended.class)
 	private List<Target> possibleTargets;
 
@@ -121,7 +121,7 @@ public abstract class Move implements Serializable {
 		this.target = target;
 	}
 
-	public abstract void executeAction();
+	public abstract void executeAction(Target target);
 
 	public abstract List<Target> calculateTargets();
 }

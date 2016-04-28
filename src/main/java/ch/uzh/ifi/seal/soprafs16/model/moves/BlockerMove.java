@@ -18,7 +18,7 @@ public class BlockerMove extends Move {
     }
 
     @Override
-    public void executeAction() {
+    public void executeAction(Target target) {
         return;
     }
 

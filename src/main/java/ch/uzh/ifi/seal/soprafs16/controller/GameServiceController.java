@@ -320,6 +320,7 @@ public class GameServiceController
     public ResponseEntity<Move> getTargets(@PathVariable Long gameId, @RequestParam("token") String userToken){
         Game game = gameRepo.findOne(gameId);
         Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
+
         if (game==null){
             logger.info("No game with" + gameId +" found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -334,17 +335,26 @@ public class GameServiceController
 
         if (!round.isActionPhase()){
             logger.info("Not in action phase yet");
-            return ResponseEntity.badRequest().body(move);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
             logger.info("User "+ game.getActionMoves().peek().getUser().getId().toString()+" isn't allowed to make move");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(move);
         }
         else {
             gameRepo.save(game);
             List<Target> targets = move.calculateTargets();
+
+            //if no possible targets are available update game, so that the next user can make his move
+            if (targets.isEmpty()){
+                game.addLog(user.getCharacterType(), user.getUsername()+" had no possible targets");
+                logger.info("no possible targets for moveId: "+move.getId());
+                game.getActionMoves().pop();
+                gameService.updateGameAfterMove(game);
+                gameRepo.save(game);
+            }
 
             return ResponseEntity.ok(move);
         }
@@ -353,26 +363,44 @@ public class GameServiceController
     @RequestMapping(value = CONTEXT + "/{gameId}/targets/{targetId}", method = RequestMethod.POST)
     @ResponseBody
     @JsonView(Views.Extended.class)
-    public ResponseEntity<Move> getTargets(@PathVariable Long gameId, @PathVariable Long targetId, @RequestParam("token") String userToken){
+    public ResponseEntity<Move> setTargets(@PathVariable Long gameId, @PathVariable Long targetId, @RequestParam("token") String userToken){
         Game game = gameRepo.findOne(gameId);
         User user = userRepo.findByToken(userToken);
-        Move move = game.getActionMoves().peek();
+        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
+
+        if (game==null){
+            logger.info("No game with" + gameId +" found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (user==null){
+            logger.info("No user found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Round round = game.getRounds().get(game.getCurrentRound());
+        if (!round.isActionPhase()){
+            logger.info("Not in action phase yet");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
-            logger.info("User "+ game.getActionMoves().peek().getUser().getId().toString()+" isn't allowed to make move");
+            logger.info("User "+ user.getUsername()+" isn't allowed to make move");
             return ResponseEntity.badRequest().body(move);
         }
 
-        if (!gameService.checkTarget(move, targetId).equals(null)){
-            move.executeAction();
+        //checks if target is a possible target
+        if (gameService.checkTarget(move, targetId)==null){
+            logger.info("Target "+targetId+" is not a possible target for this move");
+            return ResponseEntity.badRequest().body(move);
+        }
+        else {
+            move.executeAction(gameService.checkTarget(move, targetId));
             game.getActionMoves().pop();
+            gameService.updateGameAfterMove(game);
             gameRepo.save(game);
             return ResponseEntity.ok(move);
-        }
-        //target is no possible target
-        else{
-            return ResponseEntity.badRequest().body(move);
         }
     }
 }

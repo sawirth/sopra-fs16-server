@@ -19,7 +19,7 @@ public class StealMove extends Move {
     }
 
     @Override
-    public void executeAction() {
+    public void executeAction(Target target) {
         //TODO implement steal action
     }
 
