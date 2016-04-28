@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
@@ -13,20 +14,20 @@ import java.util.List;
 public class Game implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue
 	@JsonView(Views.Public.class)
 	private Long id;
-	
+
 	@Column(nullable = false)
 	@JsonView(Views.Public.class)
 	private String owner;
-	
+
 	@Column
 	@JsonView(Views.Public.class)
 	private GameStatus status;
-	
+
 	@Column
 	@JsonView(Views.Public.class)
 	private Integer currentPlayer;
@@ -101,7 +102,7 @@ public class Game implements Serializable {
 	public void setCurrentPlayer(Integer currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
-   
+
 	public int getNextPlayer() {
 		return (getCurrentPlayer() + 1) % getPlayers().size();
 	}
@@ -133,4 +134,29 @@ public class Game implements Serializable {
 	public GameLog getGameLog() {
 		return gameLog;
 	}
+
+    @JsonView(Views.Extended.class)
+    public RoundType getCurrentRoundType() {
+		if (this.rounds == null || this.rounds.isEmpty()) {
+			return null;
+		} else {
+			return this.rounds.get(currentRound).getRoundType();
+		}
+    }
+
+    @JsonView(Views.Extended.class)
+    public Move getLastPlayedMove() {
+
+        if (this.rounds == null || this.rounds.isEmpty()) {
+            return null;
+        }
+
+        Round currentRound = this.rounds.get(getCurrentRound());
+
+        if (currentRound.getMoves().isEmpty()) {
+            return null;
+        }
+        
+        return currentRound.getMoves().get(currentRound.getMoves().size() - 1);
+    }
 }

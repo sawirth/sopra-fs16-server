@@ -59,29 +59,45 @@ public class MoveServiceController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "{moveId}")
     @ResponseBody
-    public HttpStatus makeMove(@PathVariable Long moveId, @RequestParam String token) {
+    @JsonView(Views.Extended.class)
+    public ResponseEntity<User> makeMove(@PathVariable Long moveId, @RequestParam String token) {
 
         //Check that token is of the same user as the move
         Move move = moveRepo.findOne(moveId);
         User user = userRepo.findByToken(token);
 
-        if (!roundService.isUserAllowedToMakeMove(move, user)) {
-            logger.info("User " + user.getId() + " is not allowed to make Move " + move.getId());
-            return HttpStatus.BAD_REQUEST;
+        if (user == null) {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
 
-        //Switch Move
+        if (move == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
+        }
+
+        if (!roundService.isUserAllowedToMakeMove(move, user)) {
+            logger.info("User " + user.getId() + " is not allowed to make Move " + move.getId());
+            return ResponseEntity.badRequest().body(user);
+        }
+
         Game game = move.getGame();
         Round round = game.getRounds().get(game.getCurrentRound());
+
+        if(round.isActionPhase()){
+            logger.info("Action phase has ended: User isn't allowed to make move");
+            return ResponseEntity.badRequest().body(user);
+        }
+
+        //shift Move
         roundService.shiftMove(move, round);
 
         game = roundService.updateGameAfterMove(game);
+        user = userRepo.save(user);
 
         gameRepo.save(game);
         logger.info("User " + user.getId() + " makes Move " + move.getId() + ": " + move.getActionMoveType());
 
         //TODO Stop round on last move and start action phase
 
-        return HttpStatus.OK;
+        return ResponseEntity.ok(user);
     }
 }
