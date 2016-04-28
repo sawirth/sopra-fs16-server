@@ -7,6 +7,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.VerticalMove;
+import org.apache.commons.logging.Log;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -206,6 +207,12 @@ public class RoundServiceTest {
         //end of planning phase so currentMoveType doesn't change anymore
         assertThat(round.getCurrentMoveType(), is(2));
         assertThat(round.isActionPhase(), is(true));
+
+        //stack on game is the same as the array list on the round
+        for (int i=0; i<round.getMoves().size(); i++) {
+            Move move = game.getActionMoves().peek();
+            Assert.assertTrue(round.getMoves().get(i) == game.getActionMoves().pop());
+        }
     }
 
     @Test

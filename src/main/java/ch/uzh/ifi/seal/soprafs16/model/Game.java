@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 @Entity
 public class Game implements Serializable {
@@ -51,11 +52,16 @@ public class Game implements Serializable {
 	@JsonView(Views.Internal.class)
 	private GameLog gameLog;
 
+	@Column(length = 10000)
+	@JsonView(Views.Internal.class)
+	private Stack<Move> actionMoves;
+
 	public Game() {
 		this.players = new ArrayList<>();
 		this.rounds = new ArrayList<>();
 		currentRound = 0;
 		this.gameLog = new GameLog();
+		this.actionMoves = new Stack<>();
 	}
 
 	public void addLog(CharacterType characterType, String message) {
@@ -132,5 +138,13 @@ public class Game implements Serializable {
 
 	public GameLog getGameLog() {
 		return gameLog;
+	}
+
+	public Stack<Move> getActionMoves() {
+		return actionMoves;
+	}
+
+	public void setActionMoves(Stack<Move> actionMoves) {
+		this.actionMoves = actionMoves;
 	}
 }

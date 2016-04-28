@@ -188,7 +188,7 @@ public class User extends Target implements Serializable {
 
 		final User otherUser = (User) obj;
 
-		return super.getId() == otherUser.getId();
+		return super.getId().equals(otherUser.getId());
 	}
 
 	@Override

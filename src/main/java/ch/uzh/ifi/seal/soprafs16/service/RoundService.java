@@ -8,6 +8,7 @@ import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ import java.util.List;
 
 @Service("roundService")
 public class RoundService {
+
+    @Autowired
+    private GameService gameService;
 
     /**
      * Resets the player to the initial state before the next round starts. The player gets his 10 action moves (cards)
@@ -192,6 +196,13 @@ public class RoundService {
 
             if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
                 round.setActionPhase(true);
+
+                for (int i = round.getMoves().size()-1;i>=0;i--){
+                    game.getActionMoves().push(round.getMoves().get(i));
+                }
+
+                gameService.updateGameAfterMove(game);
+                return game;
             }
             else{
                 round.setCurrentMoveType(round.getCurrentMoveType()+1);

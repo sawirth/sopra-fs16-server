@@ -5,9 +5,11 @@ import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
+import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.UserRepository;
 import ch.uzh.ifi.seal.soprafs16.service.GameInitializeService;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 import ch.uzh.ifi.seal.soprafs16.service.RoundService;
 import ch.uzh.ifi.seal.soprafs16.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -36,6 +38,9 @@ public class GameServiceController
     private RoundRepository roundRepo;
 
     @Autowired
+    private MoveRepository moveRepo;
+
+    @Autowired
     private GameRepository gameRepo;
 
     @Autowired
@@ -46,6 +51,9 @@ public class GameServiceController
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GameService gameService;
 
     private static final String   CONTEXT = "/games";
 
@@ -303,6 +311,68 @@ public class GameServiceController
             return ResponseEntity.ok(game.getGameLog().getLogEntryList());
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(value = CONTEXT + "/{gameId}/targets", method = RequestMethod.GET)
+    @ResponseBody
+    @JsonView(Views.Extended.class)
+    public ResponseEntity<Move> getTargets(@PathVariable Long gameId, @RequestParam("token") String userToken){
+        Game game = gameRepo.findOne(gameId);
+        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
+        if (game==null){
+            logger.info("No game with" + gameId +" found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Round round = game.getRounds().get(game.getCurrentRound());
+        User user = userRepo.findByToken(userToken);
+        if (user==null){
+            logger.info("No user found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (!round.isActionPhase()){
+            logger.info("Not in action phase yet");
+            return ResponseEntity.badRequest().body(move);
+        }
+
+        //check if user is current user
+        if (!user.equals(game.getActionMoves().peek().getUser())){
+            logger.info("User "+ game.getActionMoves().peek().getUser().getId().toString()+" isn't allowed to make move");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        else {
+            gameRepo.save(game);
+            List<Target> targets = move.calculateTargets();
+
+            return ResponseEntity.ok(move);
+        }
+    }
+
+    @RequestMapping(value = CONTEXT + "/{gameId}/targets/{targetId}", method = RequestMethod.POST)
+    @ResponseBody
+    @JsonView(Views.Extended.class)
+    public ResponseEntity<Move> getTargets(@PathVariable Long gameId, @PathVariable Long targetId, @RequestParam("token") String userToken){
+        Game game = gameRepo.findOne(gameId);
+        User user = userRepo.findByToken(userToken);
+        Move move = game.getActionMoves().peek();
+
+        //check if user is current user
+        if (!user.equals(game.getActionMoves().peek().getUser())){
+            logger.info("User "+ game.getActionMoves().peek().getUser().getId().toString()+" isn't allowed to make move");
+            return ResponseEntity.badRequest().body(move);
+        }
+
+        if (!gameService.checkTarget(move, targetId).equals(null)){
+            move.executeAction();
+            game.getActionMoves().pop();
+            gameRepo.save(game);
+            return ResponseEntity.ok(move);
+        }
+        //target is no possible target
+        else{
+            return ResponseEntity.badRequest().body(move);
         }
     }
 }
