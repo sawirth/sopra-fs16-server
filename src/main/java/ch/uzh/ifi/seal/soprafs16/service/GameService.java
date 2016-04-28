@@ -1,10 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
-import ch.uzh.ifi.seal.soprafs16.model.Game;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Target;
-import ch.uzh.ifi.seal.soprafs16.model.User;
+import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +31,21 @@ public class GameService {
 
         //check if stack is empty cannot be else since the first if statement has to be checked before
         if (game.getActionMoves().isEmpty()){
+            Round round = game.getRounds().get(game.getCurrentRound());
+
             //check if this round was the last one of the game
             if (game.getRounds().size()==game.getCurrentRound()-1){
                 //TODO finish game
 
+                round.getRoundFinisher().finishRound(game);
+                game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
                 game.addLog(null, "Game finished");
                 return game;
             }
             else {
+                round.getRoundFinisher().finishRound(game);
+                game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
+
                 //set current round +1
                 game.addLog(null, "New round has started YUHU");
                 game.setCurrentRound(game.getCurrentRound()+1);
