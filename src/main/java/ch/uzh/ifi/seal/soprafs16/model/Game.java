@@ -137,13 +137,17 @@ public class Game implements Serializable {
 
     @JsonView(Views.Extended.class)
     public RoundType getCurrentRoundType() {
-        return this.rounds.get(currentRound).getRoundType();
+		if (this.rounds == null || this.rounds.isEmpty()) {
+			return null;
+		} else {
+			return this.rounds.get(currentRound).getRoundType();
+		}
     }
 
     @JsonView(Views.Extended.class)
     public Move getLastPlayedMove() {
 
-        if (this.rounds == null) {
+        if (this.rounds == null || this.rounds.isEmpty()) {
             return null;
         }
 

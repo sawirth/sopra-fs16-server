@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
+import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,14 +23,14 @@ public class ShootMoveTest {
 
     @Before
     public void resetGame() {
-        /*
+                /*
         This creates a train with the following setup
 
-        Hans(1), Dave(2), Sandro(3)            Fritz(6)                 Sigmund(7)
-        --------------------------         ----------------------       -----------------
+        Hans(1), Dave(2), Sandro(3)         Fritz(6)                              Sigmund(7)
+        --------------------------    ----------------------    -------------    ----------------
 
-               Sevi(4)                         Wayne(5)                   John(8)
-        --------------------------         ----------------------       ------------------
+               Sevi(4)                       Wayne(5)                               John(8)
+        --------------------------    ----------------------    -------------    ----------------
 
 
          The number in the brackets is the ID and also the position in game.getPlayers()
@@ -66,17 +67,15 @@ public class ShootMoveTest {
         move.setUser(game.getPlayers().get(5));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(4));
-
     }
 
     @Test
     public void testLowerLevelMiddle() throws Exception {
-        //Wayne(5) can shoot on Sevi(4) and John(8)
+        //Wayne(5) can shoot on Sevi(4)
         move.setUser(game.getPlayers().get(4));
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(2));
+        assertThat(targets.size(), is(1));
         assertThat(targets.get(0).getId(), is(4L));
-        assertThat(targets.get(1).getId(), is(8L));
     }
 
     @Test
@@ -90,11 +89,10 @@ public class ShootMoveTest {
 
     @Test
     public void testLowerLevelEnd() throws Exception {
-        //John(8) can shoot on Wayne(5)
+        //John(8) can shoot on no one since in the wagon before is empty on the lower level
         move.setUser(game.getPlayers().get(7));
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(1));
-        assertThat(targets.get(0).getId(), is(5L));
+        assertThat(targets.isEmpty(), is(true));
     }
 
     @Test
@@ -104,25 +102,63 @@ public class ShootMoveTest {
         move.getUser().setCharacterType(CharacterType.TUCO);
         targets = move.calculateTargets();
         assertThat(targets.size(), is(2));
+        assertThat(targets.get(0).getId(), is(6L));
+        assertThat(targets.get(1).getId(), is(4L));
     }
 
     @Test
     public void testTucoSpecialAbilityUpwards() throws Exception {
-        //John(8) as Tuco: can shoot on Wayne(5) and Sigmund(7)
+        //John(8) as Tuco: can shoot on Sigmund(7) who is above him
         move.setUser(game.getPlayers().get(7));
         move.getUser().setCharacterType(CharacterType.TUCO);
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(2));
-        assertThat(targets.get(1).getId(), is(7L));
+        assertThat(targets.size(), is(1));
+        assertThat(targets.get(0).getId(), is(7L));
     }
 
     @Test
     public void testBelleSpecialAbility() throws Exception {
-        //Hans(1) now plays at Belle which means Fritz(6) can no longer shoot on him because there two other players on the same level
-        //he can only shoot on Dave(2), Sandro(3) and Sigmund(7)
+        /*
+        Hans(1) now plays at Belle which means Fritz(6) can no longer shoot
+        on him because there two other players on the same level
+        he can only shoot on Dave(2), Sandro(3) and Sigmund(7)
+        */
         move.setUser(game.getPlayers().get(5));
         game.getPlayers().get(0).setCharacterType(CharacterType.BELLE);
         targets = move.calculateTargets();
         assertThat(targets.size(), is(3));
+    }
+
+    @Test
+    public void testUpperLevelEmptyWagonBetween() throws Exception {
+        //When we remove Fritz(6) from the second wagon, Sigmund(7) is then
+        // able to shoot on Hans(1), Dave(2) and Sandro(3)
+        move.setUser(game.getPlayers().get(6));
+        game.getTrain().get(1).getUpperLevel().getUsers().clear();
+        targets = move.calculateTargets();
+        assertThat(targets.size(), is(3));
+
+        //if we now change the user to Sandro(3), the only target must be Sigmund(7)
+        move.setUser(game.getPlayers().get(2));
+        targets = move.calculateTargets();
+        assertThat(targets.size(), is(1));
+        assertThat(targets.get(0).getId(), is(7L));
+    }
+
+    @Test
+    public void testMiddleEmptyWagonLeft() throws Exception {
+        //first we need to add an empty wagon on second position
+        Wagon wagon = new Wagon(new ArrayList<>(), false);
+        game.getTrain().add(1, wagon);
+
+        //now Fritz(6) can still shoot on Hans(1), Dave(2), Sandro(3) and Sigmund(7)
+        move.setUser(game.getPlayers().get(5));
+        targets = move.calculateTargets();
+        assertThat(targets.size(), is(4));
+
+        //Wayne(5) on the lowerLevel can now shoot on noone since both the wagon before and after him are empty
+        move.setUser(game.getPlayers().get(4));
+        targets = move.calculateTargets();
+        assertThat(targets.isEmpty(), is(true));
     }
 }

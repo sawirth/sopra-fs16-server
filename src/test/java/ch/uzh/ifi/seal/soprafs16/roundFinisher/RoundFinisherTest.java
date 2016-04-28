@@ -66,7 +66,7 @@ public class RoundFinisherTest {
         //one player moved one wagon to the front
         Assert.assertThat(game.getTrain().get(0).getUpperLevel().getUsers().size(), is(4));
         //last wagon has no players on top anymore
-        Assert.assertThat(game.getTrain().get(2).getUpperLevel().getUsers().size(), is(0));
+        Assert.assertThat(game.getTrain().get(3).getUpperLevel().getUsers().size(), is(0));
     }
 
     @Test
