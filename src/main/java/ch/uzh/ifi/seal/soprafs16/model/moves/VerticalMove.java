@@ -2,10 +2,8 @@ package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Target;
-import ch.uzh.ifi.seal.soprafs16.model.User;
-import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -22,7 +20,8 @@ public class VerticalMove extends Move {
 
     @Override
     public void executeAction(Target target) {
-        //TODO implement vertical move action
+        GameService gameService = new GameService();
+        gameService.switchLevel(super.getGame().getTrain(), (Level) target, super.getUser());
     }
 
     @Override
