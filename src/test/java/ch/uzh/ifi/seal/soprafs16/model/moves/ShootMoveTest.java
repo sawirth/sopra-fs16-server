@@ -2,10 +2,7 @@ package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
-import ch.uzh.ifi.seal.soprafs16.model.Game;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Target;
-import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -160,5 +157,18 @@ public class ShootMoveTest {
         move.setUser(game.getPlayers().get(4));
         targets = move.calculateTargets();
         assertThat(targets.isEmpty(), is(true));
+    }
+
+    @Test
+    public void testExecuteAction() throws Exception {
+        User shooter = new User("Shooter", "shooter");
+        shooter.setNumberOfShots(6);
+        User victim = new User("Victim", "victim");
+        victim.setShotsTaken(0);
+        move.setUser(shooter);
+        move.executeAction(victim);
+
+        assertThat(shooter.getNumberOfShots(), is(5));
+        assertThat(victim.getShotsTaken(), is(1));
     }
 }
