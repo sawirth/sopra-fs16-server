@@ -72,4 +72,9 @@ public class HorizontalMove extends Move {
         super.setPossibleTargets(targets);
         return targets;
     }
+
+    @Override
+    public void resetActionMoveType() {
+        super.setActionMoveType(ActionMoveType.HORIZONTAL);
+    }
 }

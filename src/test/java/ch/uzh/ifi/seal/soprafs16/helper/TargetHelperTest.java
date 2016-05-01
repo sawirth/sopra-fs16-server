@@ -27,9 +27,9 @@ public class TargetHelperTest {
         user = game.getPlayers().get(5);
         assertThat(TargetHelper.getWagonPositionOfUser(user, game.getTrain()), is(1));
 
-        //John(8) is on third wagon
+        //John(8) is on fourth wagon
         user = game.getPlayers().get(7);
-        assertThat(TargetHelper.getWagonPositionOfUser(user, game.getTrain()), is(2));
+        assertThat(TargetHelper.getWagonPositionOfUser(user, game.getTrain()), is(3));
     }
 
     @Test

@@ -43,8 +43,13 @@ public class GameService {
                 return game;
             }
             else {
-                round.getRoundFinisher().finishRound(game);
-                game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
+                if (round.getRoundFinisher() != null) {
+                    round.getRoundFinisher().finishRound(game);
+                    game.addLog(null, "Round has been finished with event " + round.getRoundType().toString());
+                } else {
+                    game.addLog(null, "Round has been finished");
+                }
+
 
                 //set current round +1
                 game.addLog(null, "New round has started YUHU");

@@ -124,4 +124,6 @@ public abstract class Move implements Serializable {
 	public abstract void executeAction(Target target);
 
 	public abstract List<Target> calculateTargets();
+
+	public abstract void resetActionMoveType();
 }

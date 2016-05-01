@@ -197,7 +197,9 @@ public class RoundService {
             if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
                 round.setActionPhase(true);
 
+                //add moves to action phase stack and reset type so that hidden moves become visible
                 for (int i = round.getMoves().size()-1;i>=0;i--){
+                    round.getMoves().get(i).resetActionMoveType();
                     game.getActionMoves().push(round.getMoves().get(i));
                 }
 

@@ -54,4 +54,9 @@ public class ChangeMarshalPositionMove extends Move {
         super.setPossibleTargets(targets);
         return targets;
     }
+
+    @Override
+    public void resetActionMoveType() {
+        super.setActionMoveType(ActionMoveType.SWITCH_MARSHAL);
+    }
 }
