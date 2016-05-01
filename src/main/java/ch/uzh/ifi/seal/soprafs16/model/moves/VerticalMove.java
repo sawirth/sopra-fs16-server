@@ -22,6 +22,9 @@ public class VerticalMove extends Move {
     public void executeAction(Target target) {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target, super.getUser());
+
+        //TODO check for marshal special case
+
     }
 
     @Override
