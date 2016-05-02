@@ -112,7 +112,8 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @JsonView(Views.Extended.class)
-    public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam(value = "fastmode", required = false,
+            defaultValue = "false") boolean isFastGame, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
@@ -135,7 +136,14 @@ public class GameServiceController
             gameInitializeService.giveUsersTreasure(game.getPlayers());
 
             //initializes the rounds with the number of rounds that will be played
-            for (Round round : gameInitializeService.initializeRounds(5, game)) {
+            int numberOfRounds;
+            if (isFastGame) {
+                numberOfRounds = 1;
+            } else {
+                numberOfRounds = 5;
+            }
+
+            for (Round round : gameInitializeService.initializeRounds(numberOfRounds, game)) {
                 round.setGame(game);
 //                round = roundRepo.save(round);
                 game.getRounds().add(round);
