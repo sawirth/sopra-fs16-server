@@ -71,7 +71,7 @@ public class ShootMove extends Move {
                     left--;
                 }
 
-                while (right < train.size() && train.get(right).getUpperLevel().getUsers().isEmpty()) {
+                while (right < train.size() - 1 && train.get(right).getUpperLevel().getUsers().isEmpty()) {
                     right++;
                 }
 
