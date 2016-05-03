@@ -6,6 +6,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import org.apache.catalina.connector.Response;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -254,6 +255,10 @@ public class GameServiceControllerIT {
 
         game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class, new Object());
         assertThat(game.getBody().getRounds().get(0).getMoves().size(), is(4));
+
+        //User shouldn't be allowed to draw cards
+        ResponseEntity responseEntity = drawCards(player1.getToken());
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
         //Action Phase
         assertThat(game.getBody().getRounds().get(0).isActionPhase(), is(true));

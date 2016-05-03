@@ -83,7 +83,7 @@ public class MoveServiceController {
         Round round = game.getRounds().get(game.getCurrentRound());
 
         if(round.isActionPhase()){
-            logger.info("Action phase has ended: User isn't allowed to make move");
+            logger.info("Action phase has begun: User isn't allowed to make move");
             return ResponseEntity.badRequest().body(user);
         }
 
