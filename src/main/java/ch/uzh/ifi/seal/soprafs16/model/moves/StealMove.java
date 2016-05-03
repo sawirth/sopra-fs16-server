@@ -1,8 +1,10 @@
 package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
+import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 
 import javax.persistence.DiscriminatorValue;
@@ -20,7 +22,23 @@ public class StealMove extends Move {
 
     @Override
     public void executeAction(Target target) {
-        //TODO implement steal action
+        super.getUser().getTreasures().add((Treasure) target);
+        for (Wagon wagon: super.getGame().getTrain()){
+            for (Treasure treasure: wagon.getLowerLevel().getTreasures()){
+                if (treasure.getId().equals(target.getId())){
+                    wagon.getLowerLevel().getTreasures().remove(treasure);
+                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString());
+                    return;
+                }
+            }
+            for (Treasure treasure: wagon.getUpperLevel().getTreasures()){
+                if (treasure.getId().equals(target.getId())){
+                    wagon.getLowerLevel().getTreasures().remove(treasure);
+                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString());
+                    return;
+                }
+            }
+        }
     }
 
     @Override
