@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
+import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,11 @@ public class GameService {
         //if move stack is not empty yet
         if (!game.getActionMoves().isEmpty()){
             Move move = game.getActionMoves().peek();
-            game.addLog(move.getCharacterType(), "It's " +game.getActionMoves().peek().getUser().getUsername()+"'s turn");
 
             if (move.getActionMoveType() == ActionMoveType.DRAW){
+                game.addLog(move.getCharacterType(),"It's " + move.getUser().getUsername() +"'s turn");
                 game.addLog(move.getCharacterType(), move.getUser().getUsername()+" drew cards in planning phase");
                 game.getActionMoves().pop();
-                game.addLog(move.getCharacterType(), "It's " +game.getActionMoves().peek().getUser().getUsername()+"'s turn");
             }
         }
 
@@ -34,12 +34,13 @@ public class GameService {
             Round round = game.getRounds().get(game.getCurrentRound());
 
             //check if this round was the last one of the game
-            if (game.getRounds().size()==game.getCurrentRound()-1){
+            if (game.getRounds().size() == game.getCurrentRound()+1){
                 //TODO finish game
 
                 round.getRoundFinisher().finishRound(game);
                 game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
                 game.addLog(null, "Game finished");
+                game.setStatus(GameStatus.FINISHED);
                 return game;
             }
             else {
@@ -63,6 +64,7 @@ public class GameService {
             }
         }
 
+        game.addLog(game.getActionMoves().peek().getCharacterType(), "It's " + game.getActionMoves().peek().getUser().getUsername()+"'s turn");
 
         return game;
     }

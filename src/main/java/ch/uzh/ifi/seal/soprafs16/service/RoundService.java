@@ -93,7 +93,7 @@ public class RoundService {
         }
 
         //Special case for Doc as he can draw 7 cards each round
-        if (player.getCharacterType().equals(CharacterType.DOC)) {
+        if (player.getCharacterType() == CharacterType.DOC) {
             player.getHandCards().add(player.getDeckCards().remove(0));
         }
     }
