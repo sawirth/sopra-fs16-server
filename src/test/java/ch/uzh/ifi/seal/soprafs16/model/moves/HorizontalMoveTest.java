@@ -22,9 +22,9 @@ public class HorizontalMoveTest {
         move.setGame(game);
         move.setUser(game.getPlayers().get(0));
 
-        //Hans: First user is on the upper level of the first waggon so he can go on wagon 2 and 3
+        //Hans: First user is on the upper level of the first waggon so he can go on wagon 2, 3 and 4
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(2));
+        assertThat(targets.size(), is(3));
         assertThat(targets.get(0).getId(), is(4L));
         assertThat(targets.get(1).getId(), is(6L));
 
@@ -41,24 +41,26 @@ public class HorizontalMoveTest {
         assertThat(targets.get(0).getId(), is(5L));
         assertThat(targets.get(1).getId(), is(1L));
 
-        //Fritz: 6th user is on upper level of second wagon so he can go to the 1st or 3rd wagon
+        //Fritz: 6th user is on upper level of second wagon so he can go to the 1st, 3rd or 4th wagon
         move.setUser(game.getPlayers().get(5));
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(2));
+        assertThat(targets.size(), is(3));
         assertThat(targets.get(0).getId(), is(6L));
-        assertThat(targets.get(1).getId(), is(2L));
+        assertThat(targets.get(1).getId(), is(8L));
+        assertThat(targets.get(2).getId(), is(2L));
 
-        //Sigmund: 7th user is on upper level of last wagon so he can go to wagon 1 and 2
+        //Sigmund: 7th user is on upper level of last wagon so he can go to wagon 1, 2 and 3
         move.setUser(game.getPlayers().get(6));
         targets = move.calculateTargets();
-        assertThat(targets.size(), is(2));
-        assertThat(targets.get(0).getId(), is(4L));
-        assertThat(targets.get(1).getId(), is(2L));
+        assertThat(targets.size(), is(3));
+        assertThat(targets.get(0).getId(), is(6L));
+        assertThat(targets.get(1).getId(), is(4L));
+        assertThat(targets.get(2).getId(), is(2L));
 
-        //John: 8th user is on lower level of last wagon so he can go to wagon 2
+        //John: 8th user is on lower level of last wagon so he can go to wagon 3
         move.setUser(game.getPlayers().get(7));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
-        assertThat(targets.get(0).getId(), is(3L));
+        assertThat(targets.get(0).getId(), is(5L));
     }
 }

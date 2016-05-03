@@ -3,14 +3,11 @@ package ch.uzh.ifi.seal.soprafs16.service;
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by David on 27.04.2016.
- */
+
 @Service("gameService")
 public class GameService {
 
@@ -44,8 +41,13 @@ public class GameService {
                 return game;
             }
             else {
-                round.getRoundFinisher().finishRound(game);
-                game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
+                if (round.getRoundFinisher() != null) {
+                    round.getRoundFinisher().finishRound(game);
+                    game.addLog(null, "Round has been finished with event " + round.getRoundType().toString());
+                } else {
+                    game.addLog(null, "Round has been finished");
+                }
+
 
                 //set current round +1
                 game.addLog(null, "New round has started YUHU");
@@ -86,5 +88,32 @@ public class GameService {
         }
 
         return null;
+    }
+
+    /**
+     * Removes the user from the current level and adds it to another
+     * @param train The train from the game
+     * @param level Level to which the user is added
+     * @param user The user who switches the level
+     */
+    public void switchLevel(List<Wagon> train, Level level, User user) {
+        //Remove from current level
+        Level oldLevel = new Level();
+        for (Wagon wagon : train) {
+            if (wagon.getUpperLevel().getUsers().contains(user)) {
+                oldLevel = wagon.getUpperLevel();
+                break;
+            } else if (wagon.getLowerLevel().getUsers().contains(user)) {
+                oldLevel = wagon.getLowerLevel();
+                break;
+            }
+        }
+
+        if (!oldLevel.getUsers().isEmpty()) {
+            oldLevel.getUsers().remove(user);
+        }
+
+        //Add to new level
+        level.getUsers().add(user);
     }
 }

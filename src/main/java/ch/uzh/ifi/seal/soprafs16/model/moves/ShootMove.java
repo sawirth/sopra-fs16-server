@@ -5,6 +5,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
+import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 
 import javax.persistence.DiscriminatorValue;
@@ -22,7 +23,12 @@ public class ShootMove extends Move {
 
     @Override
     public void executeAction(Target target) {
-        //TODO implement shoot action
+        User victim = (User) target;
+
+        if (victim != null) {
+            victim.setShotsTaken(victim.getShotsTaken() + 1);
+            super.getUser().setNumberOfShots(super.getUser().getNumberOfShots() - 1);
+        }
     }
 
     @Override
@@ -65,7 +71,7 @@ public class ShootMove extends Move {
                     left--;
                 }
 
-                while (right < train.size() && train.get(right).getUpperLevel().getUsers().isEmpty()) {
+                while (right < train.size() - 1 && train.get(right).getUpperLevel().getUsers().isEmpty()) {
                     right++;
                 }
 
@@ -93,5 +99,10 @@ public class ShootMove extends Move {
 
         super.setPossibleTargets(targets);
         return targets;
+    }
+
+    @Override
+    public void resetActionMoveType() {
+        super.setActionMoveType(ActionMoveType.SHOOT);
     }
 }

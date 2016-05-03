@@ -112,7 +112,8 @@ public class GameServiceController
 
     @RequestMapping(value = CONTEXT + "/{gameId}/start", method = RequestMethod.POST)
     @JsonView(Views.Extended.class)
-    public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam("token") String userToken) {
+    public ResponseEntity<Game> startGame(@PathVariable Long gameId, @RequestParam(value = "fastmode", required = false,
+            defaultValue = "false") boolean isFastGame, @RequestParam("token") String userToken) {
         Game game = gameRepo.findOne(gameId);
         User owner = userRepo.findByToken(userToken);
 
@@ -135,7 +136,14 @@ public class GameServiceController
             gameInitializeService.giveUsersTreasure(game.getPlayers());
 
             //initializes the rounds with the number of rounds that will be played
-            for (Round round : gameInitializeService.initializeRounds(5, game)) {
+            int numberOfRounds;
+            if (isFastGame) {
+                numberOfRounds = 1;
+            } else {
+                numberOfRounds = 5;
+            }
+
+            for (Round round : gameInitializeService.initializeRounds(numberOfRounds, game)) {
                 round.setGame(game);
 //                round = roundRepo.save(round);
                 game.getRounds().add(round);
@@ -319,24 +327,24 @@ public class GameServiceController
     @JsonView(Views.Extended.class)
     public ResponseEntity<Move> getTargets(@PathVariable Long gameId, @RequestParam("token") String userToken){
         Game game = gameRepo.findOne(gameId);
-        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
-
         if (game==null){
             logger.info("No game with" + gameId +" found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Round round = game.getRounds().get(game.getCurrentRound());
+        if (!round.isActionPhase()){
+            logger.info("Not in action phase yet");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         User user = userRepo.findByToken(userToken);
         if (user==null){
             logger.info("No user found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if (!round.isActionPhase()){
-            logger.info("Not in action phase yet");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
 
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){

@@ -19,11 +19,14 @@ public class BlockerMove extends Move {
 
     @Override
     public void executeAction(Target target) {
-        return;
     }
 
     @Override
     public List<Target> calculateTargets() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public void resetActionMoveType() {
     }
 }

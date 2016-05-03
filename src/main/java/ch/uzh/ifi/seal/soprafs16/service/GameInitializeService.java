@@ -162,6 +162,12 @@ public class GameInitializeService {
         List<Round> endRounds = new ArrayList<>();
         List<Round> allRounds = new ArrayList<>();
 
+        //Load a fast game if the number of rounds is only 1
+        if (numberOfRounds == 1) {
+            normalRounds.add(new Round(2, RoundType.FAST_GAME, game, createMoveTypes(1, 2, 0, 0, 0), new RoundFinisherBreak()));
+            return normalRounds;
+        }
+
         normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1,1,2,3,0), new RoundFinisherAngryMarshal()));
 
         normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));

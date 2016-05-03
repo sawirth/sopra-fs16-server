@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs16.service;
 
 import ch.uzh.ifi.seal.soprafs16.constant.*;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HitMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
@@ -16,17 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 public class GameServiceTest {
 
     private Game game;
     private GameService gameService;
+    private User user;
 
     @Before
     public void setup() throws Exception{
-        game = new Game();
+        game = TestHelpers.createGame();
         gameService = new GameService();
 
         game.setId(1L);
@@ -36,7 +38,6 @@ public class GameServiceTest {
         moveTypeList.add(MoveType.VISIBLE);
         moveTypeList.add(MoveType.DOUBLE);
         moveTypeList.add(MoveType.REVERSE);
-
         Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisher());
         round.setFirstPlayer(0);
         round.setCurrentMoveType(0);
@@ -46,25 +47,9 @@ public class GameServiceTest {
         moveTypeList2.add(MoveType.VISIBLE);
         moveTypeList2.add(MoveType.DOUBLE);
         moveTypeList2.add(MoveType.REVERSE);
-
         Round round2 = new Round(4, RoundType.RESISTANCE, game, moveTypeList, new RoundFinisher());
         round2.setFirstPlayer(1);
         round2.setCurrentMoveType(0);
-
-
-        User player1 = new User("Sandro", "sw");
-        player1.setId(1L);
-        player1.setCharacterType(CharacterType.CHEYENNE);
-        User player2 = new User("Horst", "hh");
-        player2.setId(2L);
-        player2.setCharacterType(CharacterType.TUCO);
-        User player3 = new User("Horst", "h2");
-        player3.setId(3L);
-        player3.setCharacterType(CharacterType.BELLE);
-
-        game.getPlayers().add(player1);
-        game.getPlayers().add(player2);
-        game.getPlayers().add(player3);
 
         game.setCurrentPlayer(0);
         game.setCurrentRound(0);
@@ -74,13 +59,17 @@ public class GameServiceTest {
         Stack<Move> moves = new Stack<>();
         Move move = new BlockerMove();
         move.setCharacterType(CharacterType.CHEYENNE);
-        move.setUser(player1);
+        move.setUser(game.getPlayers().get(0));
         move.setActionMoveType(ActionMoveType.DRAW);
 
         //adds three moves to the stack of the game to simulate the played moves in the planning phase
         moves.add(move);
-        moves.add(addMoveToStack(player2));
-        moves.add(addMoveToStack(player3));
+        moves.add(addMoveToStack(game.getPlayers().get(0)));
+        moves.add(addMoveToStack(game.getPlayers().get(0)));
+
+        for(User player: game.getPlayers()){
+            player.setCharacterType(CharacterType.BELLE);
+        }
 
         game.setActionMoves(moves);
     }
@@ -99,6 +88,7 @@ public class GameServiceTest {
 
         //since the last move in the stack is a draw move it should be removed automatically
         gameService.updateGameAfterMove(game);
+        assertThat(game.getActionMoves(), is(empty()));
 
         //started next round
         assertThat(game.getCurrentRound(), is(1));
@@ -110,6 +100,13 @@ public class GameServiceTest {
 
     }
 
+    @Test
+    public void testSwitchLevel() throws Exception {
+        user = game.getPlayers().get(0);
+        gameService.switchLevel(game.getTrain(), game.getTrain().get(1).getUpperLevel(), user);
+        assertThat(game.getTrain().get(1).getUpperLevel().getUsers().contains(user), is(true));
+    }
+
     public Move addMoveToStack(User user){
         Move move = new ShootMove();
         move.setCharacterType(user.getCharacterType());
@@ -117,5 +114,4 @@ public class GameServiceTest {
 
         return move;
     }
-
 }

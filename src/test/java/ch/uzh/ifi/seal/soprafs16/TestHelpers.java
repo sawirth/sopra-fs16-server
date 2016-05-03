@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
@@ -65,6 +66,12 @@ public class TestHelpers {
         wagon2.getUpperLevel().setId(4L);
         train.add(wagon2);
 
+        //Add empty wagon
+        Wagon emptyWagon = new Wagon(createTreasures(), false);
+        emptyWagon.getLowerLevel().setId(5L);
+        emptyWagon.getUpperLevel().setId(6L);
+        train.add(emptyWagon);
+
         List<User> users5 = new ArrayList<>();
         User user7 = new User("Sigmund", "Sigi");
         user7.setId(7L);
@@ -75,8 +82,8 @@ public class TestHelpers {
         User user8 = new User("John", "jh");
         user8.setId(8L);
         wagon3.setId(3L);
-        wagon3.getLowerLevel().setId(5L);
-        wagon3.getUpperLevel().setId(6L);
+        wagon3.getLowerLevel().setId(7L);
+        wagon3.getUpperLevel().setId(8L);
         wagon3.getLowerLevel().getUsers().add(user8);
         train.add(wagon3);
 
