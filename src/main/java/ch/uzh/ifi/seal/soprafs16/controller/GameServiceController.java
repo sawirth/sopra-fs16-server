@@ -348,7 +348,7 @@ public class GameServiceController
 
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
-            logger.info("User "+ game.getActionMoves().peek().getUser().getId().toString()+" isn't allowed to make move");
+            logger.info("User "+ user.getId() +" isn't allowed to make move");
             return ResponseEntity.badRequest().body(move);
         }
         else {
@@ -374,7 +374,6 @@ public class GameServiceController
     public ResponseEntity<Move> setTargets(@PathVariable Long gameId, @PathVariable Long targetId, @RequestParam("token") String userToken){
         Game game = gameRepo.findOne(gameId);
         User user = userRepo.findByToken(userToken);
-        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
 
         if (game==null){
             logger.info("No game with" + gameId +" found");
@@ -392,9 +391,16 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        if(game.getActionMoves().isEmpty()){
+            logger.info("Either not in action phase or action phase ended");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
+
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
-            logger.info("User "+ user.getUsername()+" isn't allowed to make move");
+            logger.info("User "+ user.getId() +" isn't allowed to make move");
             return ResponseEntity.badRequest().body(move);
         }
 
