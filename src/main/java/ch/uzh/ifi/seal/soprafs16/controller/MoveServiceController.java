@@ -96,8 +96,6 @@ public class MoveServiceController {
         gameRepo.save(game);
         logger.info("User " + user.getId() + " makes Move " + move.getId() + ": " + move.getActionMoveType());
 
-        //TODO Stop round on last move and start action phase
-
         return ResponseEntity.ok(user);
     }
 }

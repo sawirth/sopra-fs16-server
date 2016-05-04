@@ -2,6 +2,7 @@ package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ public class ChangeMarshalPositionMove extends Move {
     @Override
     public void executeAction(Target target) {
         Game game = super.getGame();
+        GameService gameService = new GameService();
         List<Wagon> train = game.getTrain();
         Level level = (Level) target;
 
@@ -32,9 +34,10 @@ public class ChangeMarshalPositionMove extends Move {
 
         //change position
         level.getWagon().setHasMarshal(true);
-        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched Marshal's Position");
+        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched Marshals Position");
 
-        //TODO check for marshal special case
+        //check for Marshals position
+        gameService.checkForMarshalInWagon(game);
     }
 
     @Override

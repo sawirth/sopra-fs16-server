@@ -29,6 +29,8 @@ public class ShootMove extends Move {
             victim.setShotsTaken(victim.getShotsTaken() + 1);
             super.getUser().setNumberOfShots(super.getUser().getNumberOfShots() - 1);
         }
+
+        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot" + ((User) target).getUsername() + " right in the face");
     }
 
     @Override
