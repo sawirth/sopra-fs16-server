@@ -425,6 +425,7 @@ public class GameServiceController
             game.getActionMoves().pop();
             gameService.updateGameAfterMove(game);
             gameRepo.save(game);
+            logger.info("User "+user.getId()+" made his move in action phase");
             return ResponseEntity.ok(move);
         }
     }

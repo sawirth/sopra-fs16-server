@@ -46,7 +46,7 @@ public class GameService {
                     round.getRoundFinisher().finishRound(game);
                     game.addLog(null, "Round has been finished with event " + round.getRoundType().toString());
                 } else {
-                    game.addLog(null, "Round has been finished");
+                    game.addLog(null, "Round has been finished with no event");
                 }
 
                 //set current round +1

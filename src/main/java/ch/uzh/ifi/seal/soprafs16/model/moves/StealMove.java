@@ -27,14 +27,14 @@ public class StealMove extends Move {
             for (Treasure treasure: wagon.getLowerLevel().getTreasures()){
                 if (treasure.getId().equals(target.getId())){
                     wagon.getLowerLevel().getTreasures().remove(treasure);
-                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString());
+                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString().toLowerCase());
                     return;
                 }
             }
             for (Treasure treasure: wagon.getUpperLevel().getTreasures()){
                 if (treasure.getId().equals(target.getId())){
                     wagon.getLowerLevel().getTreasures().remove(treasure);
-                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString());
+                    super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername() + " stole a " + treasure.getTreasureType().toString().toLowerCase());
                     return;
                 }
             }
