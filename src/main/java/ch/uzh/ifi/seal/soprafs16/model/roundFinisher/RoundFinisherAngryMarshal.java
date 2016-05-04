@@ -5,9 +5,11 @@ import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
+@DiscriminatorValue(value = "angry_marshal")
 public class RoundFinisherAngryMarshal extends RoundFinisher{
     @Override
     public void finishRound(Game game) {

@@ -3,12 +3,14 @@ package ch.uzh.ifi.seal.soprafs16.model.roundFinisher;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue(value = "pickpocketing")
 public class RoundFinisherPickPocketing extends RoundFinisher{
     @Override
     public void finishRound(Game game) {

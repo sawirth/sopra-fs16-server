@@ -5,9 +5,11 @@ import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
+@DiscriminatorValue(value = "take_all")
 public class RoundFinisherTakeAll extends RoundFinisher {
     @Override
     public void finishRound(Game game) {

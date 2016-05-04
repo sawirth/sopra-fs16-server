@@ -5,11 +5,13 @@ import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue(value = "crane")
 public class RoundFinisherCrane extends RoundFinisher {
 
     @Override
