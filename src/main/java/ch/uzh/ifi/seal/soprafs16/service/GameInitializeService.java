@@ -56,13 +56,18 @@ public class GameInitializeService {
         List<Wagon> allWagons = new ArrayList<>();
         List<Treasure> allMoneyBags = new ArrayList<>();
 
-        for (int i = 0; i < 14; i++) {
-            //TODO Check which and how many Moneybags exists
-            if (i < 4) {
+        for (int i = 0; i < 18; i++) {
+            if (i < 8) {
                 allMoneyBags.add(new Treasure(250, TreasureType.MONEYBAG));
-            } else if (i >= 4 && i < 10) {
+            } else if (i >= 8 && i < 10) {
+                allMoneyBags.add(new Treasure(300, TreasureType.MONEYBAG));
+            } else if (i >= 10 && i < 12) {
                 allMoneyBags.add(new Treasure(350, TreasureType.MONEYBAG));
-            } else if (i >= 10) {
+            } else if (i >= 12 && i < 14) {
+                allMoneyBags.add(new Treasure(400, TreasureType.MONEYBAG));
+            } else if (i >= 14 && i < 16) {
+                allMoneyBags.add(new Treasure(450, TreasureType.MONEYBAG));
+            } else {
                 allMoneyBags.add(new Treasure(500, TreasureType.MONEYBAG));
             }
         }
