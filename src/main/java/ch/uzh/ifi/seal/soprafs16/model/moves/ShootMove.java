@@ -44,7 +44,7 @@ public class ShootMove extends Move {
             //Lokomotive
             if (isUpperLevel) {
                 pointer = 1;
-                while (pointer < train.size() && train.get(pointer).getUpperLevel().getUsers().isEmpty()) {
+                while (pointer < train.size() -1 && train.get(pointer).getUpperLevel().getUsers().isEmpty()) {
                     pointer++;
                 }
                 targets.addAll(train.get(pointer).getUpperLevel().getUsers());
