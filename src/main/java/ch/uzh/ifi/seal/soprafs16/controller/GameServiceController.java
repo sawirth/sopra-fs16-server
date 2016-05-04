@@ -332,6 +332,11 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        if (game.getStatus() != GameStatus.RUNNING){
+            logger.info("Game is not running");
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
         Round round = game.getRounds().get(game.getCurrentRound());
         if (!round.isActionPhase()){
             logger.info("Not in action phase yet");
@@ -342,11 +347,6 @@ public class GameServiceController
         if (user==null){
             logger.info("No user found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (game.getStatus() != GameStatus.RUNNING){
-            logger.info("Game is not running");
-            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
