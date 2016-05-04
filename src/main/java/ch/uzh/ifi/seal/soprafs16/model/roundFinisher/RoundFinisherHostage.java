@@ -6,7 +6,9 @@ import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 
+import javax.persistence.Entity;
 
+@Entity
 public class RoundFinisherHostage extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
