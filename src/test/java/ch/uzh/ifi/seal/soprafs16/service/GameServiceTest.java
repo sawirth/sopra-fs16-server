@@ -108,6 +108,29 @@ public class GameServiceTest {
         assertThat(game.getTrain().get(1).getUpperLevel().getUsers().contains(user), is(true));
     }
 
+    @Test
+    public void testCheckForMarshalInWagon(){
+        game.getTrain().get(0).setHasMarshal(true);
+
+        //adds another user to the first lower level
+        User user = new User("Heino", "Heino");
+        game.getTrain().get(0).getLowerLevel().getUsers().add(user);
+        gameService.checkForMarshalInWagon(game);
+
+        //first there were 3 users on top now there are 5
+        assertThat(game.getTrain().get(0).getUpperLevel().getUsers().size(), is(5));
+        assertThat(game.getGameLog().getLogEntryList().size(), is(2));
+        assertThat(game.getTrain().get(0).getLowerLevel().getUsers().size(), is(0));
+
+        //checks another level so marshal is going to be set to the last wagon
+        game.getTrain().get(0).setHasMarshal(false);
+        game.getTrain().get(1).setHasMarshal(false);
+        game.getTrain().get(2).setHasMarshal(true);
+
+        assertThat(game.getTrain().get(2).getUpperLevel().getUsers().size(), is(0));
+        assertThat(game.getTrain().get(2).getLowerLevel().getUsers().size(), is(0));
+    }
+
     public Move addMoveToStack(User user){
         Move move = new ShootMove();
         move.setCharacterType(user.getCharacterType());

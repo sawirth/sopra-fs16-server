@@ -4,6 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ public class RoundFinisherAngryMarshal extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
         int i=0;
+        GameService gameService = new GameService();
         while(!game.getTrain().get(i).hasMarshal()){
             i++;
         }
@@ -28,6 +30,7 @@ public class RoundFinisherAngryMarshal extends RoundFinisher{
             game.getTrain().get(i+1).setHasMarshal(true);
         }
 
-        //Todo check for Marshal position
+        //since Marshal changed position in some cases
+        gameService.checkForMarshalInWagon(game);
     }
 }

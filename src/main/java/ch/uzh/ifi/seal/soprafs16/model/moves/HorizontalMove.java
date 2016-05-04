@@ -28,7 +28,8 @@ public class HorizontalMove extends Move {
 
         super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+" moved to another wagon");
 
-        //TODO check for marshal special case
+        //checks for Marshals position
+        gameService.checkForMarshalInWagon(super.getGame());
     }
 
     @Override

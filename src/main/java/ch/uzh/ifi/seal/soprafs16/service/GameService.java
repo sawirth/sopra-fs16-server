@@ -116,4 +116,28 @@ public class GameService {
         //Add to new level
         level.getUsers().add(user);
     }
+
+    public void checkForMarshalInWagon(Game game){
+        for (Wagon wagon: game.getTrain()) {
+            //the wagon where the marshal is on
+            if (wagon.hasMarshal()){
+                List<User> users = wagon.getLowerLevel().getUsers();
+                //no event, no add to game log
+                if (users.isEmpty()){
+                    return;
+                }
+                else{
+                    for (User user: users) {
+                        user.setShotsTaken(user.getShotsTaken() + 1);
+                    }
+                    wagon.getUpperLevel().getUsers().addAll(users);
+                    for (User user: users){
+                        game.addLog(user.getCharacterType(),user.getUsername()+ " has been shifted to top since the Marshal is in the lower level");
+                    }
+                    wagon.getLowerLevel().getUsers().clear();
+                    return;
+                }
+            }
+        }
+    }
 }

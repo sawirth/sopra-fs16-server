@@ -24,7 +24,9 @@ public class VerticalMove extends Move {
         gameService.switchLevel(super.getGame().getTrain(), (Level) target, super.getUser());
 
         super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " switched to another level in his wagon");
-        //TODO check for marshal special case
+
+        //checks for Marshals position
+        gameService.checkForMarshalInWagon(super.getGame());
 
     }
 
