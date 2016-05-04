@@ -9,6 +9,7 @@ import ch.uzh.ifi.seal.soprafs16.model.moves.HitMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.ShootMove;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherAngryMarshal;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherResistance;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class GameServiceTest {
         moveTypeList.add(MoveType.VISIBLE);
         moveTypeList.add(MoveType.DOUBLE);
         moveTypeList.add(MoveType.REVERSE);
-        Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisher());
+        Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisherBreak());
         round.setFirstPlayer(0);
         round.setCurrentMoveType(0);
 
@@ -47,7 +48,7 @@ public class GameServiceTest {
         moveTypeList2.add(MoveType.VISIBLE);
         moveTypeList2.add(MoveType.DOUBLE);
         moveTypeList2.add(MoveType.REVERSE);
-        Round round2 = new Round(4, RoundType.RESISTANCE, game, moveTypeList, new RoundFinisher());
+        Round round2 = new Round(4, RoundType.RESISTANCE, game, moveTypeList, new RoundFinisherBreak());
         round2.setFirstPlayer(1);
         round2.setCurrentMoveType(0);
 

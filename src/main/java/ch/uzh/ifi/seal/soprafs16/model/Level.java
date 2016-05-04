@@ -15,7 +15,7 @@ import java.util.List;
 @JsonDeserialize(as = Level.class)
 public class Level extends Target implements Serializable{
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JsonView(Views.Public.class)
     private List<Treasure> treasures;
 

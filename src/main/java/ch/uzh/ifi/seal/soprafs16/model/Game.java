@@ -53,7 +53,7 @@ public class Game implements Serializable {
 	@JsonView(Views.Internal.class)
 	private GameLog gameLog;
 
-	@Column(length = 10000)
+	@Column(length = 100000)
 	@JsonView(Views.Internal.class)
 	private Stack<Move> actionMoves;
 

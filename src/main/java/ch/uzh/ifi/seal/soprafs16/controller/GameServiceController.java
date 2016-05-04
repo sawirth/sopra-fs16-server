@@ -344,6 +344,11 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        if (game.getStatus() != GameStatus.RUNNING){
+            logger.info("Game is not running");
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
         Move move = moveRepo.findOne(game.getActionMoves().peek().getId());
 
         //check if user is current user
@@ -385,6 +390,11 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        if (game.getStatus()!= GameStatus.RUNNING){
+            logger.info("Game is not running");
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
         Round round = game.getRounds().get(game.getCurrentRound());
         if (!round.isActionPhase()){
             logger.info("Not in action phase yet");
@@ -405,12 +415,13 @@ public class GameServiceController
         }
 
         //checks if target is a possible target
-        if (gameService.checkTarget(move, targetId)==null){
+        Target target = gameService.checkTarget(move, targetId);
+        if (target==null){
             logger.info("Target "+targetId+" is not a possible target for this move");
             return ResponseEntity.badRequest().body(move);
         }
         else {
-            move.executeAction(gameService.checkTarget(move, targetId));
+            move.executeAction(target);
             game.getActionMoves().pop();
             gameService.updateGameAfterMove(game);
             gameRepo.save(game);

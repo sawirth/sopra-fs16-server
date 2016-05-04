@@ -77,7 +77,7 @@ public class RoundFinisherTest {
         //Every user on first wagon gets an BlockerMove
         List<User> users = game.getTrain().get(0).getUpperLevel().getUsers();
         for(User user: users){
-            Assert.assertThat(user.getDeckCards().size(), is(1));
+            Assert.assertThat(user.getShotsTaken(), is(1));
         }
 
         //Marshal is on second wagon now and not on first

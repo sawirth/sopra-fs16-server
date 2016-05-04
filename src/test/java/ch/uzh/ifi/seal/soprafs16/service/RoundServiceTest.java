@@ -7,6 +7,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.VerticalMove;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
 import org.apache.commons.logging.Log;
 import org.junit.Assert;
 import org.junit.Before;
@@ -250,7 +251,7 @@ public class RoundServiceTest {
         moveTypeList.add(MoveType.DOUBLE);
         moveTypeList.add(MoveType.REVERSE);
 
-        Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisher());
+        Round round = new Round(4, RoundType.ANGRY_MARSHAL, game, moveTypeList, new RoundFinisherBreak());
         round.setFirstPlayer(0);
         round.setCurrentMoveType(0);
 
