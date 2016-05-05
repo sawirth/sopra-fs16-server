@@ -1,9 +1,11 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
 import ch.uzh.ifi.seal.soprafs16.GameConstants;
+import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.model.moves.HitMove;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.MoveRepository;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.RoundRepository;
@@ -363,7 +365,7 @@ public class GameServiceController
             //if no possible targets are available update game, so that the next user can make his move
             if (targets.isEmpty()){
                 game.addLog(user.getCharacterType(), user.getUsername()+" had no possible targets");
-                logger.info("no possible targets for moveId: "+move.getId());
+                logger.info("no possible targets for moveId: " + move.getId());
                 game.getActionMoves().pop();
                 gameService.updateGameAfterMove(game);
                 gameRepo.save(game);
@@ -420,6 +422,21 @@ public class GameServiceController
             logger.info("Target "+targetId+" is not a possible target for this move");
             return ResponseEntity.badRequest().body(move);
         }
+
+        //since the hit move is different from other moves
+        else if (move.getActionMoveType()== ActionMoveType.HIT){
+            move.executeAction(target);
+            ((HitMove) move).setPhaseOfMove(((HitMove) move).getPhaseOfMove() + 1);
+
+            if (((HitMove) move).getPhaseOfMove() == 3){
+                game.getActionMoves().pop();
+                gameService.updateGameAfterMove(game);
+                logger.info("User "+user.getId()+" made his move in action phase");
+            }
+            gameRepo.save(game);
+            return ResponseEntity.ok(move);
+        }
+
         else {
             move.executeAction(target);
             game.getActionMoves().pop();
