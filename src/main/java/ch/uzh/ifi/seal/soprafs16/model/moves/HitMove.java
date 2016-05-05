@@ -25,6 +25,12 @@ public class HitMove extends Move {
     @ManyToOne
     private Target userTarget;
 
+    /**
+     * executes the action and checks in which state the hitMove is
+     * for every state it calls another execute method
+     *
+     * @param target
+     */
     @Override
     public void executeAction(Target target) {
         switch (phaseOfMove) {
@@ -40,6 +46,10 @@ public class HitMove extends Move {
         }
     }
 
+    /**
+     * calculates the possible targets for eah state in hitMove
+     * @return List<Target> the possible targets the user can choose from
+     */
     @Override
     public List<Target> calculateTargets() {
         List<Target> targets = new ArrayList<>();
@@ -51,7 +61,12 @@ public class HitMove extends Move {
         return targets;
     }
 
-
+    /**
+     * calculates the possible players the user can hit and returns them in a list
+     *
+     * @param targets
+     * @return possible user targets
+     */
     private List<Target> calculateUserTargets(List<Target> targets){
         Game game = super.getGame();
         User user = super.getUser();
@@ -81,12 +96,24 @@ public class HitMove extends Move {
         return targets;
     }
 
+    /**
+     * calculates the possible treasures from the player that got hit
+     *
+     * @param targets
+     * @return possible treasure targets
+     */
     private List<Target> calculateTreasureTargets(List<Target> targets){
         targets.addAll(((User) userTarget).getTreasures());
         super.setPossibleTargets(targets);
         return targets;
     }
 
+    /**
+     * calculates the levels the hitten player can be switched to
+     *
+     * @param targets
+     * @return possible levels
+     */
     private List<Target> calculateLevelTargets(List<Target> targets){
         int wagonPosition = TargetHelper.getWagonPositionOfUser((User) userTarget, super.getGame().getTrain());
         boolean isUpperLevel = TargetHelper.isOnUpperLevel((User) userTarget, super.getGame().getTrain());
@@ -125,12 +152,23 @@ public class HitMove extends Move {
         return targets;
     }
 
-
+    /**
+     * switches the hitten player to the chosen level
+     *
+     * @param target
+     */
     private void executeActionChooseLevel(Target target) {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target,(User) userTarget);
     }
 
+    /**
+     * chooses the treasure the user has chosen from the hitten player
+     * if user has character cheyenne and the chosen treasure is a moneybag it puts the treasure into
+     * the treasures of the user
+     *
+     * @param target
+     */
     private void executeActionChooseTreasure(Target target) {
         ((User) userTarget).getTreasures().remove(target);
 
@@ -151,7 +189,7 @@ public class HitMove extends Move {
             }
         }
     }
-
+    
     private void executeActionChooseUser(Target target) {
         this.setUserTarget(target);
     }
