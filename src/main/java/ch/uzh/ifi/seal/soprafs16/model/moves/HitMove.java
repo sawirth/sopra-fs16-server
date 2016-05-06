@@ -160,6 +160,7 @@ public class HitMove extends Move {
     private void executeActionChooseLevel(Target target) {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target,(User) userTarget);
+        gameService.checkForMarshalInWagon(super.getGame());
     }
 
     /**
@@ -175,8 +176,7 @@ public class HitMove extends Move {
         //checks if user has character cheyenne for her special move
         if (super.getCharacterType() == CharacterType.CHEYENNE && ((Treasure) target).getTreasureType()== TreasureType.MONEYBAG){
             super.getUser().getTreasures().add((Treasure) target);
-        }
-        else {
+        } else {
             int wagonPosition = TargetHelper.getWagonPositionOfUser((User) userTarget, super.getGame().getTrain());
             //gets the level the user stands on
             if (TargetHelper.isOnUpperLevel((User) userTarget, super.getGame().getTrain())) {
@@ -203,8 +203,8 @@ public class HitMove extends Move {
         return phaseOfMove;
     }
 
-    public void setPhaseOfMove(int pahseOfMove) {
-        this.phaseOfMove = pahseOfMove;
+    public void setPhaseOfMove(int phaseOfMove) {
+        this.phaseOfMove = phaseOfMove;
     }
 
     public Target getUserTarget() {

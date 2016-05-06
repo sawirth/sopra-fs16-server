@@ -147,7 +147,7 @@ public class GameServiceController
 
             for (Round round : gameInitializeService.initializeRounds(numberOfRounds, game)) {
                 round.setGame(game);
-//                round = roundRepo.save(round);
+                round = roundRepo.save(round);
                 game.getRounds().add(round);
             }
 
@@ -160,6 +160,10 @@ public class GameServiceController
                 roundService.drawStartCards(u);
                 //Reset shots taken and number of shots to initial values
                 u.setNumberOfShots(6);
+            }
+
+            if (numberOfRounds == 1) {
+                //TODO modify game for better fast game (add some treasures, remove shots etc.)
             }
 
             game.addLog(game.getPlayers().get(0).getCharacterType(), "It's " + game.getPlayers().get(0).getUsername() + "'s turn");
@@ -356,7 +360,8 @@ public class GameServiceController
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
             logger.info("User "+ user.getId() +" isn't allowed to make move");
-            return ResponseEntity.badRequest().body(move);
+            move.getPossibleTargets().clear();
+            return ResponseEntity.accepted().body(move);
         }
         else {
             gameRepo.save(game);
@@ -418,31 +423,27 @@ public class GameServiceController
 
         //checks if target is a possible target
         Target target = gameService.checkTarget(move, targetId);
-        if (target==null){
-            logger.info("Target "+targetId+" is not a possible target for this move");
+        if (target == null) {
+            logger.info("Target " + targetId + " is not a possible target for this move");
             return ResponseEntity.badRequest().body(move);
-        }
-
-        //since the hit move is different from other moves
-        else if (move.getActionMoveType()== ActionMoveType.HIT){
+        } else if (move.getActionMoveType() == ActionMoveType.HIT) {
+            //since the hit move is different from other moves
             move.executeAction(target);
             ((HitMove) move).setPhaseOfMove(((HitMove) move).getPhaseOfMove() + 1);
 
-            if (((HitMove) move).getPhaseOfMove() == 3){
+            if (((HitMove) move).getPhaseOfMove() == 3) {
                 game.getActionMoves().pop();
                 gameService.updateGameAfterMove(game);
-                logger.info("User "+user.getId()+" made his move in action phase");
+                logger.info("User " + user.getId() + " made his move in action phase");
             }
             gameRepo.save(game);
             return ResponseEntity.ok(move);
-        }
-
-        else {
+        } else {
             move.executeAction(target);
             game.getActionMoves().pop();
             gameService.updateGameAfterMove(game);
             gameRepo.save(game);
-            logger.info("User "+user.getId()+" made his move in action phase");
+            logger.info("User " + user.getId() + " made his move in action phase");
             return ResponseEntity.ok(move);
         }
     }

@@ -169,39 +169,40 @@ public class GameInitializeService {
 
         //Load a fast game if the number of rounds is only 1
         if (numberOfRounds == 1) {
-            normalRounds.add(new Round(2, RoundType.FAST_GAME, game, createMoveTypes(1, 2, 0, 0, 0), new RoundFinisherBreak()));
-            return normalRounds;
+            allRounds.add(new Round(2, RoundType.FAST_GAME, game, createMoveTypes(1, 2, 0, 0, 0), new RoundFinisherBreak()));
+
+        } else {
+            normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1, 1, 2, 3, 0), new RoundFinisherAngryMarshal()));
+
+            normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherCrane()));
+
+            normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1, 1, 1, 1, 0), new RoundFinisherBreak()));
+
+            normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1, 2, 4, 1, 0), new RoundFinisherTakeAll()));
+
+            normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1, 1, 2, 1, 1), new RoundFinisherResistance()));
+
+            normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1, 4, 1, 0, 0), null));
+
+            normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1, 2, 1, 2, 1), null));
+
+            endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherPickPocketing()));
+
+            endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherRevengeMarshal()));
+
+            endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherHostage()));
+
+
+            //Shuffles the rounds
+            Collections.shuffle(normalRounds);
+            Collections.shuffle(endRounds);
+
+            //gets the desired number of rounds and adds them to the list that is given back
+            for (int i = 0; i < numberOfRounds - 1; i++) {
+                allRounds.add(normalRounds.get(i));
+            }
+            allRounds.add(endRounds.get(0));
         }
-
-        normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1,1,2,3,0), new RoundFinisherAngryMarshal()));
-
-        normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));
-
-        normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1,1,1,1,0), new RoundFinisherBreak()));
-
-        normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1,2,4,1,0), new RoundFinisherTakeAll()));
-
-        normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1,1,2,1,1), new RoundFinisherResistance()));
-
-        normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1,4,1,0,0), null));
-
-        normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1,2,1,2,1), null));
-
-        endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1,1,2,1,0), new RoundFinisherPickPocketing()));
-
-        endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1,1,2,1,0), new RoundFinisherRevengeMarshal()));
-
-        endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherHostage()));
-
-        //Shuffles the rounds
-        Collections.shuffle(normalRounds);
-        Collections.shuffle(endRounds);
-
-        //gets the desired number of rounds and adds them to the list that is given back
-        for(int i=0;i<numberOfRounds-1;i++){
-            allRounds.add(normalRounds.get(i));
-        }
-        allRounds.add(endRounds.get(0));
 
         //sets the first player of a round
         for(int i=0;i<allRounds.size();i++){
