@@ -190,7 +190,7 @@ public class GameInitializeService {
 
             endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherRevengeMarshal()));
 
-            endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherHostage()));
+            endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherHostage()));
 
 
             //Shuffles the rounds
