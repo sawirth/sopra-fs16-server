@@ -8,6 +8,7 @@ import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Round;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ import java.util.List;
 
 @Service("roundService")
 public class RoundService {
+
+
+    private GameService gameService = new GameService();
 
     /**
      * Resets the player to the initial state before the next round starts. The player gets his 10 action moves (cards)
@@ -89,7 +93,7 @@ public class RoundService {
         }
 
         //Special case for Doc as he can draw 7 cards each round
-        if (player.getCharacterType().equals(CharacterType.DOC)) {
+        if (player.getCharacterType() == CharacterType.DOC) {
             player.getHandCards().add(player.getDeckCards().remove(0));
         }
     }
@@ -190,8 +194,19 @@ public class RoundService {
         if (game.getCurrentPlayer()==round.getFirstPlayer() &&
                 round.getMoves().get(round.getMoves().size()-1).getUser() != game.getPlayers().get(game.getCurrentPlayer())){
 
-            if (round.getNUMBER_OF_MOVES()*game.getPlayers().size()==round.getMoves().size()){
+            if (round.getNUMBER_OF_MOVES()*game.getPlayers().size() == round.getMoves().size()){
                 round.setActionPhase(true);
+
+                //add moves to action phase stack and reset type so that hidden moves become visible
+                for (int i = round.getMoves().size()-1;i>=0;i--){
+                    round.getMoves().get(i).resetActionMoveType();
+                    game.getActionMoves().push(round.getMoves().get(i));
+                }
+
+                game.addLog(null, "Let's start the action phase");
+
+                gameService.updateGameAfterMove(game);
+                return game;
             }
             else{
                 round.setCurrentMoveType(round.getCurrentMoveType()+1);

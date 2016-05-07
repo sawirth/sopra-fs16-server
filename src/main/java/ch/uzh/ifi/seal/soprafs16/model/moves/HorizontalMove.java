@@ -2,9 +2,11 @@ package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
+import ch.uzh.ifi.seal.soprafs16.model.Level;
 import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -20,8 +22,14 @@ public class HorizontalMove extends Move {
     }
 
     @Override
-    public void executeAction() {
-        //TODO implement horizontal move action
+    public void executeAction(Target target) {
+        GameService gameService = new GameService();
+        gameService.switchLevel(super.getGame().getTrain(), (Level) target, super.getUser());
+
+        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+" moved to another wagon");
+
+        //checks for Marshals position
+        gameService.checkForMarshalInWagon(super.getGame());
     }
 
     @Override
@@ -71,5 +79,10 @@ public class HorizontalMove extends Move {
 
         super.setPossibleTargets(targets);
         return targets;
+    }
+
+    @Override
+    public void resetActionMoveType() {
+        super.setActionMoveType(ActionMoveType.HORIZONTAL);
     }
 }

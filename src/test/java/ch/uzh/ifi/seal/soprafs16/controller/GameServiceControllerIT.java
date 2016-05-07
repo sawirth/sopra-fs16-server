@@ -1,10 +1,12 @@
 package ch.uzh.ifi.seal.soprafs16.controller;
 
 import ch.uzh.ifi.seal.soprafs16.Application;
+import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
+import org.apache.catalina.connector.Response;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,7 +120,7 @@ public class GameServiceControllerIT {
         Assert.assertEquals(2, gameResponse.getBody().getPlayers().size());
 
         //Now the owner tries to start the game which must be possible
-        template.postForLocation(base + "/games/" + gameResponse.getBody().getId() + "/start?token=" + owner.getToken(), gameResponse.getBody().getNextPlayer());
+        template.postForLocation(base + "/games/" + gameResponse.getBody().getId() + "/start?fastmode=false&token=" + owner.getToken(), gameResponse.getBody().getNextPlayer());
         gameResponse = template.getForEntity(base + "/games/" + gameResponse.getBody().getId(), Game.class);
         Assert.assertEquals(GameStatus.RUNNING, gameResponse.getBody().getStatus());
 
@@ -190,7 +192,6 @@ public class GameServiceControllerIT {
         Assert.assertThat(httpStatus, is(HttpStatus.BAD_REQUEST));
 
         //First we have to get the handCards of the user
-
         owner = getUser(owner.getId()).getBody();
         Move move = owner.getHandCards().get(0);
 
@@ -222,6 +223,68 @@ public class GameServiceControllerIT {
         int cards = owner.getHandCards().size();
         owner = drawCards(owner.getToken()).getBody();
         assertThat(owner.getHandCards().size(), is(cards + 3));
+    }
+
+    @Test
+    public void testFastGame() {
+        /*
+        Fast game has the following setup:
+        - 1 round
+        - 2 moves, first is visible, second is hidden
+        - Break RoundFinisher
+         */
+
+        //Create two players
+        User player1 = addUser();
+        User player2 = addUser();
+
+        //Create game and add player 2 to it and start it
+        ResponseEntity<Game> game = template.postForEntity(base + "/games/new?token=" + player1.getToken(), null, Game.class, new Object());
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + player2.getToken(), null, Game.class, new Object());
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/start?fastmode=true&token=" + player1.getToken(), null, Game.class, new Object());
+        assertThat(game.getBody().getStatus(), is(GameStatus.RUNNING));
+
+        //Planning phase
+        List<Move> p1HandCards = game.getBody().getPlayers().get(0).getHandCards();
+        List<Move> p2HandCards = game.getBody().getPlayers().get(1).getHandCards();
+
+        makeMove(p1HandCards.get(0).getId(), player1.getToken());
+        makeMove(p2HandCards.get(0).getId(), player2.getToken());
+        makeMove(p1HandCards.get(1).getId(), player1.getToken());
+        makeMove(p2HandCards.get(1).getId(), player2.getToken());
+
+        game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class, new Object());
+        assertThat(game.getBody().getRounds().get(0).getMoves().size(), is(4));
+
+        //User shouldn't be allowed to draw cards
+        ResponseEntity responseEntity = drawCards(player1.getToken());
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+
+        //Action Phase
+        assertThat(game.getBody().getRounds().get(0).isActionPhase(), is(true));
+        ResponseEntity<Move> move1 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
+        if (!move1.getBody().getPossibleTargets().isEmpty()) {
+            move1 = setMoveTarget(game.getBody().getId(), move1.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+        }
+
+        ResponseEntity<Move> move2 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move2.getBody().getPossibleTargets().isEmpty()) {
+            move2 = setMoveTarget(game.getBody().getId(), move2.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+        }
+
+        ResponseEntity<Move> move3 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
+        if (!move3.getBody().getPossibleTargets().isEmpty()) {
+            move3 = setMoveTarget(game.getBody().getId(), move3.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+        }
+
+        ResponseEntity<Move> move4 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move4.getBody().getPossibleTargets().isEmpty()) {
+            move4 = setMoveTarget(game.getBody().getId(), move4.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+        }
+
+        game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class);
+
+        //TODO check for finished game
     }
 
     /*
@@ -257,5 +320,13 @@ public class GameServiceControllerIT {
         HttpEntity<User> httpEntity = new HttpEntity<>(request);
         ResponseEntity<User> response = template.exchange(base + "/users/", HttpMethod.POST, httpEntity, User.class);
         return response.getBody();
+    }
+
+    private ResponseEntity<Move> getMoveWithTargets(Long gameId, String usertoken) {
+        return template.getForEntity(base + "/games/" + gameId + "/targets?token=" + usertoken, Move.class, new Object());
+    }
+
+    private ResponseEntity<Move> setMoveTarget(Long gameId, Long targetId, String usertoken) {
+        return template.postForEntity(base + "/games/" + gameId + "/targets/" + targetId + "?token=" + usertoken, null, Move.class, new Object());
     }
 }

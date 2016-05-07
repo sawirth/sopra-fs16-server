@@ -1,9 +1,8 @@
 package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
-import ch.uzh.ifi.seal.soprafs16.model.Move;
-import ch.uzh.ifi.seal.soprafs16.model.Target;
-import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.model.*;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -19,8 +18,26 @@ public class ChangeMarshalPositionMove extends Move {
     }
 
     @Override
-    public void executeAction() {
-        //TODO implement switch marshal action
+    public void executeAction(Target target) {
+        Game game = super.getGame();
+        GameService gameService = new GameService();
+        List<Wagon> train = game.getTrain();
+        Level level = (Level) target;
+
+        //find and remove marshal from wagon
+        for (Wagon wagon : train) {
+            if (wagon.hasMarshal()) {
+                wagon.setHasMarshal(false);
+                break;
+            }
+        }
+
+        //change position
+        level.getWagon().setHasMarshal(true);
+        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched Marshals Position");
+
+        //check for Marshals position
+        gameService.checkForMarshalInWagon(game);
     }
 
     @Override
@@ -47,5 +64,10 @@ public class ChangeMarshalPositionMove extends Move {
 
         super.setPossibleTargets(targets);
         return targets;
+    }
+
+    @Override
+    public void resetActionMoveType() {
+        super.setActionMoveType(ActionMoveType.SWITCH_MARSHAL);
     }
 }

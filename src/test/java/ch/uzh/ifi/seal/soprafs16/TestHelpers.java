@@ -1,5 +1,6 @@
 package ch.uzh.ifi.seal.soprafs16;
 
+import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
@@ -103,6 +104,13 @@ public class TestHelpers {
         treasures.add(new Treasure(250, TreasureType.MONEYBAG));
         treasures.add(new Treasure(1000, TreasureType.CASHBOX));
         treasures.add(new Treasure(500, TreasureType.DIAMOND));
+
+        long i = 0;
+        for (Treasure treasure: treasures){
+            treasure.setId(i);
+            i++;
+        }
+
         return treasures;
     }
 

@@ -56,13 +56,18 @@ public class GameInitializeService {
         List<Wagon> allWagons = new ArrayList<>();
         List<Treasure> allMoneyBags = new ArrayList<>();
 
-        for (int i = 0; i < 14; i++) {
-            //TODO Check which and how many Moneybags exists
-            if (i < 4) {
+        for (int i = 0; i < 18; i++) {
+            if (i < 8) {
                 allMoneyBags.add(new Treasure(250, TreasureType.MONEYBAG));
-            } else if (i >= 4 && i < 10) {
+            } else if (i >= 8 && i < 10) {
+                allMoneyBags.add(new Treasure(300, TreasureType.MONEYBAG));
+            } else if (i >= 10 && i < 12) {
                 allMoneyBags.add(new Treasure(350, TreasureType.MONEYBAG));
-            } else if (i >= 10) {
+            } else if (i >= 12 && i < 14) {
+                allMoneyBags.add(new Treasure(400, TreasureType.MONEYBAG));
+            } else if (i >= 14 && i < 16) {
+                allMoneyBags.add(new Treasure(450, TreasureType.MONEYBAG));
+            } else {
                 allMoneyBags.add(new Treasure(500, TreasureType.MONEYBAG));
             }
         }
@@ -162,35 +167,42 @@ public class GameInitializeService {
         List<Round> endRounds = new ArrayList<>();
         List<Round> allRounds = new ArrayList<>();
 
-        normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1,1,2,3,0), new RoundFinisherAngryMarshal()));
+        //Load a fast game if the number of rounds is only 1
+        if (numberOfRounds == 1) {
+            allRounds.add(new Round(2, RoundType.FAST_GAME, game, createMoveTypes(1, 2, 0, 0, 0), new RoundFinisherBreak()));
 
-        normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherCrane()));
+        } else {
+            normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1, 1, 2, 3, 0), new RoundFinisherAngryMarshal()));
 
-        normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1,1,1,1,0), new RoundFinisherBreak()));
+            normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherCrane()));
 
-        normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1,2,4,1,0), new RoundFinisherTakeAll()));
+            normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1, 1, 1, 1, 0), new RoundFinisherBreak()));
 
-        normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1,1,2,1,1), new RoundFinisherResistance()));
+            normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1, 2, 4, 1, 0), new RoundFinisherTakeAll()));
 
-        normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1,4,1,0,0), null));
+            normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1, 1, 2, 1, 1), new RoundFinisherResistance()));
 
-        normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1,2,1,2,1), null));
+            normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1, 4, 1, 0, 0), null));
 
-        endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1,1,2,1,0), new RoundFinisherPickPocketing()));
+            normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1, 2, 1, 2, 1), null));
 
-        endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1,2,1,1,0), new RoundFinisherRevengeMarshal()));
+            endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherPickPocketing()));
 
-        endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1,2,1,1,0), new RoundFinisherHostage()));
+            endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherRevengeMarshal()));
 
-        //Shuffles the rounds
-        Collections.shuffle(normalRounds);
-        Collections.shuffle(endRounds);
+            endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherHostage()));
 
-        //gets the desired number of rounds and adds them to the list that is given back
-        for(int i=0;i<numberOfRounds-1;i++){
-            allRounds.add(normalRounds.get(i));
+
+            //Shuffles the rounds
+            Collections.shuffle(normalRounds);
+            Collections.shuffle(endRounds);
+
+            //gets the desired number of rounds and adds them to the list that is given back
+            for (int i = 0; i < numberOfRounds - 1; i++) {
+                allRounds.add(normalRounds.get(i));
+            }
+            allRounds.add(endRounds.get(0));
         }
-        allRounds.add(endRounds.get(0));
 
         //sets the first player of a round
         for(int i=0;i<allRounds.size();i++){

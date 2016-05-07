@@ -41,11 +41,11 @@ public class User extends Target implements Serializable {
 	@JsonView(Views.Internal.class)
     private List<Game> games;
 	
-    @OneToMany(mappedBy="user")
+    /*@OneToMany(mappedBy="user")
 	@JsonView(Views.Internal.class)
-    private List<Move> moves;
+    private List<Move> moves;*/
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonView(Views.Extended.class)
 	private List<Treasure> treasures;
 
@@ -74,7 +74,7 @@ public class User extends Target implements Serializable {
 
 		//Initialize lists to avoid NullPointers
 		games = new ArrayList<>();
-		moves = new ArrayList<>();
+		//moves = new ArrayList<>();
 		treasures = new ArrayList<>();
 		deckCards = new ArrayList<>();
 		handCards = new ArrayList<>();
@@ -104,13 +104,13 @@ public class User extends Target implements Serializable {
 		this.games = games;
 	}
 
-	public List<Move> getMoves() {
+	/*public List<Move> getMoves() {
 		return moves;
 	}
 
 	public void setMoves(List<Move> moves) {
 		this.moves = moves;
-	}
+	}*/
 
 	public String getToken() {
 		return token;
@@ -188,7 +188,7 @@ public class User extends Target implements Serializable {
 
 		final User otherUser = (User) obj;
 
-		return super.getId() == otherUser.getId();
+		return super.getId().equals(otherUser.getId());
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class User extends Target implements Serializable {
 		result = 31 * result + (status != null ? status.hashCode() : 0);
 		result = 31 * result + (characterType != null ? characterType.hashCode() : 0);
 		result = 31 * result + (games != null ? games.hashCode() : 0);
-		result = 31 * result + (moves != null ? moves.hashCode() : 0);
+		//result = 31 * result + (moves != null ? moves.hashCode() : 0);
 		result = 31 * result + (treasures != null ? treasures.hashCode() : 0);
 		result = 31 * result + (deckCards != null ? deckCards.hashCode() : 0);
 		result = 31 * result + (handCards != null ? handCards.hashCode() : 0);

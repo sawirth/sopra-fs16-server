@@ -150,19 +150,30 @@ public class UserServiceController
         User user = userRepo.findByToken(userToken);
 
         if (user == null) {
+            logger.info("No user with user token found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Game game = userService.findRunningGame(user);
 
         if (game == null){
+            logger.info("No running game found for User " + user.getId());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        Round round = game.getRounds().get(game.getCurrentRound());
+        if (round.isActionPhase()){
+            logger.info("Action phase has begun: User " + user.getId() + " isn't allowed to draw cards");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);        //User isn't allowed to draw cards in action phase
+        }
+
         if (game.getPlayers().get(game.getCurrentPlayer()) != user){
+            logger.info("User " + user.getId() + " isn't allowed to make a move");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       //User is only allowed to draw cards if it's his turn
         }
 
         if (user.getDeckCards().isEmpty()) {
+            logger.info("User cannot draw cards anymore");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);      //User can only draw if he has at least one card in his deck
         } else {
             Move move = new BlockerMove();
@@ -171,7 +182,6 @@ public class UserServiceController
             move.setActionMoveType(ActionMoveType.DRAW);
             roundService.drawDeckCards(user);
 
-            Round round = game.getRounds().get(game.getCurrentRound());
             round.getMoves().add(move);
             game.addLog(user.getCharacterType(), user.getUsername() + " has drawn cards");
             roundService.updateGameAfterMove(game);
