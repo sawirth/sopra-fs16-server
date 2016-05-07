@@ -7,6 +7,8 @@ import ch.uzh.ifi.seal.soprafs16.model.Move;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import ch.uzh.ifi.seal.soprafs16.service.GameService;
+import ch.uzh.ifi.seal.soprafs16.service.UserService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -29,6 +31,36 @@ public class ShootMove extends Move {
             victim.setShotsTaken(victim.getShotsTaken() + 1);
             super.getUser().setNumberOfShots(super.getUser().getNumberOfShots() - 1);
         }
+
+        //Django special ability: Move victim one wagon in direction of the shot
+        if (super.getUser().getCharacterType() == CharacterType.DJANGO) {
+            List<Wagon> train = super.getGame().getTrain();
+            int shooterPosition = TargetHelper.getWagonPositionOfUser(super.getUser(), train);
+            int victimPosition = TargetHelper.getWagonPositionOfUser((User) target, train);
+
+            //Only move victim if not on first or last wagon
+            if (!(victimPosition == super.getGame().getTrain().size() - 1) && victimPosition != 0) {
+                GameService gameService = new GameService();
+                boolean isUpperLevel = TargetHelper.isOnUpperLevel((User) target, train);
+                if (shooterPosition < victimPosition) {
+                    //Move towards end of train
+                    if (isUpperLevel) {
+                        gameService.switchLevel(train, train.get(victimPosition + 1).getUpperLevel(), (User) target);
+                    } else {
+                        gameService.switchLevel(train, train.get(victimPosition + 1).getLowerLevel(), (User) target);
+                    }
+                } else {
+                    //Move towards begin of train
+                    if (isUpperLevel) {
+                        gameService.switchLevel(train, train.get(victimPosition - 1).getUpperLevel(), (User) target);
+                    } else {
+                        gameService.switchLevel(train, train.get(victimPosition - 1).getLowerLevel(), (User) target);
+                    }
+                }
+                gameService.checkForMarshalInWagon(super.getGame());
+            }
+        }
+
 
         super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot" + ((User) target).getUsername() + " right in the face");
     }

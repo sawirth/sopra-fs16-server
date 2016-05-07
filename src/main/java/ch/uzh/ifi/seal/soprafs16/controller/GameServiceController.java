@@ -244,7 +244,7 @@ public class GameServiceController
             allCharacters.add(CharacterType.BELLE);
             allCharacters.add(CharacterType.DOC);
             allCharacters.add(CharacterType.GHOST);
-            allCharacters.add(CharacterType.JANGO);
+            allCharacters.add(CharacterType.DJANGO);
             allCharacters.add(CharacterType.TUCO);
 
             for(User user : game.getPlayers()){
