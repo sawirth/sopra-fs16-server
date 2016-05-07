@@ -222,6 +222,7 @@ public class ShootMoveTest {
         move.setUser(game.getPlayers().get(7));
         move.getUser().setCharacterType(CharacterType.DJANGO);
         User victim = game.getPlayers().get(4);
+        game.getTrain().get(0).setHasMarshal(false);
         move.executeAction(victim);
 
         assertThat(game.getTrain().get(0).getLowerLevel().getUsers().contains(victim), is(true));

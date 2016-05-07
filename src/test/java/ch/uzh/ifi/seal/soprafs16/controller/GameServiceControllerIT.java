@@ -287,10 +287,26 @@ public class GameServiceControllerIT {
         //TODO check for finished game
     }
 
+    @Test
+    public void testRemovePlayer() throws Exception {
+        User p1 = addUser();
+        ResponseEntity<Game> game = template.postForEntity(base + "/games/new?token=" + p1.getToken(), null, Game.class);
+        User p2 = addUser();
+        game = template.postForEntity(base + "/games/" + game.getBody().getId() + "/player?token=" + p2.getToken(), null, Game.class);
+
+        assertThat(game.getBody().getPlayers().size(), is(2));
+        game = template.postForEntity(base + "games/" + game.getBody().getId() + "/player/remove?token=" + p1.getToken(), null, Game.class);
+        assertThat(game.getBody().getPlayers().size(), is(1));
+
+        //Delete game when last user is removed
+        game = template.postForEntity(base + "games/" + game.getBody().getId() + "/player/remove?token=" + p2.getToken(), null, Game.class);
+        Assert.assertNull(game.getBody());
+    }
+
     /*
-    * Helper Methods
-    * TODO: Move to separate helper class
-     */
+        * Helper Methods
+        * TODO: Move to separate helper class
+         */
     private ResponseEntity<User> getUser(Long userId) {
         return template.getForEntity(base + "/users/" + userId, User.class, new Object());
     }
