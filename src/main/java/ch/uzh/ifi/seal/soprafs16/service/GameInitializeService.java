@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 @Service("gameInitializeService")
 public class GameInitializeService {
@@ -54,72 +55,77 @@ public class GameInitializeService {
      */
     private List<Wagon> createWagons() {
         List<Wagon> allWagons = new ArrayList<>();
-        List<Treasure> allMoneyBags = new ArrayList<>();
+        Stack<Treasure> allMoneyBags = new Stack<>();
 
         for (int i = 0; i < 18; i++) {
             if (i < 8) {
-                allMoneyBags.add(new Treasure(250, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(250, TreasureType.MONEYBAG));
             } else if (i >= 8 && i < 10) {
-                allMoneyBags.add(new Treasure(300, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(300, TreasureType.MONEYBAG));
             } else if (i >= 10 && i < 12) {
-                allMoneyBags.add(new Treasure(350, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(350, TreasureType.MONEYBAG));
             } else if (i >= 12 && i < 14) {
-                allMoneyBags.add(new Treasure(400, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(400, TreasureType.MONEYBAG));
             } else if (i >= 14 && i < 16) {
-                allMoneyBags.add(new Treasure(450, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(450, TreasureType.MONEYBAG));
             } else {
-                allMoneyBags.add(new Treasure(500, TreasureType.MONEYBAG));
+                allMoneyBags.push(new Treasure(500, TreasureType.MONEYBAG));
             }
         }
 
         Collections.shuffle(allMoneyBags);
+        List<Treasure> tempMoneyBags = new ArrayList<>();
 
-        Wagon wagon1 = new Wagon(addTreasures(allMoneyBags,0,2,0,0),false);
+        //Wagon 1 has 3 Moneybags
+        for (int i = 0; i < 3; i++) {
+            tempMoneyBags.add(allMoneyBags.pop());
+        }
+        Wagon wagon1 = new Wagon(generateWagonTreasures(tempMoneyBags, 0),false);
         allWagons.add(wagon1);
 
-        Wagon wagon2 = new Wagon(addTreasures(allMoneyBags,2,3,1,0),false);
+        //Wagon 2 has 1 Moneybag
+        tempMoneyBags.clear();
+        tempMoneyBags.add(allMoneyBags.pop());
+        Wagon wagon2 = new Wagon(generateWagonTreasures(tempMoneyBags, 0),false);
         allWagons.add(wagon2);
 
-        Wagon wagon3 = new Wagon(addTreasures(allMoneyBags,3,3,1,0),false);
+        //Wagon 3 has 3 Diamonds
+        tempMoneyBags.clear();
+        Wagon wagon3 = new Wagon(generateWagonTreasures(tempMoneyBags, 3),false);
         allWagons.add(wagon3);
 
-        Wagon wagon4 = new Wagon(addTreasures(allMoneyBags,3,5,0,0),false);
+        //Wagon 4 has 1 Moneybag and 1 Diamond
+        tempMoneyBags.add(allMoneyBags.pop());
+        Wagon wagon4 = new Wagon(generateWagonTreasures(tempMoneyBags, 1),false);
         allWagons.add(wagon4);
 
-        Wagon wagon5 = new Wagon(addTreasures(allMoneyBags,5,7,0,0),false);
+        //Wagon 5 has 4 Moneybags and 1 Diamond
+        tempMoneyBags.clear();
+        for (int i = 0; i < 4; i++) {
+            tempMoneyBags.add(allMoneyBags.pop());
+        }
+        Wagon wagon5 = new Wagon(generateWagonTreasures(tempMoneyBags, 1),false);
         allWagons.add(wagon5);
 
-        Wagon wagon6 = new Wagon(addTreasures(allMoneyBags,7,9,2,0),false);
+        //Wagon 6 has 3 Moneybags and 1 Diamond
+        tempMoneyBags.clear();
+        for (int i = 0; i < 3; i++) {
+            tempMoneyBags.add(allMoneyBags.pop());
+        }
+        Wagon wagon6 = new Wagon(generateWagonTreasures(tempMoneyBags, 1),false);
         allWagons.add(wagon6);
 
         return allWagons;
     }
 
-    /**
-     * Generates the treasureList for each Wagon
-     *
-     * @param moneybags
-     * @param fromIndex
-     * @param toIndex
-     * @param diamonds
-     * @param cashboxes
-     * @return List<Treasure>
-     */
-    private List<Treasure> addTreasures(List<Treasure> moneybags, int fromIndex, int toIndex, int diamonds, int cashboxes){
+    private List<Treasure> generateWagonTreasures(List<Treasure> moneybags, int numDiamonds) {
         List<Treasure> treasures = new ArrayList<>();
+        treasures.addAll(moneybags);
 
-        //adds moneybags to the list
-        for (int i = fromIndex; i < toIndex; i++) {
-            treasures.add(moneybags.get(i));
-        }
-        //adds diamonds to the list
-        for (int i = 0; i < diamonds; i++) {
+        for (int i = 0; i < numDiamonds; i++) {
             treasures.add(new Treasure(500, TreasureType.DIAMOND));
         }
-        //adds cashboxes to the list
-        for (int i = 0; i < cashboxes; i++) {
-            treasures.add(new Treasure(1000, TreasureType.CASHBOX));
-        }
+
         return treasures;
     }
 

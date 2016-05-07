@@ -63,13 +63,17 @@ public class HorizontalMove extends Move {
             //dazwischen
             if (isUpperLevel) {
                 //nach hinten bzw. rechts
-                for (int i = wagonPosition + 1; i < train.size() && i <= 3; i++) {
+                int counter = 0;
+                for (int i = wagonPosition + 1; i < train.size() && counter <= 3; i++) {
                     targets.add(train.get(i).getUpperLevel());
+                    counter++;
                 }
 
                 //nach vorne bzw. links
-                for (int i = wagonPosition - 1; i >= 0 && i >= wagonPosition - 3; i--) {
+                counter = 0;
+                for (int i = wagonPosition - 1; i >= 0 && counter <= 3; i--) {
                     targets.add(train.get(i).getUpperLevel());
+                    counter++;
                 }
             } else {
                 targets.add(train.get(wagonPosition + 1).getLowerLevel());
