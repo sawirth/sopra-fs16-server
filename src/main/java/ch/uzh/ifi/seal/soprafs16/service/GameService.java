@@ -66,6 +66,8 @@ public class GameService {
             }
         }
 
+        game.setCurrentPlayer(game.getPlayers().indexOf(game.getActionMoves().peek().getUser()));
+
         game.addLog(game.getActionMoves().peek().getCharacterType(), "It's " + game.getActionMoves().peek().getUser().getUsername()+"'s turn");
 
         return game;
