@@ -443,6 +443,7 @@ public class GameServiceController
         //check if user is current user
         if (!user.equals(game.getActionMoves().peek().getUser())){
             logger.info("User "+ user.getId() +" isn't allowed to make move");
+            move.getPossibleTargets().clear();
             return ResponseEntity.badRequest().body(move);
         }
 

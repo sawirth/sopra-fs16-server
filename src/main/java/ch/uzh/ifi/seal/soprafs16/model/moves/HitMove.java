@@ -105,7 +105,13 @@ public class HitMove extends Move {
     private List<Target> calculateTreasureTargets(List<Target> targets){
         targets.addAll(((User) userTarget).getTreasures());
         super.setPossibleTargets(targets);
-        return targets;
+        if (targets.isEmpty()){
+            phaseOfMove++;
+            return calculateLevelTargets(targets);
+        }
+        else{
+            return targets;
+        }
     }
 
     /**
@@ -160,11 +166,13 @@ public class HitMove extends Move {
     private void executeActionChooseLevel(Target target) {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target,(User) userTarget);
+        super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()+" hit "+
+                ((User) userTarget).getUsername());
         gameService.checkForMarshalInWagon(super.getGame());
     }
 
     /**
-     * chooses the treasure the user has chosen from the hitten player
+     * chooses the treasure the user has chosen from the player that got hit
      * if user has character cheyenne and the chosen treasure is a moneybag it puts the treasure into
      * the treasures of the user
      *
@@ -174,7 +182,7 @@ public class HitMove extends Move {
         ((User) userTarget).getTreasures().remove(target);
 
         //checks if user has character cheyenne for her special move
-        if (super.getCharacterType() == CharacterType.CHEYENNE && ((Treasure) target).getTreasureType()== TreasureType.MONEYBAG){
+        if (super.getUser().getCharacterType().equals(CharacterType.CHEYENNE) && ((Treasure) target).getTreasureType().equals(TreasureType.MONEYBAG)){
             super.getUser().getTreasures().add((Treasure) target);
         } else {
             int wagonPosition = TargetHelper.getWagonPositionOfUser((User) userTarget, super.getGame().getTrain());
