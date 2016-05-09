@@ -4,6 +4,7 @@ import ch.uzh.ifi.seal.soprafs16.GameConstants;
 import ch.uzh.ifi.seal.soprafs16.constant.ActionMoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
 import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.model.moves.HitMove;
 import ch.uzh.ifi.seal.soprafs16.model.repositories.GameRepository;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 
 @RestController
@@ -162,8 +164,31 @@ public class GameServiceController
                 u.setNumberOfShots(6);
             }
 
+            //Make some random changes to the fast game so it is better to play
             if (numberOfRounds == 1) {
-                //TODO modify game for better fast game (add some treasures, remove shots etc.)
+
+                //User changes
+                Random random = new Random();
+                for (User user : game.getPlayers()) {
+                    user.setShotsTaken(random.nextInt(4));
+                    user.setNumberOfShots(random.nextInt(7));
+
+                    if (random.nextBoolean()) {
+                        user.getTreasures().add(new Treasure(500, TreasureType.DIAMOND));
+                        user.getTreasures().add(new Treasure(250, TreasureType.MONEYBAG));
+                        user.getTreasures().add(new Treasure(250, TreasureType.MONEYBAG));
+                    }
+                }
+
+                for (Wagon wagon : game.getTrain()) {
+                    if (wagon.getId() % 2 == 0) {
+                        wagon.getUpperLevel().getTreasures().add(new Treasure(400, TreasureType.MONEYBAG));
+                        wagon.getUpperLevel().getTreasures().add(new Treasure(400, TreasureType.MONEYBAG));
+                    } else {
+                        wagon.getUpperLevel().getTreasures().add(new Treasure(500, TreasureType.DIAMOND));
+                        wagon.getUpperLevel().getTreasures().add(new Treasure(500, TreasureType.DIAMOND));
+                    }
+                }
             }
 
             game.addLog(game.getPlayers().get(0).getCharacterType(), "It's " + game.getPlayers().get(0).getUsername() + "'s turn");
