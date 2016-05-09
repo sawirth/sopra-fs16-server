@@ -1,16 +1,15 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
 
-import ch.uzh.ifi.seal.soprafs16.constant.*;
-import ch.uzh.ifi.seal.soprafs16.model.*;
 import ch.uzh.ifi.seal.soprafs16.TestHelpers;
+import ch.uzh.ifi.seal.soprafs16.constant.*;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
+import ch.uzh.ifi.seal.soprafs16.model.Move;
+import ch.uzh.ifi.seal.soprafs16.model.Round;
+import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
-import ch.uzh.ifi.seal.soprafs16.model.moves.HitMove;
-import ch.uzh.ifi.seal.soprafs16.model.moves.HorizontalMove;
 import ch.uzh.ifi.seal.soprafs16.model.moves.ShootMove;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherAngryMarshal;
 import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherResistance;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class GameServiceTest {
 

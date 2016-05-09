@@ -8,7 +8,6 @@ import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
 import ch.uzh.ifi.seal.soprafs16.service.GameService;
-import ch.uzh.ifi.seal.soprafs16.service.UserService;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -27,10 +26,12 @@ public class ShootMove extends Move {
     public void executeAction(Target target) {
         User victim = (User) target;
 
-        if (victim != null) {
-            victim.setShotsTaken(victim.getShotsTaken() + 1);
-            super.getUser().setNumberOfShots(super.getUser().getNumberOfShots() - 1);
+        if (victim == null) {
+            return;
         }
+
+        victim.setShotsTaken(victim.getShotsTaken() + 1);
+        super.getUser().setNumberOfShots(super.getUser().getNumberOfShots() - 1);
 
         //Django special ability: Move victim one wagon in direction of the shot
         if (super.getUser().getCharacterType() == CharacterType.DJANGO) {

@@ -7,11 +7,10 @@ import ch.uzh.ifi.seal.soprafs16.model.Target;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class ChangeMarshalPositionMoveTest {
 

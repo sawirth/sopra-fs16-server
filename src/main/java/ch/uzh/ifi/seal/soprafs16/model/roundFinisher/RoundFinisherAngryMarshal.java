@@ -3,7 +3,6 @@ package ch.uzh.ifi.seal.soprafs16.model.roundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 import ch.uzh.ifi.seal.soprafs16.service.GameService;
 
 import javax.persistence.DiscriminatorValue;

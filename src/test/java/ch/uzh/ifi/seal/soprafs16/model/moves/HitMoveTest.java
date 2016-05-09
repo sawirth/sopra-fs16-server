@@ -2,18 +2,15 @@ package ch.uzh.ifi.seal.soprafs16.model.moves;
 
 import ch.uzh.ifi.seal.soprafs16.TestHelpers;
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
-import ch.uzh.ifi.seal.soprafs16.helper.TargetHelper;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Level;
 import ch.uzh.ifi.seal.soprafs16.model.Target;
 import ch.uzh.ifi.seal.soprafs16.model.User;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class HitMoveTest {

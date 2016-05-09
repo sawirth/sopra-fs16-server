@@ -4,7 +4,6 @@ import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.RoundFinisher;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
-import ch.uzh.ifi.seal.soprafs16.model.moves.BlockerMove;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
