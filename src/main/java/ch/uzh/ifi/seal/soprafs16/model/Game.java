@@ -53,6 +53,10 @@ public class Game implements Serializable {
 	@JsonView(Views.Internal.class)
 	private GameLog gameLog;
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@JsonView(Views.Extended.class)
+	private List<UserResult> userResults;
+
 	@Column(length = 100000)
 	@JsonView(Views.Internal.class)
 	private Stack<Move> actionMoves;
@@ -63,6 +67,7 @@ public class Game implements Serializable {
 		currentRound = 0;
 		this.gameLog = new GameLog();
 		this.actionMoves = new Stack<>();
+		this.userResults = new ArrayList<>();
 	}
 
 	public void addLog(CharacterType characterType, String message) {
@@ -173,4 +178,12 @@ public class Game implements Serializable {
         
         return currentRound.getMoves().get(currentRound.getMoves().size() - 1);
     }
+
+	public List<UserResult> getUserResults() {
+		return userResults;
+	}
+
+	public void setUserResults(List<UserResult> userResults) {
+		this.userResults = userResults;
+	}
 }

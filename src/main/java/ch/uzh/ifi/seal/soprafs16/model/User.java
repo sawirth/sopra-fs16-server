@@ -1,6 +1,7 @@
 package ch.uzh.ifi.seal.soprafs16.model;
 
 import ch.uzh.ifi.seal.soprafs16.constant.CharacterType;
+import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -206,5 +207,43 @@ public class User extends Target implements Serializable {
 		result = 31 * result + numberOfShots;
 		result = 31 * result + shotsTaken;
 		return result;
+	}
+
+	public int getMoneybagsValue(){
+		int value = 0;
+		for(Treasure treasure: treasures){
+			if(treasure.getTreasureType().equals(TreasureType.MONEYBAG)){
+				value = value + treasure.getValue();
+			}
+		}
+		return value;
+	}
+
+	public int getDiamondsValue(){
+		int value = 0;
+		for(Treasure treasure: treasures){
+			if(treasure.getTreasureType().equals(TreasureType.DIAMOND)){
+				value = value + treasure.getValue();
+			}
+		}
+		return value;
+	}
+
+	public int getCashboxesValue(){
+		int value = 0;
+		for(Treasure treasure: treasures){
+			if(treasure.getTreasureType().equals(TreasureType.CASHBOX)){
+				value = value + treasure.getValue();
+			}
+		}
+		return value;
+	}
+
+	public int getTotalValueOfTreasures(){
+		int value = 0;
+		for(Treasure treasure: treasures){
+			value = value + treasure.getValue();
+		}
+		return value;
 	}
 }
