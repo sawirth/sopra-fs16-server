@@ -23,7 +23,6 @@ public class GameService {
             Move move = game.getActionMoves().peek();
 
             if (move.getActionMoveType() == ActionMoveType.DRAW){
-                game.addLog(move.getCharacterType(),"It's " + move.getUser().getUsername() +"'s turn");
                 game.addLog(move.getCharacterType(), move.getUser().getUsername()+" drew cards in planning phase");
                 game.getActionMoves().pop();
             }
@@ -37,7 +36,6 @@ public class GameService {
             if (game.getRounds().size() == game.getCurrentRound()+1){
 
                 round.getRoundFinisher().finishRound(game);
-                game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
                 game.addLog(null, "Game finished");
 
                 setGameResults(game);
@@ -49,13 +47,12 @@ public class GameService {
                 //check if round has an round finisher
                 if (round.getRoundFinisher() != null) {
                     round.getRoundFinisher().finishRound(game);
-                    game.addLog(null, "Round has been finished with event " + round.getRoundType().toString());
                 } else {
                     game.addLog(null, "Round has been finished with no event");
                 }
 
                 //set current round +1
-                game.addLog(null, "New round has started YUHU");
+                game.addLog(null, "A new round has started, get ready!");
                 game.setCurrentRound(game.getCurrentRound()+1);
                 game.setCurrentPlayer(game.getRounds().get(game.getCurrentRound()).getFirstPlayer());
 
@@ -64,16 +61,11 @@ public class GameService {
                     roundService.drawStartCards(user);
                 }
 
-                game.addLog(game.getPlayers().get(game.getCurrentPlayer()).getCharacterType(),
-                        "It's "+ game.getPlayers().get(game.getCurrentPlayer()).getUsername()+"'s turn");
-
                 return game;
             }
         }
 
         game.setCurrentPlayer(game.getPlayers().indexOf(game.getActionMoves().peek().getUser()));
-
-        game.addLog(game.getActionMoves().peek().getCharacterType(), "It's " + game.getActionMoves().peek().getUser().getUsername()+"'s turn");
 
         return game;
     }
@@ -139,7 +131,7 @@ public class GameService {
                     }
                     wagon.getUpperLevel().getUsers().addAll(users);
                     for (User user: users){
-                        game.addLog(user.getCharacterType(),user.getUsername()+ " has been shifted to top since the Marshal is in the lower level");
+                        game.addLog(user.getCharacterType(),user.getUsername()+ " has been shifted to top of the wagon, since the Marshal is now in the lower level");
                     }
                     wagon.getLowerLevel().getUsers().clear();
                     return;

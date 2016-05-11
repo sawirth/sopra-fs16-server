@@ -50,7 +50,7 @@ public class HitMove extends Move {
     }
 
     /**
-     * calculates the possible targets for eah state in hitMove
+     * calculates the possible targets for each state in hitMove
      * @return List<Target> the possible targets the user can choose from
      */
     @Override
@@ -169,9 +169,9 @@ public class HitMove extends Move {
     private void executeActionChooseLevel(Target target) {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target,(User) userTarget);
-        super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()+" hit "+
-                ((User) userTarget).getUsername());
         gameService.checkForMarshalInWagon(super.getGame());
+        super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()
+                + " changed " + ((User)this.userTarget).getUsername() + "'s position");
     }
 
     /**
@@ -187,22 +187,30 @@ public class HitMove extends Move {
         //checks if user has character cheyenne for her special move
         if (super.getUser().getCharacterType().equals(CharacterType.CHEYENNE) && ((Treasure) target).getTreasureType().equals(TreasureType.MONEYBAG)){
             super.getUser().getTreasures().add((Treasure) target);
+            super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()
+                    + " stole " + ((User)this.userTarget).getUsername() + "a moneybag and kept it");
         } else {
             int wagonPosition = TargetHelper.getWagonPositionOfUser((User) userTarget, super.getGame().getTrain());
             //gets the level the user stands on
             if (TargetHelper.isOnUpperLevel((User) userTarget, super.getGame().getTrain())) {
                 Level level = super.getGame().getTrain().get(wagonPosition).getUpperLevel();
                 level.getTreasures().add((Treasure) target);
+                super.getGame().addLog(((User)this.userTarget).getCharacterType(), ((User)this.userTarget).getUsername()
+                        + " lost " + ((User)this.userTarget).getUsername() + " one of his treasures");
             }
             else{
                 Level level = super.getGame().getTrain().get(wagonPosition).getLowerLevel();
                 level.getTreasures().add((Treasure) target);
+                super.getGame().addLog(((User)this.userTarget).getCharacterType(), ((User)this.userTarget).getUsername()
+                        + " lost " + ((User)this.userTarget).getUsername() + " one of his treasures");
             }
         }
     }
     
     private void executeActionChooseUser(Target target) {
         this.setUserTarget(target);
+        super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()
+                + " beat " + ((User)this.userTarget).getUsername());
     }
 
     @Override

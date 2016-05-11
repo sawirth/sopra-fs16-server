@@ -16,9 +16,12 @@ public class RoundFinisherHostage extends RoundFinisher{
     public void finishRound(Game game) {
         for(User user: game.getTrain().get(0).getLowerLevel().getUsers()){
             user.getTreasures().add(new Treasure(250, TreasureType.MONEYBAG));
+            game.addLog(user.getCharacterType(), user.getUsername() + " took the conductor as an hostage and earned 250$ at the end of the round");
         }
         for(User user: game.getTrain().get(0).getUpperLevel().getUsers()){
             user.getTreasures().add(new Treasure(250, TreasureType.MONEYBAG));
+            game.addLog(user.getCharacterType(), user.getUsername() + " took the conductor as an hostage and earned 250$ at the end of the round");
         }
+        game.addLog(null, "Round has been finished with the hostage event");
     }
 }

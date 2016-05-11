@@ -63,7 +63,7 @@ public class ShootMove extends Move {
         }
 
 
-        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot" + ((User) target).getUsername() + " right in the face");
+        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot at " + ((User) target).getUsername());
     }
 
     @Override
