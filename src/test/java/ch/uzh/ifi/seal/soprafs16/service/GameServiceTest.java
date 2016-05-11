@@ -86,14 +86,11 @@ public class GameServiceTest {
 
     @Test
     public void testUpdateGameAfterMove(){
-        //should just add a log to the game log
+
         gameService.updateGameAfterMove(game);
-        assertThat(game.getGameLog().getLogEntryList().size(), is(1));
         game.getActionMoves().pop();
 
-        //again only should add a log
         gameService.updateGameAfterMove(game);
-        assertThat(game.getGameLog().getLogEntryList().size(), is(2));
         game.getActionMoves().pop();
 
         //since the last move in the stack is a draw move it should be removed automatically
@@ -107,7 +104,6 @@ public class GameServiceTest {
 
         gameService.updateGameAfterMove(game);
         assertThat(game.getStatus(), is(GameStatus.FINISHED));
-
     }
 
     @Test

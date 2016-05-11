@@ -17,7 +17,9 @@ public class RoundFinisherResistance extends RoundFinisher{
         for(Wagon wagon: game.getTrain()){
             for(User user: wagon.getLowerLevel().getUsers()){
                 user.setShotsTaken(user.getShotsTaken()+1);
+                game.addLog(user.getCharacterType(), user.getUsername()+" got shot by the passengers at the end of the round");
             }
         }
+        game.addLog(null, "Round has been finished with the resistance event");
     }
 }

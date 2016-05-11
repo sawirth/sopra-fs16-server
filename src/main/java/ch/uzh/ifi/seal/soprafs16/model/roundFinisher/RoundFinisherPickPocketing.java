@@ -17,11 +17,16 @@ public class RoundFinisherPickPocketing extends RoundFinisher{
         for(Wagon wagon: game.getTrain()){
             if(wagon.getLowerLevel().getUsers().size()==1){
                 chooseRandomMoneybag(wagon.getLowerLevel());
+                game.addLog(wagon.getLowerLevel().getUsers().get(0).getCharacterType(), wagon.getLowerLevel().getUsers().get(0).getUsername()
+                        + " picked up a moneybag at the end of the round");
             }
             if(wagon.getUpperLevel().getUsers().size()==1){
                 chooseRandomMoneybag(wagon.getUpperLevel());
+                game.addLog(wagon.getLowerLevel().getUsers().get(0).getCharacterType(), wagon.getLowerLevel().getUsers().get(0).getUsername()
+                        + " picked up a moneybag at the end of the round");
             }
         }
+        game.addLog(null, "Round has been finished with the pickpocketing event");
     }
 
     /**
@@ -36,8 +41,8 @@ public class RoundFinisherPickPocketing extends RoundFinisher{
                     moneyBags.add(treasure);
                 }
             }
-            Collections.shuffle(moneyBags);
             if(!moneyBags.isEmpty()){
+                Collections.shuffle(moneyBags);
                 //adds the moneybag to the only user on the level
                 level.getUsers().get(0).getTreasures().add(moneyBags.get(0));
                 level.getTreasures().remove(moneyBags.get(0));

@@ -34,7 +34,7 @@ public class ChangeMarshalPositionMove extends Move {
 
         //change position
         level.getWagon().setHasMarshal(true);
-        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched Marshals Position");
+        game.addLog(super.getCharacterType(),super.getUser().getUsername()+" switched marshals position");
 
         //check for Marshals position
         gameService.checkForMarshalInWagon(game);
