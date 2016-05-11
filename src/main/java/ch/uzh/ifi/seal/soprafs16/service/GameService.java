@@ -5,6 +5,9 @@ import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -32,11 +35,13 @@ public class GameService {
 
             //check if this round was the last one of the game
             if (game.getRounds().size() == game.getCurrentRound()+1){
-                //TODO finish game
 
                 round.getRoundFinisher().finishRound(game);
                 game.addLog(null, "Round has been finished with event "+round.getRoundType().toString());
                 game.addLog(null, "Game finished");
+
+                setGameResults(game);
+
                 game.setStatus(GameStatus.FINISHED);
                 return game;
             }
@@ -141,5 +146,31 @@ public class GameService {
                 }
             }
         }
+    }
+
+    /**
+     * calculates the gunslingers and adds the userResults to the game
+     * sorts the UserResults by the amount of total money
+     *
+     * @param game
+     */
+    public void setGameResults(Game game){
+        int fewestNumberOfShots = 6;
+
+        for(int i=0; i<game.getPlayers().size(); i++){
+            if(game.getPlayers().get(i).getNumberOfShots()<fewestNumberOfShots){
+                fewestNumberOfShots = game.getPlayers().get(i).getNumberOfShots();
+            }
+        }
+
+        for (User user : game.getPlayers()) {
+            if (user.getNumberOfShots() == fewestNumberOfShots) {
+                game.getUserResults().add(new UserResult(user, true));
+            } else {
+                game.getUserResults().add(new UserResult(user, false));
+            }
+        }
+
+        Collections.sort(game.getUserResults());
     }
 }

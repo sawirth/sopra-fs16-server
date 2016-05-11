@@ -73,6 +73,15 @@ public class GameServiceTest {
         }
 
         game.setActionMoves(moves);
+
+        game.getPlayers().get(0).setNumberOfShots(2);
+        game.getPlayers().get(1).setNumberOfShots(0);
+        game.getPlayers().get(2).setNumberOfShots(6);
+        game.getPlayers().get(3).setNumberOfShots(4);
+        game.getPlayers().get(4).setNumberOfShots(3);
+        game.getPlayers().get(5).setNumberOfShots(0);
+        game.getPlayers().get(6).setNumberOfShots(1);
+        game.getPlayers().get(7).setNumberOfShots(5);
     }
 
     @Test
@@ -129,6 +138,26 @@ public class GameServiceTest {
 
         assertThat(game.getTrain().get(2).getUpperLevel().getUsers().size(), is(0));
         assertThat(game.getTrain().get(2).getLowerLevel().getUsers().size(), is(0));
+    }
+
+    @Test
+    public void testSetGameResults(){
+
+        gameService.setGameResults(game);
+
+        assertThat(game.getUserResults().get(0).getTreasures().size(), is(3));
+        assertThat(game.getUserResults().get(0).getGunslinger(), is(false));
+        assertThat(game.getUserResults().get(0).getTotalMoney(), is(2050));
+
+        assertThat(game.getUserResults().get(1).getGunslinger(), is(false));
+        assertThat(game.getUserResults().get(1).getTotalMoney(), is(2050));
+
+        assertThat(game.getUserResults().get(2).getGunslinger(), is(true));
+        assertThat(game.getUserResults().get(2).getTotalMoney(), is(1500));
+
+        assertThat(game.getUserResults().get(3).getGunslinger(), is(true));
+        assertThat(game.getUserResults().get(3).getTotalMoney(), is(1000));
+
     }
 
     public Move addMoveToStack(User user){
