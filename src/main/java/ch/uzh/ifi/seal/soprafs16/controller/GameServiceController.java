@@ -389,9 +389,8 @@ public class GameServiceController
         if (!user.equals(game.getActionMoves().peek().getUser())){
             logger.info("User "+ user.getId() +" isn't allowed to make move");
             move.getPossibleTargets().clear();
-            return ResponseEntity.accepted().body(move);
-        }
-        else {
+            return ResponseEntity.ok(move);
+        } else {
             gameRepo.save(game);
             List<Target> targets = move.calculateTargets();
 
