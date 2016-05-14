@@ -321,7 +321,7 @@ public class GameServiceController
 
         if (user.getUsername().equals(game.getOwner())) {
             if (game.getPlayers().size() == 1) {
-                gameRepo.delete(game);
+                stopGame(game.getId(), user.getToken());
                 user.setGames(null);
                 userRepo.save(user);
             } else {
