@@ -140,7 +140,7 @@ public class GameServiceController
             //initializes the rounds with the number of rounds that will be played
             int numberOfRounds;
             if (isFastGame) {
-                numberOfRounds = 1;
+                numberOfRounds = 2;
             } else {
                 numberOfRounds = 5;
             }

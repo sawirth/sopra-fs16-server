@@ -249,10 +249,12 @@ public class GameServiceControllerIT {
         makeMove(p1HandCards.get(0).getId(), player1.getToken());
         makeMove(p2HandCards.get(0).getId(), player2.getToken());
         makeMove(p1HandCards.get(1).getId(), player1.getToken());
+        makeMove(p1HandCards.get(2).getId(), player1.getToken());
         makeMove(p2HandCards.get(1).getId(), player2.getToken());
+        makeMove(p2HandCards.get(2).getId(), player2.getToken());
 
         game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class, new Object());
-        assertThat(game.getBody().getRounds().get(0).getMoves().size(), is(4));
+        assertThat(game.getBody().getRounds().get(0).getMoves().size(), is(6));
 
         //User shouldn't be allowed to draw cards
         ResponseEntity responseEntity = drawCards(player1.getToken());
@@ -260,29 +262,74 @@ public class GameServiceControllerIT {
 
         //Action Phase
         assertThat(game.getBody().getRounds().get(0).isActionPhase(), is(true));
+
         ResponseEntity<Move> move1 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
         if (!move1.getBody().getPossibleTargets().isEmpty()) {
-            move1 = setMoveTarget(game.getBody().getId(), move1.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+            setMoveTarget(game.getBody().getId(), move1.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
         }
 
         ResponseEntity<Move> move2 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
         if (!move2.getBody().getPossibleTargets().isEmpty()) {
-            move2 = setMoveTarget(game.getBody().getId(), move2.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+            setMoveTarget(game.getBody().getId(), move2.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
         }
 
         ResponseEntity<Move> move3 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
         if (!move3.getBody().getPossibleTargets().isEmpty()) {
-            move3 = setMoveTarget(game.getBody().getId(), move3.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+            setMoveTarget(game.getBody().getId(), move3.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
         }
 
-        ResponseEntity<Move> move4 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        ResponseEntity<Move> move4 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
         if (!move4.getBody().getPossibleTargets().isEmpty()) {
-            move4 = setMoveTarget(game.getBody().getId(), move4.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+            setMoveTarget(game.getBody().getId(), move4.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+        }
+
+        ResponseEntity<Move> move5 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move5.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move5.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+        }
+
+        ResponseEntity<Move> move6= getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move6.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move6.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
         }
 
         game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class);
+        assertThat(game.getBody().getCurrentRound(), is(1));
+        assertThat(game.getBody().getRounds().get(game.getBody().getCurrentRound()).isActionPhase(), is(false));
+        assertThat(game.getBody().getPlayers().get(0).getHandCards().size(), is(6));
+        assertThat(game.getBody().getPlayers().get(1).getHandCards().size(), is(6));
+        assertThat(game.getBody().getCurrentPlayer(), is(1));
 
-        //TODO check for finished game
+        p1HandCards = game.getBody().getPlayers().get(0).getHandCards();
+        p2HandCards = game.getBody().getPlayers().get(1).getHandCards();
+        makeMove(p2HandCards.get(0).getId(), player2.getToken());
+        makeMove(p1HandCards.get(0).getId(), player1.getToken());
+        makeMove(p2HandCards.get(1).getId(), player2.getToken());
+        makeMove(p1HandCards.get(1).getId(), player1.getToken());
+
+        ResponseEntity<Move> move7 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move7.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move7.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+        }
+
+        ResponseEntity<Move> move8 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
+        if (!move8.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move8.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+        }
+
+        ResponseEntity<Move> move9 = getMoveWithTargets(game.getBody().getId(), player2.getToken());
+        if (!move9.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move9.getBody().getPossibleTargets().get(0).getId(), player2.getToken());
+        }
+
+        ResponseEntity<Move> move10 = getMoveWithTargets(game.getBody().getId(), player1.getToken());
+        if (!move10.getBody().getPossibleTargets().isEmpty()) {
+            setMoveTarget(game.getBody().getId(), move10.getBody().getPossibleTargets().get(0).getId(), player1.getToken());
+        }
+
+        game = template.getForEntity(base + "/games/" + game.getBody().getId(), Game.class);
+        assertThat(game.getBody().getStatus(), is(GameStatus.FINISHED));
+        assertThat(game.getBody().getUserResults().size(), is(2));
     }
 
     @Test
