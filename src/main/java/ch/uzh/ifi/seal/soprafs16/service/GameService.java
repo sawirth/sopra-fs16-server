@@ -25,6 +25,7 @@ public class GameService {
             if (move.getActionMoveType() == ActionMoveType.DRAW){
                 game.addLog(move.getCharacterType(), move.getUser().getUsername()+" drew cards in planning phase");
                 game.getActionMoves().pop();
+                return updateGameAfterMove(game);
             }
         }
 
