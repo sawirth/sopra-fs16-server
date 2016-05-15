@@ -67,6 +67,11 @@ public class GameInitializeServiceTest {
         //Because there are three players in on this train, two must be in the last wagon and one in the second last
         assertThat(train.get(this.players.size()).getLowerLevel().getUsers().size(), is(2));
         assertThat(train.get(this.players.size() - 1).getLowerLevel().getUsers().size(), is(1));
+
+        players.remove(0);
+        train.clear();
+        train.addAll(gameInitializeService.createTrain(players));
+        assertThat(train.size(), is(4));
     }
 
     @Test

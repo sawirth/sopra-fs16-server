@@ -34,8 +34,15 @@ public class GameInitializeService {
 
         //add random wagons based on the number of players. A wagon for each player
         Collections.shuffle(allWagons);
-        for (int i = 0; i < players.size(); i++) {
-            train.add(allWagons.get(i));
+
+        if (players.size() == 2){                               //if only two players play the game, append three wagons
+            for (int i = 0; i < 3; i++) {
+                train.add(allWagons.get(i));
+            }
+        } else {
+            for (int i = 0; i < players.size(); i++) {          //else append as many wagons as there are players
+                train.add(allWagons.get(i));
+            }
         }
 
         //adds users to train
