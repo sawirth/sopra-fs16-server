@@ -129,7 +129,7 @@ public class GameService {
                     }
                     wagon.getUpperLevel().getUsers().addAll(users);
                     for (User user: users){
-                        game.addLog(user.getCharacterType(),user.getUsername()+ " has been shifted to top of the wagon, since the Marshal is now in the lower level");
+                        game.addLog(user.getCharacterType(),user.getUsername()+ " got shot by the marshal and jumped to the top");
                     }
                     wagon.getLowerLevel().getUsers().clear();
                     return;

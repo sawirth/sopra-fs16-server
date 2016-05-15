@@ -27,7 +27,7 @@ public class RoundFinisherCrane extends RoundFinisher {
         train.get(train.size()-1).getUpperLevel().setUsers(users);
 
         for (User user: users){
-            game.addLog(user.getCharacterType(), user.getUsername() + " got shifted to the end of the train at the end of the round");
+            game.addLog(user.getCharacterType(), user.getUsername() + " took the crane to the end");
         }
 
         game.setTrain(train);
