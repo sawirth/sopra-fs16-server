@@ -163,7 +163,7 @@ public class GameServiceController
             }
 
             //Make some random changes to the fast game so it is better to play
-            if (numberOfRounds == 1) {
+            if (isFastGame) {
 
                 //User changes
                 Random random = new Random();
