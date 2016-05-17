@@ -19,6 +19,6 @@ public class RoundFinisherTakeAll extends RoundFinisher {
         }
         game.getTrain().get(i).getLowerLevel().getTreasures().add(new Treasure(1000, TreasureType.CASHBOX));
         game.addLog(null, "The second cashbox was placed in wagon next to the marshal");
-        game.addLog(null, "Round has been finished with the take-everything event");
+        game.addLog(null, "Round has been finished with the take all event");
     }
 }
