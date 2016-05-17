@@ -183,10 +183,11 @@ public class UserServiceController
             roundService.drawDeckCards(user);
 
             round.getMoves().add(move);
+            gameRepo.save(game);
             game.addLog(user.getCharacterType(), user.getUsername() + " has drawn cards");
+            logger.info("User " + user.getId() + " has drawn cards");
             roundService.updateGameAfterMove(game);
             gameRepo.save(game);
-            logger.info("User " + user.getId() + " has drawn cards");
             return ResponseEntity.ok(user);
         }
     }

@@ -62,8 +62,7 @@ public class ShootMove extends Move {
             }
         }
 
-
-        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot" + ((User) target).getUsername() + " right in the face");
+        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " shot at " + ((User) target).getUsername());
     }
 
     @Override
@@ -73,6 +72,12 @@ public class ShootMove extends Move {
 
         int wagonPosition = TargetHelper.getWagonPositionOfUser(super.getUser(), train);
         boolean isUpperLevel = TargetHelper.isOnUpperLevel(super.getUser(), train);
+
+        if (super.getUser().getNumberOfShots()==0){
+            super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+" has no bullets anymore");
+            super.setPossibleTargets(targets);
+            return targets;
+        }
 
         int pointer;
         if (wagonPosition == 0) {

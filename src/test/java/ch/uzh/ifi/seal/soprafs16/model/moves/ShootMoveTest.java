@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,6 +44,7 @@ public class ShootMoveTest {
     @Test
     public void testUpperLevelLoc() throws Exception {
         //Hans(1) can shoot on Fritz
+        game.getPlayers().get(0).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(0));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
@@ -52,6 +54,7 @@ public class ShootMoveTest {
     @Test
     public void testLowerLevelLoc() throws Exception {
         //Sevi(4): can shoot on Wayne(5)
+        game.getPlayers().get(3).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(3));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
@@ -61,6 +64,7 @@ public class ShootMoveTest {
     @Test
     public void testUpperLevelMiddle() throws Exception {
         //Fritz(6): can shoot on Hans(1), Dave(2), Sandro(3) and Sigmund(7)
+        game.getPlayers().get(5).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(5));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(4));
@@ -69,6 +73,7 @@ public class ShootMoveTest {
     @Test
     public void testLowerLevelMiddle() throws Exception {
         //Wayne(5) can shoot on Sevi(4)
+        game.getPlayers().get(4).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(4));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
@@ -78,6 +83,7 @@ public class ShootMoveTest {
     @Test
     public void testUpperLevelEnd() throws Exception {
         //Sigmund(7) can shoot on Fritz(6)
+        game.getPlayers().get(6).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(6));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
@@ -95,6 +101,7 @@ public class ShootMoveTest {
     @Test
     public void testTucoSpecialAbilityDownwards() throws Exception {
         //Hans(1) can shoot on Fritz(6) and also on Sevi(4) below
+        game.getPlayers().get(1).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(1));
         move.getUser().setCharacterType(CharacterType.TUCO);
         targets = move.calculateTargets();
@@ -106,6 +113,7 @@ public class ShootMoveTest {
     @Test
     public void testTucoSpecialAbilityUpwards() throws Exception {
         //John(8) as Tuco: can shoot on Sigmund(7) who is above him
+        game.getPlayers().get(7).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(7));
         move.getUser().setCharacterType(CharacterType.TUCO);
         targets = move.calculateTargets();
@@ -120,6 +128,7 @@ public class ShootMoveTest {
         on him because there two other players on the same level
         he can only shoot on Dave(2), Sandro(3) and Sigmund(7)
         */
+        game.getPlayers().get(5).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(5));
         game.getPlayers().get(0).setCharacterType(CharacterType.BELLE);
         targets = move.calculateTargets();
@@ -130,12 +139,14 @@ public class ShootMoveTest {
     public void testUpperLevelEmptyWagonBetween() throws Exception {
         //When we remove Fritz(6) from the second wagon, Sigmund(7) is then
         // able to shoot on Hans(1), Dave(2) and Sandro(3)
+        game.getPlayers().get(6).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(6));
         game.getTrain().get(1).getUpperLevel().getUsers().clear();
         targets = move.calculateTargets();
         assertThat(targets.size(), is(3));
 
         //if we now change the user to Sandro(3), the only target must be Sigmund(7)
+        game.getPlayers().get(2).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(2));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(1));
@@ -149,6 +160,7 @@ public class ShootMoveTest {
         game.getTrain().add(1, wagon);
 
         //now Fritz(6) can still shoot on Hans(1), Dave(2), Sandro(3) and Sigmund(7)
+        game.getPlayers().get(5).setNumberOfShots(3);
         move.setUser(game.getPlayers().get(5));
         targets = move.calculateTargets();
         assertThat(targets.size(), is(4));
@@ -237,5 +249,14 @@ public class ShootMoveTest {
         move.executeAction(victim);
 
         assertThat(game.getTrain().get(2).getLowerLevel().getUsers().contains(victim), is(true));
+    }
+
+    @Test
+    public void testNoShootsLeft(){
+        game.getPlayers().get(3).setNumberOfShots(0);
+        move.setUser(game.getPlayers().get(3));
+        move.getUser().setCharacterType(CharacterType.CHEYENNE);
+        move.calculateTargets();
+        assertThat(move.getPossibleTargets().size(), is(0));
     }
 }

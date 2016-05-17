@@ -91,7 +91,6 @@ public class GameServiceController
             game.setStatus(GameStatus.PENDING);
             game.setCurrentPlayer(0);
             game.getPlayers().add(owner);
-            game.addLog(owner.getCharacterType(), "Game created by " + owner.getUsername());
             game = gameRepo.save(game);
 
             logger.info("Game " + game.getId() + " successfully created");
@@ -134,7 +133,6 @@ public class GameServiceController
                 && game.getStatus() == GameStatus.PENDING) {
 
             game.setStatus(GameStatus.RUNNING);
-            game.addLog(owner.getCharacterType(), owner.getUsername() + " has started the game");
             //initializes the train, rounds for this game, and gives users treasures
             game.setTrain(gameInitializeService.createTrain(game.getPlayers()));
             gameInitializeService.giveUsersTreasure(game.getPlayers());
@@ -142,7 +140,7 @@ public class GameServiceController
             //initializes the rounds with the number of rounds that will be played
             int numberOfRounds;
             if (isFastGame) {
-                numberOfRounds = 1;
+                numberOfRounds = 2;
             } else {
                 numberOfRounds = 5;
             }
@@ -165,7 +163,7 @@ public class GameServiceController
             }
 
             //Make some random changes to the fast game so it is better to play
-            if (numberOfRounds == 1) {
+            if (isFastGame) {
 
                 //User changes
                 Random random = new Random();
@@ -191,7 +189,13 @@ public class GameServiceController
                 }
             }
 
-            game.addLog(game.getPlayers().get(0).getCharacterType(), "It's " + game.getPlayers().get(0).getUsername() + "'s turn");
+            for (int i=0;i<game.getPlayers().size();i++){
+                if(i==0){
+                    game.addLog(game.getPlayers().get(0).getCharacterType(), game.getPlayers().get(0).getUsername() + " created the game");
+                } else {
+                    game.addLog(game.getPlayers().get(i).getCharacterType(), game.getPlayers().get(i).getUsername() + " joined the game");
+                }
+            }
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
@@ -279,7 +283,6 @@ public class GameServiceController
             player.setCharacterType(allCharacters.get(0));
             game.getPlayers().add(player);
             game.setCurrentPlayer(0);
-            game.addLog(player.getCharacterType(), player.getUsername() + " joined the game");
             game = gameRepo.save(game);
             logger.info("Game: " + game.getId() + " - player added: " + player.getUsername());
             return ResponseEntity.ok(game);
@@ -318,7 +321,7 @@ public class GameServiceController
 
         if (user.getUsername().equals(game.getOwner())) {
             if (game.getPlayers().size() == 1) {
-                gameRepo.delete(game);
+                stopGame(game.getId(), user.getToken());
                 user.setGames(null);
                 userRepo.save(user);
             } else {
@@ -386,9 +389,8 @@ public class GameServiceController
         if (!user.equals(game.getActionMoves().peek().getUser())){
             logger.info("User "+ user.getId() +" isn't allowed to make move");
             move.getPossibleTargets().clear();
-            return ResponseEntity.accepted().body(move);
-        }
-        else {
+            return ResponseEntity.ok(move);
+        } else {
             gameRepo.save(game);
             List<Target> targets = move.calculateTargets();
 

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 @Entity
-public class UserResult implements Serializable, Comparable{
+public class UserResult implements Serializable{
 
     @Id
     @GeneratedValue
@@ -23,6 +23,10 @@ public class UserResult implements Serializable, Comparable{
     @Column
     @JsonView(Views.Extended.class)
     private CharacterType characterType;
+
+    @Column
+    @JsonView(Views.Internal.class)
+    private int numberOfShotsTaken;
 
     @Column
     @JsonView(Views.Extended.class)
@@ -39,6 +43,7 @@ public class UserResult implements Serializable, Comparable{
     public UserResult (User user, boolean isGunslinger){
         username = user.getUsername();
         characterType = user.getCharacterType();
+        numberOfShotsTaken = user.getShotsTaken();
 
         treasures.put(TreasureType.MONEYBAG, user.getMoneybagsValue());
         treasures.put(TreasureType.DIAMOND, user.getDiamondsValue());
@@ -104,10 +109,11 @@ public class UserResult implements Serializable, Comparable{
         this.totalMoney = totalMoney;
     }
 
-    @Override
-    public int compareTo(Object o) {
-        int compareTotal = ((UserResult) o).getTotalMoney();
+    public int getNumberOfShotsTaken() {
+        return numberOfShotsTaken;
+    }
 
-        return compareTotal - this.totalMoney;
+    public void setNumberOfShotsTaken(int numberOfShotsTaken) {
+        this.numberOfShotsTaken = numberOfShotsTaken;
     }
 }

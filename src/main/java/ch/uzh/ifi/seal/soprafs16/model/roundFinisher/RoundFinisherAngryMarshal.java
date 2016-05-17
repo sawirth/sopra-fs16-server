@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 public class RoundFinisherAngryMarshal extends RoundFinisher{
     @Override
     public void finishRound(Game game) {
+
         int i=0;
         GameService gameService = new GameService();
         while(!game.getTrain().get(i).hasMarshal()){
@@ -21,15 +22,19 @@ public class RoundFinisherAngryMarshal extends RoundFinisher{
         //gives every user on top of Marshal a BlockerMove
         for(User user: game.getTrain().get(i).getUpperLevel().getUsers()){
             user.setShotsTaken(user.getShotsTaken()+1);
+            game.addLog(user.getCharacterType(), user.getUsername() + " got shot by the marshal at the end of the round");
         }
 
         //Marshal goe one wagon closer to the end of the train if
         if(i<game.getTrain().size()-1){
             game.getTrain().get(i).setHasMarshal(false);
             game.getTrain().get(i+1).setHasMarshal(true);
+            game.addLog(null, "Marshal moved one wagon closer to the end of the train");
         }
 
         //since Marshal changed position in some cases
         gameService.checkForMarshalInWagon(game);
+
+        game.addLog(null, "Round has been finished with the angry marshal event");
     }
 }

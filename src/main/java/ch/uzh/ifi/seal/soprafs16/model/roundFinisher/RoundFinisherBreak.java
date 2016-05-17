@@ -17,8 +17,12 @@ public class RoundFinisherBreak extends RoundFinisher{
             List<User> users = game.getTrain().get(i).getUpperLevel().getUsers();
             if(users!=null){
                 game.getTrain().get(i-1).getUpperLevel().getUsers().addAll(users);
+                for(User user: users){
+                    game.addLog(user.getCharacterType(), user.getUsername() + " was surprised by the breaking");
+                }
                 game.getTrain().get(i).getUpperLevel().getUsers().clear();
             }
         }
+        game.addLog(null, "Round has been finished with the break event");
     }
 }

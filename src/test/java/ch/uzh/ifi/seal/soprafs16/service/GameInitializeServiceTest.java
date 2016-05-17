@@ -1,9 +1,13 @@
 package ch.uzh.ifi.seal.soprafs16.service;
 
+import ch.uzh.ifi.seal.soprafs16.TestHelpers;
+import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
+import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Treasure;
 import ch.uzh.ifi.seal.soprafs16.model.User;
 import ch.uzh.ifi.seal.soprafs16.model.Wagon;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,11 +71,15 @@ public class GameInitializeServiceTest {
         //Because there are three players in on this train, two must be in the last wagon and one in the second last
         assertThat(train.get(this.players.size()).getLowerLevel().getUsers().size(), is(2));
         assertThat(train.get(this.players.size() - 1).getLowerLevel().getUsers().size(), is(1));
+
+        players.remove(0);
+        train.clear();
+        train.addAll(gameInitializeService.createTrain(players));
+        assertThat(train.size(), is(4));
     }
 
     @Test
     public void testGiveUsersTreasure() throws Exception {
-
         //Give each user a moneybag with value 250
         gameInitializeService.giveUsersTreasure(this.players);
         for (User player : this.players) {
@@ -79,5 +87,25 @@ public class GameInitializeServiceTest {
             assertThat(player.getTreasures().get(0).getTreasureType(), is(equalTo(TreasureType.MONEYBAG)));
             assertThat(player.getTreasures().get(0).getValue(), is(250));
         }
+    }
+
+    @Test
+    public void testInitializeRounds(){
+        Game game = TestHelpers.createGame();
+        game.getRounds().addAll(gameInitializeService.initializeRounds(5, game));
+
+        assertThat(game.getRounds().size(), is(5));
+        assertThat(game.getRounds().get(0).getFirstPlayer(), is(0));
+        assertThat(game.getRounds().get(1).getFirstPlayer(), is(1));
+        assertThat(game.getRounds().get(2).getFirstPlayer(), is(2));
+        assertThat(game.getRounds().get(3).getFirstPlayer(), is(3));
+
+        game.getRounds().clear();
+        game.getRounds().addAll(gameInitializeService.initializeRounds(2, game));
+        assertThat(game.getRounds().get(0).getFirstPlayer(), is(0));
+        assertThat(game.getRounds().get(1).getFirstPlayer(), is(1));
+        assertThat(game.getRounds().get(0).getRoundType(), is(RoundType.BREAK));
+        assertThat(game.getRounds().get(1).getRoundType(), is(RoundType.REVENGE_MARSHAL));
+
     }
 }
