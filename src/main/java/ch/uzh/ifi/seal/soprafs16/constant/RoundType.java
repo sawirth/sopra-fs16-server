@@ -14,5 +14,6 @@ public enum RoundType {
     PICK_POCKETING,
     REVENGE_MARSHAL,
     HOSTAGE,
-    FAST_GAME
+    FAST_GAME,
+    FAST_GAME2
 }
