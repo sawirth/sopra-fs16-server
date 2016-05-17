@@ -400,6 +400,10 @@ public class GameServiceController
                 logger.info("no possible targets for moveId: " + move.getId());
                 game.getActionMoves().pop();
                 gameService.updateGameAfterMove(game);
+
+                //Zufallszahl setzen damit der User sicher einen Unterschied merkt
+                Random random = new Random();
+                game.setChangeCheckNumber(random.nextInt(1000000));
                 gameRepo.save(game);
             }
 

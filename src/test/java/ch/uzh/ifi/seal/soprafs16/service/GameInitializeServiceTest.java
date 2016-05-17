@@ -104,8 +104,8 @@ public class GameInitializeServiceTest {
         game.getRounds().addAll(gameInitializeService.initializeRounds(2, game));
         assertThat(game.getRounds().get(0).getFirstPlayer(), is(0));
         assertThat(game.getRounds().get(1).getFirstPlayer(), is(1));
-        assertThat(game.getRounds().get(0).getRoundType(), is(RoundType.BREAK));
-        assertThat(game.getRounds().get(1).getRoundType(), is(RoundType.REVENGE_MARSHAL));
+        assertThat(game.getRounds().get(0).getRoundType(), is(RoundType.FAST_GAME));
+        assertThat(game.getRounds().get(1).getRoundType(), is(RoundType.FAST_GAME2));
 
     }
 }
