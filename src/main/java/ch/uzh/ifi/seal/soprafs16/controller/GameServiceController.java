@@ -257,10 +257,17 @@ public class GameServiceController
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+
+
         //This allows the user to reenter the game if for example the app crashed
-        if (userService.findRunningGame(player) != null && userService.findRunningGame(player).getId() == gameId) {
+        if (userService.findRunningGame(player) != null && userService.findRunningGame(player).getId().equals(gameId)) {
             return ResponseEntity.ok(game);
         }
+
+        if (userService.findPendingGame(player) != null && userService.findPendingGame(player).getId().equals(gameId)) {
+            return ResponseEntity.ok(game);
+        }
+
 
         //This prevents users that are not in the game from joining a running game
         if (game.getStatus() == GameStatus.RUNNING) {

@@ -47,6 +47,21 @@ public class UserService {
         return null;
     }
 
+    public Game findPendingGame(User user) {
+        if (user.getGames() == null || user.getGames().isEmpty()) {
+            return null;
+        }
+
+        for (int i=0; i<user.getGames().size(); i++) {
+            Game game = user.getGames().get(i);
+            if (game.getStatus() == GameStatus.PENDING) {
+                return game;
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Returns true if the User is currently in a running or pending game
