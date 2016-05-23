@@ -61,6 +61,10 @@ public class Game implements Serializable {
 	@JsonView(Views.Internal.class)
 	private Stack<Move> actionMoves;
 
+	@Column
+	@JsonView(Views.Extended.class)
+	private int changeCheckNumber;
+
 	public Game() {
 		this.players = new ArrayList<>();
 		this.rounds = new ArrayList<>();
@@ -185,5 +189,13 @@ public class Game implements Serializable {
 
 	public void setUserResults(List<UserResult> userResults) {
 		this.userResults = userResults;
+	}
+
+	public int getChangeCheckNumber() {
+		return changeCheckNumber;
+	}
+
+	public void setChangeCheckNumber(int changeCheckNumber) {
+		this.changeCheckNumber = changeCheckNumber;
 	}
 }

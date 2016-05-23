@@ -5,10 +5,7 @@ import ch.uzh.ifi.seal.soprafs16.constant.GameStatus;
 import ch.uzh.ifi.seal.soprafs16.model.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 @Service("gameService")
@@ -25,6 +22,7 @@ public class GameService {
             if (move.getActionMoveType() == ActionMoveType.DRAW){
                 game.addLog(move.getCharacterType(), move.getUser().getUsername()+" drew cards in planning phase");
                 game.getActionMoves().pop();
+                return updateGameAfterMove(game);
             }
         }
 
@@ -131,7 +129,7 @@ public class GameService {
                     }
                     wagon.getUpperLevel().getUsers().addAll(users);
                     for (User user: users){
-                        game.addLog(user.getCharacterType(),user.getUsername()+ " has been shifted to top of the wagon, since the Marshal is now in the lower level");
+                        game.addLog(user.getCharacterType(),user.getUsername()+ " got shot by the marshal and jumped to the top");
                     }
                     wagon.getLowerLevel().getUsers().clear();
                     return;
@@ -146,11 +144,11 @@ public class GameService {
      *
      * @param game
      */
-    public void setGameResults(Game game){
+    public void setGameResults(Game game) {
         int fewestNumberOfShots = 6;
 
-        for(int i=0; i<game.getPlayers().size(); i++){
-            if(game.getPlayers().get(i).getNumberOfShots()<fewestNumberOfShots){
+        for (int i = 0; i < game.getPlayers().size(); i++) {
+            if (game.getPlayers().get(i).getNumberOfShots() < fewestNumberOfShots) {
                 fewestNumberOfShots = game.getPlayers().get(i).getNumberOfShots();
             }
         }
@@ -163,6 +161,22 @@ public class GameService {
             }
         }
 
-        Collections.sort(game.getUserResults());
+        Collections.sort(game.getUserResults(), new Comparator<UserResult>() {
+
+            public int compare(UserResult o1, UserResult o2) {
+
+                Integer x1 = o1.getTotalMoney();
+                Integer x2 = o2.getTotalMoney();
+                int sComp = x2.compareTo(x1);
+
+                if (sComp != 0) {
+                    return sComp;
+                } else {
+                    x1 = o1.getNumberOfShotsTaken();
+                    x2 = o2.getNumberOfShotsTaken();
+                    return x1.compareTo(x2);
+                }
+            }
+        });
     }
 }

@@ -140,7 +140,7 @@ public class GameServiceController
             //initializes the rounds with the number of rounds that will be played
             int numberOfRounds;
             if (isFastGame) {
-                numberOfRounds = 1;
+                numberOfRounds = 2;
             } else {
                 numberOfRounds = 5;
             }
@@ -163,7 +163,7 @@ public class GameServiceController
             }
 
             //Make some random changes to the fast game so it is better to play
-            if (numberOfRounds == 1) {
+            if (isFastGame) {
 
                 //User changes
                 Random random = new Random();
@@ -407,6 +407,10 @@ public class GameServiceController
                 logger.info("no possible targets for moveId: " + move.getId());
                 game.getActionMoves().pop();
                 gameService.updateGameAfterMove(game);
+
+                //Zufallszahl setzen damit der User sicher einen Unterschied merkt
+                Random random = new Random();
+                game.setChangeCheckNumber(random.nextInt(1000000));
                 gameRepo.save(game);
             }
 

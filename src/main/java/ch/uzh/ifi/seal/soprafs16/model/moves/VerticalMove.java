@@ -23,7 +23,7 @@ public class VerticalMove extends Move {
         GameService gameService = new GameService();
         gameService.switchLevel(super.getGame().getTrain(), (Level) target, super.getUser());
 
-        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " moved to another level in his wagon");
+        super.getGame().addLog(super.getCharacterType(),super.getUser().getUsername()+ " jumped to another level");
 
         //checks for Marshals position
         gameService.checkForMarshalInWagon(super.getGame());

@@ -188,7 +188,7 @@ public class HitMove extends Move {
         if (super.getUser().getCharacterType().equals(CharacterType.CHEYENNE) && ((Treasure) target).getTreasureType().equals(TreasureType.MONEYBAG)){
             super.getUser().getTreasures().add((Treasure) target);
             super.getGame().addLog(super.getCharacterType(), super.getUser().getUsername()
-                    + " stole " + ((User)this.userTarget).getUsername() + "a moneybag and kept it");
+                    + " stole " + ((User)this.userTarget).getUsername() + " a moneybag and kept it");
         } else {
             int wagonPosition = TargetHelper.getWagonPositionOfUser((User) userTarget, super.getGame().getTrain());
             //gets the level the user stands on
@@ -196,13 +196,13 @@ public class HitMove extends Move {
                 Level level = super.getGame().getTrain().get(wagonPosition).getUpperLevel();
                 level.getTreasures().add((Treasure) target);
                 super.getGame().addLog(((User)this.userTarget).getCharacterType(), ((User)this.userTarget).getUsername()
-                        + " lost " + ((User)this.userTarget).getUsername() + " one of his treasures");
+                        + " lost a " + ((Treasure) target).getTreasureType().toString().toLowerCase() + " during the hit");
             }
             else{
                 Level level = super.getGame().getTrain().get(wagonPosition).getLowerLevel();
                 level.getTreasures().add((Treasure) target);
                 super.getGame().addLog(((User)this.userTarget).getCharacterType(), ((User)this.userTarget).getUsername()
-                        + " lost " + ((User)this.userTarget).getUsername() + " one of his treasures");
+                        + " lost a " + ((Treasure) target).getTreasureType().toString().toLowerCase() + " during the hit");
             }
         }
     }

@@ -40,7 +40,7 @@ public class RoundFinisherRevengeMarshal extends RoundFinisher{
                 user.getTreasures().remove(minMoneybag);
             }
 
-            game.addLog(user.getCharacterType(), user.getUsername() + " lost his smallest moneybag at the end of the round");
+            game.addLog(user.getCharacterType(), user.getUsername() + " lost his lightest moneybag");
         }
 
         game.addLog(null, "Round has been finished with the revenge-marshal event");

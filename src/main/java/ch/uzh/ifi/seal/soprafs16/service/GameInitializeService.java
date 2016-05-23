@@ -34,8 +34,15 @@ public class GameInitializeService {
 
         //add random wagons based on the number of players. A wagon for each player
         Collections.shuffle(allWagons);
-        for (int i = 0; i < players.size(); i++) {
-            train.add(allWagons.get(i));
+
+        if (players.size() == 2){                               //if only two players play the game, append three wagons
+            for (int i = 0; i < 3; i++) {
+                train.add(allWagons.get(i));
+            }
+        } else {
+            for (int i = 0; i < players.size(); i++) {          //else append as many wagons as there are players
+                train.add(allWagons.get(i));
+            }
         }
 
         //adds users to train
@@ -174,8 +181,9 @@ public class GameInitializeService {
         List<Round> allRounds = new ArrayList<>();
 
         //Load a fast game if the number of rounds is only 1
-        if (numberOfRounds == 1) {
-            allRounds.add(new Round(2, RoundType.FAST_GAME, game, createMoveTypes(1, 2, 0, 0, 0), new RoundFinisherBreak()));
+        if (numberOfRounds == 2) {
+            allRounds.add(new Round(3, RoundType.FAST_GAME, game, createMoveTypes(1, 4, 0, 0, 0), new RoundFinisherBreak()));
+            allRounds.add(new Round(2, RoundType.FAST_GAME2, game, createMoveTypes(3, 2, 0, 0, 0), new RoundFinisherRevengeMarshal()));
 
         } else {
             normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1, 1, 2, 3, 0), new RoundFinisherAngryMarshal()));
