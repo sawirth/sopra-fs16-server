@@ -4,7 +4,11 @@ import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.constant.TreasureType;
 import ch.uzh.ifi.seal.soprafs16.model.*;
-import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherBreak;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.RoundFinisherRevengeMarshal;
+import ch.uzh.ifi.seal.soprafs16.service.RoundFactories.FourPlayerRoundFactory;
+import ch.uzh.ifi.seal.soprafs16.service.RoundFactories.RoundFactory;
+import ch.uzh.ifi.seal.soprafs16.service.RoundFactories.SixPlayerRoundFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -111,6 +115,7 @@ public class GameInitializeService {
         for (int i = 0; i < 4; i++) {
             tempMoneyBags.add(allMoneyBags.pop());
         }
+
         Wagon wagon5 = new Wagon(generateWagonTreasures(tempMoneyBags, 1),false);
         allWagons.add(wagon5);
 
@@ -176,55 +181,34 @@ public class GameInitializeService {
      *
      */
     public List<Round> initializeRounds(int numberOfRounds, Game game){
-        List<Round> normalRounds = new ArrayList<>();
-        List<Round> endRounds = new ArrayList<>();
-        List<Round> allRounds = new ArrayList<>();
+        List<Round> gameRounds = new ArrayList<>();
 
         //Load a fast game if the number of rounds is only 1
         if (numberOfRounds == 2) {
-            allRounds.add(new Round(3, RoundType.FAST_GAME, game, createMoveTypes(1, 4, 0, 0, 0), new RoundFinisherBreak()));
-            allRounds.add(new Round(2, RoundType.FAST_GAME2, game, createMoveTypes(3, 2, 0, 0, 0), new RoundFinisherRevengeMarshal()));
-
+            gameRounds.add(new Round(3, RoundType.FAST_GAME, game, createMoveTypes(1, 4, 0, 0, 0), new RoundFinisherBreak()));
+            gameRounds.add(new Round(2, RoundType.FAST_GAME2, game, createMoveTypes(3, 2, 0, 0, 0), new RoundFinisherRevengeMarshal()));
         } else {
-            normalRounds.add(new Round(4, RoundType.ANGRY_MARSHAL, game, createMoveTypes(1, 1, 2, 3, 0), new RoundFinisherAngryMarshal()));
-
-            normalRounds.add(new Round(4, RoundType.CRANE, game, createMoveTypes(1, 2, 1, 1, 0), new RoundFinisherCrane()));
-
-            normalRounds.add(new Round(4, RoundType.BREAK, game, createMoveTypes(1, 1, 1, 1, 0), new RoundFinisherBreak()));
-
-            normalRounds.add(new Round(5, RoundType.TAKE_ALL, game, createMoveTypes(1, 2, 4, 1, 0), new RoundFinisherTakeAll()));
-
-            normalRounds.add(new Round(5, RoundType.RESISTANCE, game, createMoveTypes(1, 1, 2, 1, 1), new RoundFinisherResistance()));
-
-            normalRounds.add(new Round(4, RoundType.NO_EVENT1, game, createMoveTypes(1, 4, 1, 0, 0), null));
-
-            normalRounds.add(new Round(5, RoundType.NO_EVENT2, game, createMoveTypes(1, 2, 1, 2, 1), null));
-
-            endRounds.add(new Round(4, RoundType.PICK_POCKETING, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherPickPocketing()));
-
-            endRounds.add(new Round(4, RoundType.REVENGE_MARSHAL, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherRevengeMarshal()));
-
-            endRounds.add(new Round(4, RoundType.HOSTAGE, game, createMoveTypes(1, 1, 2, 1, 0), new RoundFinisherHostage()));
-
-
-            //Shuffles the rounds
-            Collections.shuffle(normalRounds);
-            Collections.shuffle(endRounds);
-
-            //gets the desired number of rounds and adds them to the list that is given back
-            for (int i = 0; i < numberOfRounds - 1; i++) {
-                allRounds.add(normalRounds.get(i));
+            RoundFactory roundFactory;
+            int numberOfPlayers = game.getPlayers().size();
+            if (numberOfPlayers <= 4)
+            {
+                roundFactory = new FourPlayerRoundFactory();
             }
-            allRounds.add(endRounds.get(0));
+            else
+            {
+                roundFactory = new SixPlayerRoundFactory();
+            }
+
+            gameRounds = roundFactory.createRounds(game, numberOfRounds);
         }
 
         //sets the first player of a round
-        for(int i=0;i<allRounds.size();i++){
-            allRounds.get(i).setFirstPlayer((i+game.getPlayers().size()) % game.getPlayers().size());
-            allRounds.get(i).setCurrentMoveType(0);
+        for (int i=0; i < gameRounds.size(); i++){
+            gameRounds.get(i).setFirstPlayer((i + game.getPlayers().size()) % game.getPlayers().size());
+            gameRounds.get(i).setCurrentMoveType(0);
         }
 
-        return allRounds;
+        return gameRounds;
     }
 
     /**

@@ -153,7 +153,6 @@ public class GameServiceController
 
             //Draw cards for first round
             Iterator<User> iter = game.getPlayers().iterator();
-
             while (iter.hasNext()) {
                 User u = iter.next();
                 roundService.resetPlayer(u, game);
@@ -164,7 +163,6 @@ public class GameServiceController
 
             //Make some random changes to the fast game so it is better to play
             if (isFastGame) {
-
                 //User changes
                 Random random = new Random();
                 for (User user : game.getPlayers()) {
@@ -196,14 +194,16 @@ public class GameServiceController
                     game.addLog(game.getPlayers().get(i).getCharacterType(), game.getPlayers().get(i).getUsername() + " joined the game");
                 }
             }
+
             game = gameRepo.save(game);
             logger.info("Game " + game.getId() + " started");
             return ResponseEntity.ok(game);
         }
-        else if(game.getPlayers().size() < GameConstants.MIN_PLAYERS){
+        else if (game.getPlayers().size() < GameConstants.MIN_PLAYERS) {
             logger.error("Couldn't start game: Number of Minimum players required");
             return new ResponseEntity<>(HttpStatus.PRECONDITION_REQUIRED);
         }
+
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -256,8 +256,6 @@ public class GameServiceController
         if (game == null || player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-
 
         //This allows the user to reenter the game if for example the app crashed
         if (userService.findRunningGame(player) != null && userService.findRunningGame(player).getId().equals(gameId)) {

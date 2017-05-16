@@ -161,21 +161,17 @@ public class GameService {
             }
         }
 
-        Collections.sort(game.getUserResults(), new Comparator<UserResult>() {
+        Collections.sort(game.getUserResults(), (o1, o2) -> {
+            Integer x1 = o1.getTotalMoney();
+            Integer x2 = o2.getTotalMoney();
+            int sComp = x2.compareTo(x1);
 
-            public int compare(UserResult o1, UserResult o2) {
-
-                Integer x1 = o1.getTotalMoney();
-                Integer x2 = o2.getTotalMoney();
-                int sComp = x2.compareTo(x1);
-
-                if (sComp != 0) {
-                    return sComp;
-                } else {
-                    x1 = o1.getNumberOfShotsTaken();
-                    x2 = o2.getNumberOfShotsTaken();
-                    return x1.compareTo(x2);
-                }
+            if (sComp != 0) {
+                return sComp;
+            } else {
+                x1 = o1.getNumberOfShotsTaken();
+                x2 = o2.getNumberOfShotsTaken();
+                return x1.compareTo(x2);
             }
         });
     }
