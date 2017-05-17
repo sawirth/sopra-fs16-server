@@ -43,13 +43,13 @@ public abstract class RoundFactory {
         return roundsForGame;
     }
 
-    abstract Round createNoFinisherRoundWithDoubleMove(Game game);
-    abstract Round createNoFinisherRoundWithTunnel(Game game);
-    abstract Round createCraneRound(Game game);
-    abstract Round createTakeAllRound(Game game);
-    abstract Round createAngryMarshalRound(Game game);
-    abstract Round createResistanceRound(Game game);
-    abstract Round createBrakeRound(Game game);
+    protected abstract Round createNoFinisherRoundWithDoubleMove(Game game);
+    protected abstract Round createNoFinisherRoundWithTunnel(Game game);
+    protected abstract Round createCraneRound(Game game);
+    protected abstract Round createTakeAllRound(Game game);
+    protected abstract Round createAngryMarshalRound(Game game);
+    protected abstract Round createResistanceRound(Game game);
+    protected abstract Round createBrakeRound(Game game);
 
     private Round createPickPocketingFinisherRound(Game game)
     {
