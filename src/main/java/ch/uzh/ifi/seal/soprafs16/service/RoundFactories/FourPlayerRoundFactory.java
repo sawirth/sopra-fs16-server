@@ -4,21 +4,23 @@ import ch.uzh.ifi.seal.soprafs16.constant.MoveType;
 import ch.uzh.ifi.seal.soprafs16.constant.RoundType;
 import ch.uzh.ifi.seal.soprafs16.model.Game;
 import ch.uzh.ifi.seal.soprafs16.model.Round;
+import ch.uzh.ifi.seal.soprafs16.model.roundFinisher.*;
 
 public class FourPlayerRoundFactory extends RoundFactory {
     @Override
     protected Round createNoFinisherRoundWithDoubleMove(Game game) {
-        return createRound(RoundType.NO_EVENT1, game, MoveType.VISIBLE, MoveType.DOUBLE, MoveType.VISIBLE);
+        return createRound(RoundType.NO_EVENT1, null, game, MoveType.VISIBLE, MoveType.DOUBLE, MoveType.VISIBLE);
     }
 
     @Override
     protected Round createNoFinisherRoundWithTunnel(Game game) {
-        return createRound(RoundType.NO_EVENT2, game, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE);
+        return createRound(RoundType.NO_EVENT2, null, game, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE);
     }
 
     @Override
     protected Round createCraneRound(Game game) {
         return createRound(RoundType.CRANE,
+                new RoundFinisherCrane(),
                 game,
                 MoveType.VISIBLE,
                 MoveType.HIDDEN,
@@ -28,12 +30,13 @@ public class FourPlayerRoundFactory extends RoundFactory {
 
     @Override
     protected Round createTakeAllRound(Game game) {
-        return createRound(RoundType.TAKE_ALL, game, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.DOUBLE, MoveType.VISIBLE);
+        return createRound(RoundType.TAKE_ALL, new RoundFinisherTakeAll(), game, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.DOUBLE, MoveType.VISIBLE);
     }
 
     @Override
     protected Round createAngryMarshalRound(Game game) {
         return createRound(RoundType.ANGRY_MARSHAL,
+                new RoundFinisherAngryMarshal(),
                 game,
                 MoveType.VISIBLE,
                 MoveType.VISIBLE,
@@ -43,11 +46,11 @@ public class FourPlayerRoundFactory extends RoundFactory {
 
     @Override
     protected Round createResistanceRound(Game game) {
-        return createRound(RoundType.RESISTANCE, game, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE, MoveType.VISIBLE);
+        return createRound(RoundType.RESISTANCE, new RoundFinisherResistance(), game, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.HIDDEN, MoveType.VISIBLE, MoveType.VISIBLE);
     }
 
     @Override
     protected Round createBrakeRound(Game game) {
-        return createRound(RoundType.BREAK, game, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.VISIBLE);
+        return createRound(RoundType.BREAK, new RoundFinisherBreak(), game, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.VISIBLE, MoveType.VISIBLE);
     }
 }

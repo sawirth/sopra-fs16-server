@@ -86,48 +86,9 @@ public abstract class RoundFactory {
         return moveTypes;
     }
 
-    protected Round createRound(RoundType roundType, Game game, MoveType... moveTypes) {
+    protected Round createRound(RoundType roundType, RoundFinisher roundFinisher, Game game, MoveType... moveTypes) {
         List<MoveType> moveTypeList = Arrays.asList(moveTypes);
         int numberOfRounds = moveTypeList.size();
-        RoundFinisher roundFinisher = null;
-
-        switch (roundType) {
-            case ANGRY_MARSHAL:
-                roundFinisher = new RoundFinisherAngryMarshal();
-                break;
-
-            case BREAK:
-                roundFinisher = new RoundFinisherBreak();
-                break;
-
-            case CRANE:
-                roundFinisher = new RoundFinisherCrane();
-                break;
-
-            case HOSTAGE:
-                roundFinisher = new RoundFinisherHostage();
-                break;
-
-            case PICK_POCKETING:
-                roundFinisher = new RoundFinisherPickPocketing();
-                break;
-
-            case RESISTANCE:
-                roundFinisher = new RoundFinisherResistance();
-                break;
-
-            case REVENGE_MARSHAL:
-                roundFinisher = new RoundFinisherRevengeMarshal();
-                break;
-
-            case TAKE_ALL:
-                roundFinisher =  new RoundFinisherTakeAll();
-                break;
-
-            default:
-                break;
-        }
-
         return new Round(numberOfRounds, roundType, game, moveTypeList, roundFinisher);
     }
 }
